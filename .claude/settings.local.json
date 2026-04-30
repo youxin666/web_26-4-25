@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(curl *)",
+      "PowerShell(Start-Process -FilePath \"python\" -ArgumentList \"-m http.server\", \"3000\" -NoNewWindow)",
+      "PowerShell(Start-Process -FilePath \"python\" -ArgumentList \"-m http.server\",\"3000\" -WorkingDirectory \"E:\\\\Coding\\\\web_26-4-25\" -NoNewWindow)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"cd 'E:\\\\Coding\\\\web_26-4-25'; python -m http.server 3000\")",
+      "Bash(findstr LISTENING)",
+      "PowerShell(python --version)"
+    ]
+  }
+}

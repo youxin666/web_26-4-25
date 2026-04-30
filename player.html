@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放器 | 我的音乐松弛小宇宙</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="player.css">
+</head>
+<body class="player-page">
+    <header class="player-hero">
+        <video
+            class="hero-video"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            loop>
+            <source src="intro-loop.mp4" type="video/mp4">
+        </video>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <a class="back-link" href="index.html">返回主页</a>
+            <p class="eyebrow">MY CHILL UNIVERSE</p>
+            <h1 class="hero-title">耳机一戴，世界自动静音</h1>
+            <p class="hero-copy">上面是小鸭的入场动画，下面是你的专属音乐面板。可以直接播放、暂停、切歌，也能搜索歌单或导入自己的音频。</p>
+        </div>
+    </header>
+
+    <main class="player-main">
+        <section class="playlist-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="panel-kicker">PLAYLIST</p>
+                    <h2 class="panel-title">今日松弛歌单</h2>
+                </div>
+                <button class="list-toggle" id="list-toggle" type="button">切换列表</button>
+            </div>
+
+            <div class="playlist-toolbar">
+                <label class="upload-button" for="audio-upload">导入音乐</label>
+                <input id="audio-upload" type="file" accept="audio/*" multiple>
+                <input id="playlist-search" class="search-input" type="search" placeholder="搜索歌名或歌手">
+            </div>
+
+            <div class="playlist-meta">
+                <span id="track-count">5 首歌曲</span>
+                <span>支持本地导入 / 下一首 / 暂停 / 拖动进度</span>
+            </div>
+
+            <div class="playlist-list" id="playlist-list"></div>
+        </section>
+    </main>
+
+    <audio id="audio-player" preload="metadata"></audio>
+
+    <footer class="bottom-player">
+        <div class="now-playing">
+            <div class="cover-badge">♪</div>
+            <div class="track-meta">
+                <p class="track-label">NOW PLAYING</p>
+                <h3 id="current-title">未开始播放</h3>
+                <p id="current-artist">点击播放按钮开始</p>
+            </div>
+        </div>
+
+        <div class="player-center">
+            <div class="controls">
+                <button id="prev-btn" class="control-btn" type="button" aria-label="上一首">上一首</button>
+                <button id="play-btn" class="control-btn primary" type="button" aria-label="播放或暂停">播放</button>
+                <button id="next-btn" class="control-btn" type="button" aria-label="下一首">下一首</button>
+            </div>
+
+            <div class="progress-row">
+                <span id="current-time">00:00</span>
+                <input id="progress-range" type="range" min="0" max="100" value="0">
+                <span id="duration-time">00:00</span>
+            </div>
+        </div>
+
+        <div class="player-side">
+            <button id="playlist-btn" class="ghost-btn" type="button">歌单</button>
+            <label class="volume-wrap" for="volume-range">
+                <span>音量</span>
+                <input id="volume-range" type="range" min="0" max="1" step="0.01" value="0.8">
+            </label>
+        </div>
+    </footer>
+
+    <script src="player.js"></script>
+</body>
+</html>
