@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目经历 | 罗文辉个人简历</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="detail-page">
+    <header class="site-header">
+        <a class="brand" href="index.html">罗文辉</a>
+        <nav class="site-nav" aria-label="简历详情导航">
+            <a href="immerse.html">工作经历</a>
+            <a class="is-active" href="release.html">项目经历</a>
+            <a href="rest.html">技能教育</a>
+            <a href="player.html">联系方式</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="detail-hero">
+            <p class="eyebrow">Project Details</p>
+            <h1>基于 STM32 的四足机器人</h1>
+            <p>项目时间为 2024.06-2024.07，围绕嵌入式控制、舵机驱动、机械结构和人机交互完成四足机器人控制系统开发。</p>
+        </section>
+
+        <section class="project-layout">
+            <article class="info-card">
+                <h2>项目概述</h2>
+                <p>基于 STM32 微控制器开发四足机器人控制系统，采用模块化设计实现多自由度运动控制。硬件端通过 3D 打印技术构建轻量化机械结构，集成 SG90 舵机驱动系统与 PCA9685 舵机驱动板实现 8 路 PWM 信号扩展控制。</p>
+            </article>
+            <article class="info-card">
+                <h2>软件与交互</h2>
+                <p>软件端设计基于三角解析法的步态规划算法，通过 IDY-31 蓝牙模块与 Android 终端 APP 实现实时指令控制，并同步开发 0.96 寸 OLED 人机交互界面显示运动参数。</p>
+            </article>
+        </section>
+
+        <section class="section-block">
+            <div class="section-heading">
+                <p class="eyebrow">Technical Stack</p>
+                <h2>技术组成</h2>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <h3>控制核心</h3>
+                    <p>STM32 微控制器、模块化运动控制、多自由度控制逻辑。</p>
+                </article>
+                <article class="feature-card">
+                    <h3>硬件驱动</h3>
+                    <p>SG90 舵机、PCA9685 舵机驱动板、8 路 PWM 信号扩展。</p>
+                </article>
+                <article class="feature-card">
+                    <h3>结构与显示</h3>
+                    <p>3D 打印轻量化结构、0.96 寸 OLED 参数显示、蓝牙指令控制。</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="contact-strip">
+            <div>
+                <p class="eyebrow">Result</p>
+                <h2>实现 8 种基础步态控制</h2>
+                <p>项目成果实现四足机器人基础运动控制，响应延迟低于 50ms，可适应复杂地形环境。</p>
+            </div>
+            <a class="button primary" href="rest.html">查看技能证书</a>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

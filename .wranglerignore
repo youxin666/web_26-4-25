@@ -1,0 +1,11 @@
+.git
+dist
+node_modules
+.wrangler
+.claude
+plan.txt
+PROJECT_SUMMARY.md
+QUICK_START.md
+README.md
+TYPOGRAPHY_GUIDE.md
+*.log
