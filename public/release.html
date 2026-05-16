@@ -23,49 +23,73 @@
     <main>
         <section class="detail-hero">
             <p class="eyebrow">Project Details</p>
-            <h1>基于 STM32 的四足机器人</h1>
-            <p>项目时间为 2024.06-2024.07，围绕嵌入式控制、舵机驱动、机械结构和人机交互完成四足机器人控制系统开发。</p>
+            <h1>项目经历</h1>
+            <p>围绕嵌入式控制、硬件电路、外设驱动、人机交互和云平台通信完成项目实践，重点体现 STM32 平台下的软硬件协同开发能力。</p>
         </section>
 
-        <section class="project-layout">
-            <article class="info-card">
-                <h2>项目概述</h2>
-                <p>基于 STM32 微控制器开发四足机器人控制系统，采用模块化设计实现多自由度运动控制。硬件端通过 3D 打印技术构建轻量化机械结构，集成 SG90 舵机驱动系统与 PCA9685 舵机驱动板实现 8 路 PWM 信号扩展控制。</p>
-            </article>
-            <article class="info-card">
-                <h2>软件与交互</h2>
-                <p>软件端设计基于三角解析法的步态规划算法，通过 IDY-31 蓝牙模块与 Android 终端 APP 实现实时指令控制，并同步开发 0.96 寸 OLED 人机交互界面显示运动参数。</p>
-            </article>
-        </section>
-
-        <section class="section-block">
+        <section class="section-block project-detail-block">
             <div class="section-heading">
-                <p class="eyebrow">Technical Stack</p>
-                <h2>技术组成</h2>
+                <div>
+                    <p class="eyebrow">Graduation Project</p>
+                    <h2>基于 STM32 的多功能家庭门禁系统</h2>
+                </div>
+                <span class="project-role">项目负责人（毕设） · 2024.12-2025.05</span>
             </div>
-            <div class="feature-grid">
+            <div class="project-layout">
+                <article class="info-card">
+                    <h3>项目职责</h3>
+                    <p>调研家庭门禁系统实际需求，设计多模块功能架构与系统工作流程，制定软硬件协同开发方案；基于 STM32 微控制器完成硬件电路设计与 PCB 绘制，编写指纹识别、RFID 读卡、密码键盘等外设驱动代码。</p>
+                </article>
+                <article class="info-card">
+                    <h3>功能实现</h3>
+                    <p>实现 OLED 人机交互界面，完成 OneNET 云平台数据对接，开发手机 APP 远程控制功能；完成单元测试与系统集成测试，持续优化响应速度与运行稳定性。</p>
+                </article>
+            </div>
+            <div class="feature-grid compact-grid">
                 <article class="feature-card">
-                    <h3>控制核心</h3>
-                    <p>STM32 微控制器、模块化运动控制、多自由度控制逻辑。</p>
+                    <h3>主控与硬件</h3>
+                    <p>STM32F103C8T6、供电/时钟/复位最小系统、PCB 布局、模块焊接与基础功能测试。</p>
                 </article>
                 <article class="feature-card">
-                    <h3>硬件驱动</h3>
-                    <p>SG90 舵机、PCA9685 舵机驱动板、8 路 PWM 信号扩展。</p>
+                    <h3>身份认证模块</h3>
+                    <p>AS608 指纹模块、K210 人脸识别模块、MFRC522 RFID 模块、4x4 矩阵键盘。</p>
                 </article>
                 <article class="feature-card">
-                    <h3>结构与显示</h3>
-                    <p>3D 打印轻量化结构、0.96 寸 OLED 参数显示、蓝牙指令控制。</p>
+                    <h3>交互与执行</h3>
+                    <p>OLED 状态显示、SG90 舵机门锁控制、蜂鸣器异常报警，支持连续错误提醒。</p>
+                </article>
+                <article class="feature-card">
+                    <h3>联网与远程控制</h3>
+                    <p>ESP-01S / ESP8266 Wi-Fi 通信，基于 MQTT 接入 OneNET 云平台，支持 APP 远程开锁、设备状态查询和密码管理。</p>
                 </article>
             </div>
         </section>
 
-        <section class="contact-strip">
-            <div>
-                <p class="eyebrow">Result</p>
-                <h2>实现 8 种基础步态控制</h2>
-                <p>项目成果实现四足机器人基础运动控制，响应延迟低于 50ms，可适应复杂地形环境。</p>
+        <section class="section-block project-detail-block">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Embedded Project</p>
+                    <h2>基于 STM32 的四足机器人</h2>
+                </div>
+                <span class="project-role">2024.06-2024.07</span>
             </div>
-            <a class="button primary" href="rest.html">查看技能证书</a>
+            <div class="project-layout">
+                <article class="info-card">
+                    <h3>项目概述</h3>
+                    <p>基于 STM32 微控制器开发四足机器人控制系统，采用模块化设计实现多自由度运动控制。硬件端通过 3D 打印技术构建轻量化机械结构，集成 SG90 舵机驱动系统与 PCA9685 舵机驱动板实现 8 路 PWM 信号扩展控制。</p>
+                </article>
+                <article class="info-card">
+                    <h3>软件与交互</h3>
+                    <p>软件端设计基于三角解析法的步态规划算法，通过 IDY-31 蓝牙模块与 Android 终端 APP 实现实时指令控制，并同步开发 0.96 寸 OLED 人机交互界面显示运动参数。</p>
+                </article>
+            </div>
+            <div class="contact-strip compact-result">
+                <div>
+                    <p class="eyebrow">Result</p>
+                    <h2>实现 8 种基础步态控制</h2>
+                    <p>项目成果实现四足机器人基础运动控制，响应延迟低于 50ms，可适应复杂地形环境。</p>
+                </div>
+            </div>
         </section>
     </main>
 

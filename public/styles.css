@@ -492,6 +492,32 @@ h2 {
     margin-top: 24px;
 }
 
+.project-detail-block {
+    display: grid;
+    gap: 18px;
+}
+
+.project-role {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid rgba(15, 118, 110, 0.18);
+    border-radius: 6px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    font-weight: 800;
+}
+
+.compact-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.compact-result {
+    margin-top: 0;
+    box-shadow: none;
+}
+
 .skill-matrix {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -557,7 +583,8 @@ h2 {
     .detail-grid,
     .skill-matrix,
     .contact-grid,
-    .feature-grid {
+    .feature-grid,
+    .compact-grid {
         grid-template-columns: 1fr;
     }
 

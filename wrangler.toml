@@ -1,4 +1,5 @@
 name = "duckly-scrollytelling"
+account_id = "c12bce427a48c6bab79e16bfddbcaa2f"
 compatibility_date = "2026-04-30"
 main = "./worker.js"
 

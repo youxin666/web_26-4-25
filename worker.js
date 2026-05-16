@@ -15,9 +15,7 @@ export default {
     const headers = new Headers(assetResponse.headers);
 
     // Set cache headers based on file type
-    if (path.endsWith('.mp4')) {
-      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-    } else if (path.endsWith('.css') || path.endsWith('.js')) {
+    if (path.endsWith('.css') || path.endsWith('.js')) {
       headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
     } else if (path.endsWith('.html') || path === '/') {
       headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
