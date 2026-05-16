@@ -1,7 +1,8 @@
 name = "duckly-scrollytelling"
-account_id = "c12bce427a48c6bab79e16bfddbcaa2f"
+account_id = "7722052fdf1845b1b5e987938bb735f3"
 compatibility_date = "2026-04-30"
 main = "./worker.js"
+workers_dev = false
 
 [assets]
 directory = "./public"
