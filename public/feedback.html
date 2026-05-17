@@ -18,7 +18,7 @@
             <a href="rest.html">技能教育</a>
             <a href="player.html">联系方式</a>
             <a class="is-active" href="feedback.html">反馈系统</a>
-            <a href="https://mail.858846.xyz">邮箱系统</a>
+            <a href="https://mail.858846.xyz">邮箱系统 <span aria-hidden="true">🔗</span></a>
         </nav>
     </header>
 
@@ -36,12 +36,12 @@
                     <h2>提交反馈</h2>
                 </div>
 
-                <label>
-                    <span>称呼</span>
-                    <input name="name" type="text" maxlength="40" autocomplete="name" placeholder="例如：HR / 访客 / 同学">
-                </label>
-
-                <div class="form-row">
+                <fieldset class="feedback-fieldset">
+                    <legend>基础信息</legend>
+                    <label>
+                        <span>称呼</span>
+                        <input name="name" type="text" maxlength="40" autocomplete="name" placeholder="例如：HR / 访客 / 同学">
+                    </label>
                     <label>
                         <span>分类</span>
                         <select name="category">
@@ -62,17 +62,23 @@
                             <option value="1">1 分</option>
                         </select>
                     </label>
-                </div>
+                </fieldset>
 
-                <label>
-                    <span>反馈内容</span>
-                    <textarea name="comment" maxlength="600" rows="7" required placeholder="写下你对网站、简历内容或项目展示的建议。"></textarea>
-                </label>
+                <fieldset class="feedback-fieldset feedback-fieldset-wide">
+                    <legend>反馈内容</legend>
+                    <label>
+                        <span>建议或评论</span>
+                        <textarea name="comment" maxlength="600" rows="7" required placeholder="写下你对网站、简历内容或项目展示的建议。"></textarea>
+                    </label>
+                </fieldset>
 
-                <label>
-                    <span>联系方式（可选，不公开展示）</span>
-                    <input name="contact" type="text" maxlength="80" autocomplete="off" placeholder="微信 / 邮箱 / 电话均可选填">
-                </label>
+                <fieldset class="feedback-fieldset feedback-fieldset-wide">
+                    <legend>回访信息</legend>
+                    <label>
+                        <span>联系方式（可选，不公开展示）</span>
+                        <input name="contact" type="text" maxlength="80" autocomplete="off" placeholder="微信 / 邮箱 / 电话均可选填">
+                    </label>
+                </fieldset>
 
                 <label class="feedback-trap" aria-hidden="true">
                     <span>Website</span>

@@ -514,6 +514,29 @@ button.button {
     padding: 24px;
 }
 
+.feedback-fieldset {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 0.72fr) minmax(110px, 0.42fr);
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid rgba(219, 231, 228, 0.94);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.48);
+}
+
+.feedback-fieldset-wide {
+    grid-template-columns: 1fr;
+}
+
+.feedback-fieldset legend {
+    padding: 0 8px;
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
 .feedback-list-panel {
     min-height: 520px;
     padding: 24px;
@@ -565,18 +588,15 @@ button.button {
     box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
 }
 
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 120px;
-    gap: 12px;
-}
-
 .feedback-trap {
     position: absolute;
     left: -9999px;
+    top: auto;
     width: 1px;
     height: 1px;
     overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .feedback-actions {
@@ -1211,8 +1231,9 @@ button.button {
         min-width: 0;
     }
 
-    .form-row {
+    .feedback-fieldset {
         grid-template-columns: 1fr;
+        padding: 14px;
     }
 }
 
