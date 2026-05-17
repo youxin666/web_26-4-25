@@ -10,6 +10,9 @@
     --accent-soft: #d9efeb;
     --warning: #b7791f;
     --shadow: 0 24px 70px rgba(19, 32, 31, 0.11);
+    --glass: rgba(255, 255, 255, 0.68);
+    --pointer-x: 50vw;
+    --pointer-y: 18vh;
 }
 
 * {
@@ -32,6 +35,36 @@ body {
         var(--bg);
     line-height: 1.7;
     overflow-x: hidden;
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+body::before {
+    z-index: -2;
+    background:
+        radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(15, 118, 110, 0.18), transparent 22rem),
+        radial-gradient(circle at 14% 22%, rgba(11, 79, 108, 0.12), transparent 24rem),
+        radial-gradient(circle at 86% 68%, rgba(183, 121, 31, 0.08), transparent 20rem);
+    filter: blur(4px);
+    transition: background-position 0.2s ease;
+}
+
+body::after {
+    z-index: -1;
+    opacity: 0.38;
+    background-image:
+        linear-gradient(rgba(15, 118, 110, 0.11) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 118, 110, 0.1) 1px, transparent 1px),
+        linear-gradient(115deg, transparent 0 46%, rgba(11, 79, 108, 0.08) 46% 47%, transparent 47% 100%);
+    background-size: 42px 42px, 42px 42px, 160px 160px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.2));
+    animation: circuitDrift 22s linear infinite;
 }
 
 a {
@@ -59,9 +92,10 @@ main {
     gap: 24px;
     border: 1px solid rgba(219, 231, 228, 0.9);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 12px 32px rgba(19, 32, 31, 0.08);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(22px) saturate(1.45);
+    -webkit-backdrop-filter: blur(22px) saturate(1.45);
+    box-shadow: 0 12px 32px rgba(19, 32, 31, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .brand {
@@ -95,6 +129,7 @@ main {
 .site-nav a.is-active {
     color: var(--accent-strong);
     background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12);
 }
 
 .site-nav a:active {
@@ -108,9 +143,13 @@ main {
     border: 1px solid var(--line);
     border-radius: 8px;
     background:
+        linear-gradient(105deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.34) 38%, rgba(217, 239, 235, 0.62)),
         linear-gradient(120deg, rgba(255, 255, 255, 0.95), rgba(238, 245, 243, 0.92)),
         repeating-linear-gradient(90deg, rgba(15, 118, 110, 0.08) 0 1px, transparent 1px 44px);
+    backdrop-filter: blur(22px) saturate(1.28);
+    -webkit-backdrop-filter: blur(22px) saturate(1.28);
     box-shadow: var(--shadow);
+    isolation: isolate;
 }
 
 .hero-section {
@@ -132,6 +171,21 @@ main {
     height: 260px;
     border: 34px solid rgba(15, 118, 110, 0.08);
     border-radius: 50%;
+    animation: ringFloat 12s ease-in-out infinite;
+}
+
+.hero-section::before,
+.detail-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.16), transparent),
+        repeating-linear-gradient(0deg, transparent 0 25px, rgba(15, 118, 110, 0.045) 25px 26px);
+    transform: translateX(-100%);
+    animation: scanSweep 7.5s ease-in-out infinite;
+    mix-blend-mode: multiply;
 }
 
 .hero-copy,
@@ -165,6 +219,8 @@ h2 {
     margin-top: 14px;
     font-size: clamp(3.3rem, 10vw, 7rem);
     font-weight: 900;
+    text-shadow: 0 18px 42px rgba(11, 79, 108, 0.12);
+    animation: titleRise 0.85s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .hero-lead,
@@ -191,7 +247,7 @@ h2 {
     border: 1px solid var(--line);
     border-radius: 6px;
     font-weight: 800;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .button:hover {
@@ -216,8 +272,11 @@ h2 {
     padding: 22px;
     border: 1px solid rgba(15, 118, 110, 0.18);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 18px 38px rgba(19, 32, 31, 0.08);
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(18px) saturate(1.35);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    box-shadow: 0 18px 38px rgba(19, 32, 31, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    animation: cardFloatIn 0.85s 0.12s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .profile-card div,
@@ -260,9 +319,19 @@ h2 {
     border: 1px solid rgba(15, 118, 110, 0.18);
     border-radius: 6px;
     color: var(--accent-strong);
-    background: rgba(255, 255, 255, 0.76);
+    background: rgba(255, 255, 255, 0.64);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     font-size: 0.92rem;
     font-weight: 700;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-tags span:hover,
+.pill-list span:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 24px rgba(11, 79, 108, 0.1);
 }
 
 .section-block,
@@ -271,8 +340,10 @@ h2 {
     padding: clamp(24px, 5vw, 42px);
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 16px 42px rgba(19, 32, 31, 0.07);
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(1.28);
+    -webkit-backdrop-filter: blur(20px) saturate(1.28);
+    box-shadow: 0 16px 42px rgba(19, 32, 31, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.74);
 }
 
 .section-heading {
@@ -313,7 +384,23 @@ h2 {
 .skill-matrix article {
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px) saturate(1.22);
+    -webkit-backdrop-filter: blur(16px) saturate(1.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    will-change: transform;
+}
+
+.feature-card:hover,
+.info-card:hover,
+.detail-card:hover,
+.contact-card:hover,
+.skill-matrix article:hover {
+    border-color: rgba(15, 118, 110, 0.28);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 20px 42px rgba(11, 79, 108, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .feature-card,
@@ -365,6 +452,7 @@ h2 {
     border-radius: 50%;
     background: var(--accent);
     box-shadow: 0 0 0 6px var(--accent-soft);
+    animation: nodePulse 2.8s ease-in-out infinite;
 }
 
 .timeline-item time,
@@ -389,8 +477,29 @@ h2 {
     align-items: center;
     color: #ffffff;
     background:
+        radial-gradient(circle at 8% 15%, rgba(255, 255, 255, 0.18), transparent 17rem),
+        linear-gradient(115deg, rgba(255, 255, 255, 0.11), transparent 38%),
         linear-gradient(135deg, rgba(15, 118, 110, 0.95), rgba(11, 79, 108, 0.96)),
         var(--accent-strong);
+    overflow: hidden;
+    position: relative;
+}
+
+.project-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 38px 38px;
+    opacity: 0.28;
+    animation: circuitDrift 18s linear infinite;
+}
+
+.project-panel > * {
+    position: relative;
+    z-index: 1;
 }
 
 .project-panel .eyebrow,
@@ -419,6 +528,14 @@ h2 {
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.project-stats div:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.16);
 }
 
 .project-stats dt {
@@ -549,13 +666,90 @@ h2 {
 
 .reveal {
     opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.55s ease, transform 0.55s ease;
+    transform: translateY(24px) scale(0.985);
+    filter: blur(8px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1), filter 0.7s ease;
 }
 
 .reveal.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+
+.reveal-stagger > * {
+    transition-delay: calc(var(--stagger-index, 0) * 55ms);
+}
+
+@keyframes circuitDrift {
+    from {
+        background-position: 0 0, 0 0, 0 0;
+    }
+    to {
+        background-position: 84px 42px, 42px 84px, 160px 160px;
+    }
+}
+
+@keyframes scanSweep {
+    0%,
+    42% {
+        transform: translateX(-120%);
+        opacity: 0;
+    }
+    52% {
+        opacity: 0.8;
+    }
+    72%,
+    100% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+}
+
+@keyframes ringFloat {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(-18px, 16px, 0) rotate(12deg);
+    }
+}
+
+@keyframes titleRise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes cardFloatIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+        filter: blur(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes nodePulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 6px var(--accent-soft), 0 0 0 rgba(15, 118, 110, 0);
+    }
+    50% {
+        box-shadow: 0 0 0 7px var(--accent-soft), 0 0 22px rgba(15, 118, 110, 0.38);
+    }
 }
 
 @media (max-width: 860px) {
@@ -642,5 +836,22 @@ h2 {
     .profile-card strong,
     .contact-card strong {
         font-size: 1.18rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
     }
 }
