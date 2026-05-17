@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
         }, { passive: true });
 
-        document.querySelectorAll('.feature-card, .info-card, .detail-card, .contact-card, .skill-matrix article').forEach((card) => {
+        document.querySelectorAll('.feature-card, .info-card, .detail-card, .contact-card, .feedback-card, .skill-matrix article').forEach((card) => {
             card.addEventListener('pointermove', (event) => {
                 const rect = card.getBoundingClientRect();
                 const x = (event.clientX - rect.left) / rect.width - 0.5;
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.querySelectorAll('.feature-grid, .timeline, .project-layout, .skill-matrix, .contact-grid, .pill-list, .quick-tags').forEach((group) => {
+    document.querySelectorAll('.feature-grid, .timeline, .project-layout, .skill-matrix, .contact-grid, .comment-list, .pill-list, .quick-tags').forEach((group) => {
         group.classList.add('reveal-stagger');
         Array.from(group.children).forEach((child, index) => {
             child.style.setProperty('--stagger-index', index);

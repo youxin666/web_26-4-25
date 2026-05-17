@@ -8,3 +8,8 @@ workers_dev = false
 directory = "./public"
 binding = "ASSETS"
 run_worker_first = true
+
+[[d1_databases]]
+binding = "FEEDBACK_DB"
+database_name = "resume-feedback"
+database_id = "a1234648-7657-441a-9cf8-0982503e6786"

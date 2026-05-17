@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反馈系统 | 罗文辉个人简历</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="detail-page feedback-page">
+    <header class="site-header">
+        <a class="brand" href="index.html">罗文辉</a>
+        <nav class="site-nav" aria-label="反馈系统导航">
+            <a href="index.html">简历首页</a>
+            <a href="release.html">项目经历</a>
+            <a href="rest.html">技能教育</a>
+            <a href="player.html">联系方式</a>
+            <a class="is-active" href="feedback.html">反馈系统</a>
+            <a href="https://mail.858846.xyz">邮箱系统</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="detail-hero feedback-hero">
+            <p class="eyebrow">Feedback System</p>
+            <h1>网站反馈与评论</h1>
+            <p>这里用于收集对简历网站、项目内容和求职沟通体验的建议。反馈数据会写入 Cloudflare D1 数据库，公开评论区仅展示姓名、分类、评分、内容和时间。</p>
+        </section>
+
+        <section class="feedback-layout">
+            <form class="feedback-form reveal" data-feedback-form>
+                <div class="section-heading compact-heading">
+                    <p class="eyebrow">New Feedback</p>
+                    <h2>提交反馈</h2>
+                </div>
+
+                <label>
+                    <span>称呼</span>
+                    <input name="name" type="text" maxlength="40" autocomplete="name" placeholder="例如：HR / 访客 / 同学">
+                </label>
+
+                <div class="form-row">
+                    <label>
+                        <span>分类</span>
+                        <select name="category">
+                            <option>网站建议</option>
+                            <option>简历内容</option>
+                            <option>项目交流</option>
+                            <option>招聘沟通</option>
+                            <option>其他</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>评分</span>
+                        <select name="rating">
+                            <option value="5">5 分</option>
+                            <option value="4">4 分</option>
+                            <option value="3">3 分</option>
+                            <option value="2">2 分</option>
+                            <option value="1">1 分</option>
+                        </select>
+                    </label>
+                </div>
+
+                <label>
+                    <span>反馈内容</span>
+                    <textarea name="comment" maxlength="600" rows="7" required placeholder="写下你对网站、简历内容或项目展示的建议。"></textarea>
+                </label>
+
+                <label>
+                    <span>联系方式（可选，不公开展示）</span>
+                    <input name="contact" type="text" maxlength="80" autocomplete="off" placeholder="微信 / 邮箱 / 电话均可选填">
+                </label>
+
+                <label class="feedback-trap" aria-hidden="true">
+                    <span>Website</span>
+                    <input name="website" type="text" tabindex="-1" autocomplete="off">
+                </label>
+
+                <div class="feedback-actions">
+                    <button class="button primary" type="submit">提交反馈</button>
+                    <p class="feedback-status" data-feedback-status data-state="muted">提交后会显示在右侧公开评论区。</p>
+                </div>
+            </form>
+
+            <section class="feedback-list-panel reveal">
+                <div class="section-heading compact-heading">
+                    <div>
+                        <p class="eyebrow">Comments</p>
+                        <h2>公开评论</h2>
+                    </div>
+                    <span class="feedback-count" data-feedback-count>0 条反馈</span>
+                </div>
+                <div class="comment-list" data-feedback-list>
+                    <p class="feedback-empty">正在读取反馈...</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="feedback.js"></script>
+</body>
+</html>

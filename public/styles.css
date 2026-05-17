@@ -263,6 +263,16 @@ h2 {
     box-shadow: 0 14px 32px rgba(19, 32, 31, 0.14);
 }
 
+button.button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.button:disabled {
+    cursor: wait;
+    opacity: 0.64;
+}
+
 .button.primary {
     color: #ffffff;
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
@@ -376,7 +386,8 @@ h2 {
 .feature-grid,
 .detail-grid,
 .skill-matrix,
-.contact-grid {
+.contact-grid,
+.feedback-layout {
     display: grid;
     gap: 16px;
 }
@@ -476,6 +487,193 @@ h2 {
 
 .timeline-item p {
     color: var(--muted);
+}
+
+.feedback-layout {
+    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+    gap: 20px;
+    margin-top: 28px;
+}
+
+.feedback-form,
+.feedback-list-panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(219, 231, 228, 0.9);
+    border-radius: 8px;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    box-shadow: 0 18px 48px rgba(19, 32, 31, 0.08);
+}
+
+.feedback-form {
+    display: grid;
+    gap: 16px;
+    align-self: start;
+    padding: 24px;
+}
+
+.feedback-list-panel {
+    min-height: 520px;
+    padding: 24px;
+}
+
+.compact-heading {
+    margin-bottom: 4px;
+}
+
+.feedback-form label {
+    display: grid;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.76);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.feedback-form input,
+.feedback-form select {
+    min-height: 44px;
+    padding: 0 12px;
+}
+
+.feedback-form textarea {
+    min-height: 150px;
+    padding: 12px;
+    resize: vertical;
+}
+
+.feedback-form input:focus,
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+    border-color: rgba(15, 118, 110, 0.55);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 12px;
+}
+
+.feedback-trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.feedback-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.feedback-status {
+    min-height: 22px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.feedback-status[data-state="success"] {
+    color: var(--accent);
+}
+
+.feedback-status[data-state="error"] {
+    color: #a33a2a;
+}
+
+.feedback-count {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border: 1px solid rgba(15, 118, 110, 0.2);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.comment-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.feedback-card,
+.feedback-empty {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 14px 32px rgba(19, 32, 31, 0.06);
+}
+
+.feedback-card {
+    padding: 18px;
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    will-change: transform;
+}
+
+.feedback-card:hover {
+    border-color: rgba(15, 118, 110, 0.32);
+    box-shadow: 0 18px 38px rgba(11, 79, 108, 0.1);
+}
+
+.feedback-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.feedback-card-meta strong {
+    color: var(--ink);
+    font-size: 1.02rem;
+}
+
+.feedback-card-meta span,
+.feedback-card time {
+    color: var(--muted);
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.feedback-card p {
+    margin-top: 12px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+.feedback-card time {
+    display: block;
+    margin-top: 12px;
+}
+
+.feedback-empty {
+    padding: 18px;
+    color: var(--muted);
+    font-weight: 700;
 }
 
 .project-panel {
@@ -848,6 +1046,7 @@ h2 {
     .skill-matrix,
     .contact-grid,
     .feature-grid,
+    .feedback-layout,
     .compact-grid {
         grid-template-columns: 1fr;
     }
@@ -868,6 +1067,10 @@ h2 {
 
     .action-pair .button {
         flex: 1 1 180px;
+    }
+
+    .feedback-list-panel {
+        min-height: auto;
     }
 }
 
@@ -946,6 +1149,7 @@ h2 {
     .detail-hero + .detail-grid,
     .detail-hero + .project-layout,
     .detail-hero + .contact-grid,
+    .detail-hero + .feedback-layout,
     .detail-hero + .section-block {
         margin-top: 24px;
     }
@@ -981,12 +1185,14 @@ h2 {
     .feature-card,
     .info-card,
     .detail-card,
+    .feedback-card,
     .skill-matrix article {
         padding: 18px;
     }
 
     .project-layout,
-    .contact-grid {
+    .contact-grid,
+    .feedback-layout {
         margin-top: 16px;
     }
 
@@ -998,8 +1204,15 @@ h2 {
     .info-card,
     .detail-card,
     .contact-card,
+    .feedback-form,
+    .feedback-list-panel,
+    .feedback-card,
     .skill-matrix article {
         min-width: 0;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1054,6 +1267,9 @@ h2 {
     .info-card,
     .detail-card,
     .contact-card,
+    .feedback-form,
+    .feedback-list-panel,
+    .feedback-card,
     .skill-matrix article,
     .project-layout,
     .two-column,
@@ -1066,6 +1282,7 @@ h2 {
     .feature-card p,
     .info-card p,
     .detail-card li,
+    .feedback-card p,
     .skill-matrix p,
     .contact-strip p,
     .detail-hero p {
