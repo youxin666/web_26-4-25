@@ -239,6 +239,13 @@ h2 {
     margin-top: 28px;
 }
 
+.action-pair {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
 .button {
     min-height: 44px;
     display: inline-flex;
@@ -719,6 +726,14 @@ h2 {
     padding: 20px;
 }
 
+.link-card {
+    color: inherit;
+}
+
+.link-card strong {
+    color: var(--accent-strong);
+}
+
 .reveal {
     opacity: 0;
     transform: translateY(24px) scale(0.985);
@@ -846,6 +861,14 @@ h2 {
         align-items: flex-start;
         flex-direction: column;
     }
+
+    .action-pair {
+        width: 100%;
+    }
+
+    .action-pair .button {
+        flex: 1 1 180px;
+    }
 }
 
 @media (min-width: 861px) {
@@ -891,7 +914,7 @@ h2 {
     .site-nav a {
         min-height: 34px;
         padding: 0 6px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     .brand {
