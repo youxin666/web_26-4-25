@@ -137,6 +137,15 @@ main {
     transform: translateY(1px);
 }
 
+.external-arrow {
+    display: inline-block;
+    margin-left: 0.18em;
+    font-size: 0.82em;
+    font-weight: 800;
+    line-height: 1;
+    transform: translateY(-0.16em);
+}
+
 .hero-section,
 .detail-hero {
     position: relative;
