@@ -106,6 +106,10 @@ function extractJson(content) {
   }
 }
 
+function createMatchPrompt(jobDescription) {
+  return `候选人公开简历：\n${RESUME_CONTEXT}\n\n岗位 JD：\n${jobDescription}\n\n请输出 JSON：{"overallScore":0-100,"matchLevel":"高度匹配/较匹配/需进一步确认/不太匹配","dimensionScores":{"education":0-100,"experience":0-100,"technical":0-100,"maintenance":0-100,"communication":0-100},"highlights":["最多4条"],"gaps":["最多4条"],"summary":"120字以内总结"}`;
+}
+
 async function callMatchModel(jobDescription, env) {
   const baseUrl = normalizeText(env.AI_MATCH_BASE_URL, 300).replace(/\/+$/, '');
   const apiKey = env.AI_MATCH_API_KEY;
@@ -116,16 +120,54 @@ async function callMatchModel(jobDescription, env) {
     return null;
   }
 
-  const response = await fetch(`${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      response_format: { type: 'json_object' },
+  try {
+    const response = await fetch(`${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.2,
+        max_tokens: 900,
+        stream: false,
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'system',
+            content: '你是招聘岗位匹配分析助手。只输出 JSON，不要输出 Markdown。评分必须客观，不能夸大。不要展示模型名称。',
+          },
+          {
+            role: 'user',
+            content: createMatchPrompt(jobDescription),
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || data.output_text || data.content;
+    if (!normalizeText(content, 20)) {
+      return null;
+    }
+    return normalizeMatchResult(extractJson(content), true);
+  } catch {
+    return null;
+  }
+}
+
+async function callCloudflareMatchModel(jobDescription, env) {
+  if (!env.AI) {
+    return null;
+  }
+
+  try {
+    const answer = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
         {
           role: 'system',
@@ -133,19 +175,18 @@ async function callMatchModel(jobDescription, env) {
         },
         {
           role: 'user',
-          content: `候选人公开简历：\n${RESUME_CONTEXT}\n\n岗位 JD：\n${jobDescription}\n\n请输出 JSON：{"overallScore":0-100,"matchLevel":"高度匹配/较匹配/需进一步确认/不太匹配","dimensionScores":{"education":0-100,"experience":0-100,"technical":0-100,"maintenance":0-100,"communication":0-100},"highlights":["最多4条"],"gaps":["最多4条"],"summary":"120字以内总结"}`,
+          content: createMatchPrompt(jobDescription),
         },
       ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error('AI 匹配服务暂时不可用');
+    });
+    const content = answer?.response || answer?.result?.response || answer?.text;
+    if (!normalizeText(content, 20)) {
+      return null;
+    }
+    return normalizeMatchResult(extractJson(content), true);
+  } catch {
+    return null;
   }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content || data.output_text || data.content;
-  return normalizeMatchResult(extractJson(content), true);
 }
 
 async function handleFeedback(request, env) {
@@ -228,7 +269,8 @@ async function handleJobMatch(request, env) {
   }
 
   const aiResult = await callMatchModel(jobDescription, env);
-  return jsonResponse({ result: aiResult || buildLocalMatch(jobDescription) });
+  const cloudflareResult = aiResult || await callCloudflareMatchModel(jobDescription, env);
+  return jsonResponse({ result: cloudflareResult || buildLocalMatch(jobDescription) });
 }
 
 export default {

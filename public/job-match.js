@@ -35,12 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const resizeTextarea = () => {
-        if (!textarea) return;
-        textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 180)}px`;
-    };
-
     const fillList = (target, items) => {
         if (!target) return;
         target.replaceChildren();
@@ -88,7 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('has-modal');
     };
 
-    textarea?.addEventListener('input', resizeTextarea);
+    textarea?.addEventListener('paste', () => {
+        setStatus('已读取粘贴内容，点击开始匹配即可生成报告。', 'muted');
+    });
     document.querySelectorAll('[data-match-close]').forEach((button) => {
         button.addEventListener('click', closeModal);
     });
