@@ -42,7 +42,9 @@ function clampScore(value) {
 function scoreByKeywords(text, keywords) {
   const lower = text.toLowerCase();
   const hits = keywords.filter((keyword) => lower.includes(keyword.toLowerCase())).length;
-  return Math.min(100, Math.round((hits / Math.max(1, keywords.length)) * 100));
+  if (hits === 0) return 28;
+  const ratio = hits / Math.max(1, keywords.length);
+  return Math.min(96, Math.round(40 + (ratio * 60)));
 }
 
 function normalizeMatchResult(result, isAiPowered) {
