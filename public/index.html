@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260517-link-arrow">
+    <link rel="stylesheet" href="styles.css?v=20260517-job-matcher">
 </head>
 <body class="resume-home">
     <header class="site-header">
@@ -51,6 +51,19 @@
                     <span>8588***@qq.com</span>
                 </div>
             </aside>
+        </section>
+
+        <section class="job-matcher reveal" aria-labelledby="job-matcher-title">
+            <div class="job-matcher-head">
+                <p class="eyebrow">AI Job Matcher</p>
+                <h2 id="job-matcher-title">AI 岗位匹配器</h2>
+            </div>
+            <form class="job-matcher-bar" data-job-match-form>
+                <label class="sr-only" for="job-description">粘贴岗位 JD</label>
+                <textarea id="job-description" name="jobDescription" rows="1" maxlength="6000" placeholder="粘贴您的 JD，查看罗文辉与该岗位之间的匹配度" required></textarea>
+                <button class="button match-button" type="submit">开始匹配 <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="job-matcher-note" data-job-match-status>HR 可直接粘贴岗位描述，系统会自动总结匹配度、亮点和差距。</p>
         </section>
 
         <section class="quick-tags" aria-label="核心能力">
@@ -175,6 +188,50 @@
         </section>
     </main>
 
+    <div class="match-modal" data-match-modal hidden>
+        <div class="match-modal-backdrop" data-match-close></div>
+        <section class="match-dialog" role="dialog" aria-modal="true" aria-labelledby="match-dialog-title">
+            <div class="match-dialog-head">
+                <div>
+                    <p class="eyebrow">Match Report</p>
+                    <h2 id="match-dialog-title">综合匹配结果</h2>
+                </div>
+                <span class="match-badge" data-match-label>分析中</span>
+            </div>
+
+            <div class="match-matrix">
+                <div class="match-score-orb">
+                    <span>综合分</span>
+                    <strong data-match-score>--</strong>
+                    <small>/100</small>
+                </div>
+                <div class="match-bars" data-match-bars></div>
+            </div>
+
+            <div class="match-detail-grid">
+                <article class="match-card">
+                    <h3>匹配亮点</h3>
+                    <ul data-match-highlights></ul>
+                </article>
+                <article class="match-card">
+                    <h3>总结</h3>
+                    <p data-match-summary>正在生成匹配总结...</p>
+                </article>
+            </div>
+
+            <article class="match-card match-card-wide">
+                <h3>可能差距</h3>
+                <ul data-match-gaps></ul>
+            </article>
+
+            <div class="match-dialog-actions">
+                <p data-match-source>结果由岗位描述和公开简历信息生成。</p>
+                <button class="button primary" type="button" data-match-close>关闭</button>
+            </div>
+        </section>
+    </div>
+
     <script src="script.js"></script>
+    <script src="job-match.js?v=20260517-job-matcher"></script>
 </body>
 </html>
