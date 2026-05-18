@@ -1,6 +1,6 @@
-# 罗文辉个人简历网站
+# Cloudflare Resume Site
 
-这是一个部署在 Cloudflare Workers 上的个人简历网站，域名为 `858846.xyz`。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、反馈系统、邮箱系统入口和 AI 岗位匹配器。
+这是一个部署在 Cloudflare Workers 上的简历网站项目，可绑定自定义域名。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、反馈系统、邮箱系统入口和 AI 岗位匹配器。
 
 网站重点展示电子信息工程背景、维保电工与智慧家庭工程经历、STM32 项目、Cloudflare 部署实践，以及面向 HR 的岗位匹配能力。
 
@@ -12,7 +12,7 @@
 - 技能教育页：展示教育背景、资格证书和专业技能。
 - 联系方式页：公开半隐藏联系方式，完整电话和邮箱通过查看码接口读取。
 - 反馈系统：访客可提交反馈，数据写入 Cloudflare D1。
-- 邮箱系统入口：跳转至 `mail.858846.xyz`。
+- 邮箱系统入口：跳转至 `mail.<YOUR_DOMAIN>`。
 - AI 岗位匹配器：HR 粘贴 JD 后生成匹配分数、亮点、差距和总结。
 
 ## 技术栈
@@ -57,7 +57,7 @@
 | `/rest` | 技能证书与教育经历 |
 | `/player` | 联系方式 |
 | `/feedback` | 反馈系统 |
-| `https://mail.858846.xyz` | 邮箱系统 |
+| `https://mail.<YOUR_DOMAIN>` | 邮箱系统 |
 
 ## Worker API
 
@@ -77,14 +77,14 @@
 ```toml
 [[d1_databases]]
 binding = "FEEDBACK_DB"
-database_name = "resume-feedback"
-database_id = "a1234648-7657-441a-9cf8-0982503e6786"
+database_name = "<D1_DATABASE_NAME>"
+database_id = "<D1_DATABASE_ID>"
 ```
 
 初始化表结构：
 
 ```bash
-wrangler d1 execute resume-feedback --remote --file migrations/0001_create_feedback.sql
+wrangler d1 execute <D1_DATABASE_NAME> --remote --file migrations/0001_create_feedback.sql
 ```
 
 ## Secrets 配置
@@ -176,7 +176,7 @@ run_worker_first = true
 - 完整联系方式仅在输入查看码后通过 Worker API 返回。
 - 完整联系方式不应写入 HTML、JS、README 或 Git 历史。
 
-## 当前线上地址
+## 线上地址
 
-- 主站：`https://858846.xyz`
-- 邮箱系统：`https://mail.858846.xyz`
+- 主站：`https://<YOUR_DOMAIN>`
+- 邮箱系统：`https://mail.<YOUR_DOMAIN>`
