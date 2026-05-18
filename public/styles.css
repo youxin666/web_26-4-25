@@ -403,14 +403,17 @@ button.button {
 
 .job-matcher-head > span {
     display: inline-flex;
-    min-height: 30px;
+    min-height: 40px;
     align-items: center;
-    padding: 0 10px;
-    border: 1px solid rgba(15, 118, 110, 0.16);
-    border-radius: 999px;
+    padding: 0 14px;
+    border: 1px solid rgba(15, 118, 110, 0.24);
+    border-radius: 8px;
     color: var(--accent-strong);
-    background: rgba(217, 239, 235, 0.68);
-    font-size: 0.82rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(217, 239, 235, 0.82)),
+        var(--accent-soft);
+    box-shadow: 0 12px 26px rgba(11, 79, 108, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    font-size: 0.96rem;
     font-weight: 900;
 }
 
