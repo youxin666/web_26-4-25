@@ -261,10 +261,15 @@ h2 {
 }
 
 .action-pair {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, auto));
     gap: 12px;
     align-items: center;
+    justify-content: end;
+}
+
+.action-pair .button {
+    min-width: 138px;
 }
 
 .button {
@@ -1417,10 +1422,12 @@ body.has-modal {
 
     .action-pair {
         width: 100%;
+        grid-template-columns: 1fr;
+        justify-content: stretch;
     }
 
     .action-pair .button {
-        flex: 1 1 180px;
+        width: 100%;
     }
 
     .feedback-list-panel {
