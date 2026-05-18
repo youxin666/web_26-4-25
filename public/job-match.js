@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLoading = (isLoading) => {
         if (submitButton) {
             submitButton.disabled = isLoading;
-            submitButton.innerHTML = isLoading ? '匹配中 <span aria-hidden="true">…</span>' : '开始匹配 <span aria-hidden="true">→</span>';
+            submitButton.innerHTML = isLoading ? '<span>匹配中</span><span class="match-button-icon" aria-hidden="true">…</span>' : '<span>开始匹配</span><span class="match-button-icon" aria-hidden="true">→</span>';
         }
     };
 

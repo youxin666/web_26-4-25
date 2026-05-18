@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260518-job-input-panel">
+    <link rel="stylesheet" href="styles.css?v=20260518-job-resize">
 </head>
 <body class="resume-home">
     <header class="site-header">
@@ -61,7 +61,7 @@
             <form class="job-matcher-bar" data-job-match-form>
                 <label class="sr-only" for="job-description">粘贴岗位 JD</label>
                 <textarea id="job-description" name="jobDescription" rows="1" maxlength="6000" placeholder="粘贴您的 JD，查看罗文辉与该岗位之间的匹配度" required></textarea>
-                <button class="button match-button" type="submit">开始匹配 <span aria-hidden="true">→</span></button>
+                <button class="button match-button" type="submit"><span>开始匹配</span><span class="match-button-icon" aria-hidden="true">→</span></button>
             </form>
             <p class="job-matcher-note" data-job-match-status>HR 可直接粘贴岗位描述，系统会自动总结匹配度、亮点和差距。</p>
         </section>
@@ -232,6 +232,6 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="job-match.js?v=20260518-job-input-panel"></script>
+    <script src="job-match.js?v=20260518-job-resize"></script>
 </body>
 </html>
