@@ -274,6 +274,49 @@ async function handleJobMatch(request, env) {
   return jsonResponse({ result: cloudflareResult || buildLocalMatch(jobDescription) });
 }
 
+async function handleContactReveal(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const type = normalizeText(payload.type, 20);
+  const code = normalizeText(payload.code, 60);
+  const expectedCode = normalizeText(env.CONTACT_VIEW_CODE, 60);
+
+  if (!expectedCode) {
+    return jsonResponse({ error: '查看码暂未配置' }, { status: 503 });
+  }
+
+  if (code !== expectedCode) {
+    return jsonResponse({ error: '查看码错误' }, { status: 403 });
+  }
+
+  if (type === 'phone') {
+    const phone = normalizeText(env.CONTACT_PHONE, 40);
+    if (!phone) {
+      return jsonResponse({ error: '手机号暂未配置' }, { status: 503 });
+    }
+    return jsonResponse({ value: phone });
+  }
+
+  if (type === 'email') {
+    const email = normalizeText(env.CONTACT_EMAIL, 80);
+    if (!email) {
+      return jsonResponse({ error: '邮箱暂未配置' }, { status: 503 });
+    }
+    return jsonResponse({ value: email });
+  }
+
+  return jsonResponse({ error: '未知联系方式类型' }, { status: 400 });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -292,6 +335,14 @@ export default {
         return await handleJobMatch(request, env);
       } catch (error) {
         return jsonResponse({ error: error.message || '岗位匹配服务暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/contact-reveal') {
+      try {
+        return await handleContactReveal(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '联系方式查看服务暂时不可用' }, { status: 500 });
       }
     }
 

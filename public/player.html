@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260518-job-label">
+    <link rel="stylesheet" href="styles.css?v=20260518-contact-reveal">
 </head>
 <body class="detail-page contact-page">
     <header class="site-header">
@@ -36,11 +36,13 @@
             </article>
             <article class="contact-card">
                 <span class="card-label">电话</span>
-                <strong>173****5749</strong>
+                <strong data-contact-phone>180****9758</strong>
+                <button class="reveal-contact-button" type="button" data-reveal-contact="phone" aria-label="输入查看码查看完整手机号">查看</button>
             </article>
             <article class="contact-card">
                 <span class="card-label">邮箱</span>
-                <strong>8588***@qq.com</strong>
+                <strong data-contact-email>8588***@qq.com</strong>
+                <button class="reveal-contact-button" type="button" data-reveal-contact="email" aria-label="输入查看码查看完整邮箱">查看</button>
             </article>
             <article class="contact-card">
                 <span class="card-label">期望城市</span>
@@ -79,5 +81,6 @@
     </main>
 
     <script src="script.js"></script>
+    <script src="contact-reveal.js?v=20260518-contact-reveal"></script>
 </body>
 </html>

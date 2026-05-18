@@ -1291,6 +1291,33 @@ body.has-modal {
     color: var(--accent-strong);
 }
 
+.reveal-contact-button {
+    width: max-content;
+    min-height: 30px;
+    margin-top: 8px;
+    padding: 0 10px;
+    border: 1px solid rgba(15, 118, 110, 0.22);
+    border-radius: 6px;
+    color: var(--accent-strong);
+    background: rgba(217, 239, 235, 0.72);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.reveal-contact-button:hover {
+    border-color: rgba(15, 118, 110, 0.36);
+    background: rgba(217, 239, 235, 0.96);
+    transform: translateY(-1px);
+}
+
+.reveal-contact-button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
 .reveal {
     opacity: 0;
     transform: translateY(24px) scale(0.985);
