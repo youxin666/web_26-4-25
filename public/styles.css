@@ -262,14 +262,17 @@ h2 {
 
 .action-pair {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, auto));
+    grid-template-columns: repeat(3, minmax(154px, 1fr));
     gap: 12px;
     align-items: center;
     justify-content: end;
+    width: min(100%, 560px);
 }
 
 .action-pair .button {
-    min-width: 138px;
+    width: 100%;
+    min-width: 0;
+    white-space: nowrap;
 }
 
 .button {
