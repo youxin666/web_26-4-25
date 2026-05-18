@@ -388,23 +388,37 @@ button.button {
 
 .job-matcher-head {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
 .job-matcher-head h2 {
     font-family: 'Noto Sans SC', sans-serif;
-    font-size: 1.08rem;
+    margin-top: 4px;
+    font-size: 1.16rem;
+    font-weight: 900;
+}
+
+.job-matcher-head > span {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    color: var(--accent-strong);
+    background: rgba(217, 239, 235, 0.68);
+    font-size: 0.82rem;
     font-weight: 900;
 }
 
 .job-matcher-bar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 170px;
-    gap: 12px;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
 }
 
 .job-matcher textarea {
@@ -434,10 +448,12 @@ button.button {
 }
 
 .match-button {
-    width: 100%;
+    width: auto;
     min-width: 0;
+    justify-self: start;
     height: 56px;
     min-height: 56px;
+    padding: 0 18px 0 20px;
     gap: 10px;
     border: 1px solid rgba(15, 118, 110, 0.2);
     border-radius: 12px;
@@ -446,7 +462,8 @@ button.button {
         linear-gradient(135deg, rgba(15, 118, 110, 0.98), rgba(11, 79, 108, 0.98)),
         var(--accent-strong);
     box-shadow: 0 16px 34px rgba(11, 79, 108, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-    align-self: start;
+    align-self: center;
+    white-space: nowrap;
 }
 
 .match-button:hover {
@@ -1409,6 +1426,7 @@ body.has-modal {
 
     .match-button {
         width: 100%;
+        justify-self: stretch;
     }
 
     .match-dialog-head,
