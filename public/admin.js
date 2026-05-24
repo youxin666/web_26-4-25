@@ -55,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const setAuthed = (authed) => {
         if (loginPanel) loginPanel.hidden = authed;
         if (consolePanel) consolePanel.hidden = !authed;
+        if (!authed) {
+            renderStats({});
+            renderList(interviewList, [], interviewCount, '登录后显示面试邀约。', createInterviewCard);
+            renderList(feedbackList, [], feedbackCount, '登录后显示反馈记录。', createFeedbackCard);
+        }
     };
 
     const createEmpty = (message) => {
