@@ -917,6 +917,13 @@ body.has-modal {
     stroke-linejoin: round;
 }
 
+.social-icon .x-logo-mark {
+    fill: currentColor;
+    stroke: none;
+    width: 24px;
+    height: 24px;
+}
+
 .social-card strong {
     display: block;
     color: var(--ink);
