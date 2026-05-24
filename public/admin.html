@@ -21,25 +21,31 @@
     </header>
 
     <main>
-        <section class="detail-hero admin-hero">
-            <p class="eyebrow">Admin Console</p>
-            <h1>后台管理系统</h1>
-            <p>用于查看反馈数据、HR 面试邀约和关键统计。后台需要管理员密码登录，数据不会在公开页面展示。</p>
-        </section>
-
         <section class="admin-login-panel reveal" data-admin-login-panel>
-            <form class="admin-login-card" data-admin-login-form>
-                <div class="section-heading compact-heading">
-                    <p class="eyebrow">Secure Access</p>
-                    <h2>管理员登录</h2>
+            <div class="admin-login-shell">
+                <div class="admin-login-copy">
+                    <p class="eyebrow">Admin Console</p>
+                    <h1>后台管理系统</h1>
+                    <p>集中查看反馈数据、HR 面试邀约和关键统计。后台数据仅管理员可见，不会在公开页面展示。</p>
+                    <div class="admin-login-points" aria-label="后台能力">
+                        <span>反馈记录</span>
+                        <span>面试邀约</span>
+                        <span>状态跟进</span>
+                    </div>
                 </div>
-                <label>
-                    <span>管理员密码</span>
-                    <input name="password" type="password" autocomplete="current-password" placeholder="输入管理员密码" required>
-                </label>
-                <button class="button primary" type="submit">进入后台</button>
-                <p class="feedback-status" data-admin-login-status data-state="muted">登录后可查看数据库中的反馈与邀约。</p>
-            </form>
+                <form class="admin-login-card" data-admin-login-form>
+                    <div class="section-heading compact-heading">
+                        <p class="eyebrow">Secure Access</p>
+                        <h2>管理员登录</h2>
+                    </div>
+                    <label>
+                        <span>管理员密码</span>
+                        <input name="password" type="password" autocomplete="current-password" placeholder="输入管理员密码" required>
+                    </label>
+                    <button class="button primary" type="submit">进入后台</button>
+                    <p class="feedback-status" data-admin-login-status data-state="muted">登录后可查看数据库中的反馈与邀约。</p>
+                </form>
+            </div>
         </section>
 
         <section class="admin-console" data-admin-console hidden>
