@@ -1,6 +1,6 @@
 # Cloudflare Resume Site
 
-这是一个部署在 Cloudflare Workers 上的简历网站项目，可绑定自定义域名。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、面试邀约系统、反馈系统、邮箱系统入口和 AI 岗位匹配器。
+这是一个部署在 Cloudflare Workers 上的简历网站项目，可绑定自定义域名。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、面试邀约系统、反馈系统、后台管理系统、邮箱系统入口和 AI 岗位匹配器。
 
 网站重点展示电子信息工程背景、维保电工与智慧家庭工程经历、STM32 项目、Cloudflare 部署实践，以及面向 HR 的岗位匹配能力。
 
@@ -13,6 +13,7 @@
 - 联系方式页：公开半隐藏联系方式，完整电话和邮箱通过查看码接口读取。
 - 面试邀约系统：HR 可提交公司、岗位、联系人、沟通方式和备注，数据写入数据库。
 - 反馈系统：访客可提交反馈，数据写入 Cloudflare D1。
+- 后台管理系统：管理员密码登录后查看反馈、面试邀约和统计概览。
 - 邮箱系统入口：跳转至 `mail.<YOUR_DOMAIN>`。
 - AI 岗位匹配器：HR 粘贴 JD 后生成匹配分数、亮点、差距和总结。
 
@@ -36,11 +37,13 @@
 │   ├── rest.html           # 技能、证书与教育经历
 │   ├── player.html         # 联系方式与求职意向
 │   ├── interview.html      # HR 面试邀约系统
+│   ├── admin.html          # 后台管理页面
 │   ├── feedback.html       # 反馈系统页面
 │   ├── styles.css          # 全站样式
 │   ├── script.js           # 通用交互与动效
 │   ├── feedback.js         # 反馈提交与评论读取
 │   ├── interview.js        # 面试邀约提交逻辑
+│   ├── admin.js            # 后台登录与数据管理逻辑
 │   ├── job-match.js        # AI 岗位匹配器前端逻辑
 │   └── contact-reveal.js   # 联系方式查看码交互
 ├── migrations/
@@ -61,6 +64,7 @@
 | `/rest` | 技能证书与教育经历 |
 | `/player` | 联系方式 |
 | `/interview` | 面试邀约系统 |
+| `/admin` | 后台管理系统 |
 | `/feedback` | 反馈系统 |
 | `https://mail.<YOUR_DOMAIN>` | 邮箱系统 |
 
@@ -72,6 +76,13 @@
 | `/api/feedback` | `POST` | 提交反馈 |
 | `/api/interview` | `POST` | 提交面试邀约 |
 | `/api/interview` | `GET` | 使用查看码读取邀约列表 |
+| `/api/admin/login` | `POST` | 管理员登录 |
+| `/api/admin/logout` | `POST` | 管理员退出 |
+| `/api/admin/session` | `GET` | 检查管理员会话 |
+| `/api/admin/summary` | `GET` | 读取后台统计 |
+| `/api/admin/feedback` | `GET` | 读取后台反馈列表 |
+| `/api/admin/interviews` | `GET` | 读取后台邀约列表 |
+| `/api/admin/interview-status` | `PATCH` | 更新邀约状态 |
 | `/api/job-match` | `POST` | 根据 JD 生成岗位匹配报告 |
 | `/api/contact-reveal` | `POST` | 使用查看码读取完整电话或邮箱 |
 
@@ -102,7 +113,11 @@ wrangler d1 execute <D1_DATABASE_NAME> --remote --file migrations/0001_create_fe
 wrangler secret put CONTACT_VIEW_CODE
 wrangler secret put CONTACT_PHONE
 wrangler secret put CONTACT_EMAIL
+wrangler secret put ADMIN_PASSWORD
+wrangler secret put ADMIN_SESSION_SECRET
 ```
+
+`ADMIN_PASSWORD` 用于后台登录。`ADMIN_SESSION_SECRET` 用于签名后台登录会话，建议设置为随机长字符串。
 
 AI 岗位匹配器支持 OpenAI-compatible API。若未配置或调用失败，会尝试 Cloudflare Workers AI，再退回本地规则预评估。
 

@@ -1,5 +1,8 @@
 const FEEDBACK_CATEGORIES = new Set(['网站建议', '简历内容', '项目交流', '招聘沟通', '其他']);
 const INTERVIEW_CHANNELS = new Set(['电话沟通', '微信沟通', '邮件沟通', '线上面试', '线下面试']);
+const INTERVIEW_STATUSES = new Set(['new', 'contacted', 'scheduled', 'closed']);
+const ADMIN_COOKIE_NAME = 'resume_admin_session';
+const ADMIN_SESSION_MAX_AGE = 60 * 60 * 8;
 
 const RESUME_CONTEXT = `
 姓名：罗文辉。求职城市：广州。期望薪资：5-7K。
@@ -33,6 +36,94 @@ function normalizeText(value, maxLength) {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, maxLength);
+}
+
+function base64UrlEncode(value) {
+  const bytes = value instanceof ArrayBuffer ? new Uint8Array(value) : new TextEncoder().encode(String(value));
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlDecode(value) {
+  const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - value.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return new TextDecoder().decode(bytes);
+}
+
+function parseCookies(request) {
+  const header = request.headers.get('Cookie') || '';
+  return Object.fromEntries(header.split(';').map((item) => {
+    const [name, ...rest] = item.trim().split('=');
+    return [name, rest.join('=')];
+  }).filter(([name]) => name));
+}
+
+function getAdminPassword(env) {
+  return normalizeText(env.ADMIN_PASSWORD || env.CONTACT_VIEW_CODE, 200);
+}
+
+function getAdminSecret(env) {
+  return normalizeText(env.ADMIN_SESSION_SECRET || env.ADMIN_PASSWORD || env.CONTACT_VIEW_CODE, 240);
+}
+
+async function signAdminPayload(payload, env) {
+  const secret = getAdminSecret(env);
+  if (!secret) return '';
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
+  return base64UrlEncode(signature);
+}
+
+async function createAdminToken(env) {
+  const payload = base64UrlEncode(JSON.stringify({
+    role: 'admin',
+    exp: Date.now() + ADMIN_SESSION_MAX_AGE * 1000,
+  }));
+  const signature = await signAdminPayload(payload, env);
+  return `${payload}.${signature}`;
+}
+
+async function verifyAdminToken(token, env) {
+  const [payload, signature] = String(token || '').split('.');
+  if (!payload || !signature) return false;
+  const expected = await signAdminPayload(payload, env);
+  if (signature !== expected) return false;
+
+  try {
+    const data = JSON.parse(base64UrlDecode(payload));
+    return data.role === 'admin' && Number(data.exp) > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+async function isAdminRequest(request, env) {
+  const token = parseCookies(request)[ADMIN_COOKIE_NAME];
+  return verifyAdminToken(token, env);
+}
+
+function adminCookie(value, maxAge = ADMIN_SESSION_MAX_AGE) {
+  return `${ADMIN_COOKIE_NAME}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+}
+
+async function requireAdmin(request, env) {
+  if (await isAdminRequest(request, env)) {
+    return null;
+  }
+  return jsonResponse({ error: '管理员未登录' }, { status: 401 });
 }
 
 function clampScore(value) {
@@ -340,6 +431,125 @@ async function handleInterview(request, env) {
   }, { status: 201 });
 }
 
+async function handleAdminLogin(request, env) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  const expectedPassword = getAdminPassword(env);
+  if (!expectedPassword) {
+    return jsonResponse({ error: '管理员密码暂未配置' }, { status: 503 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const password = normalizeText(payload.password, 200);
+  if (password !== expectedPassword) {
+    return jsonResponse({ error: '管理员密码错误' }, { status: 403 });
+  }
+
+  const token = await createAdminToken(env);
+  return jsonResponse({ ok: true }, {
+    headers: {
+      'Set-Cookie': adminCookie(token),
+    },
+  });
+}
+
+async function handleAdminLogout() {
+  return jsonResponse({ ok: true }, {
+    headers: {
+      'Set-Cookie': adminCookie('', 0),
+    },
+  });
+}
+
+async function handleAdminSession(request, env) {
+  return jsonResponse({ authenticated: await isAdminRequest(request, env) });
+}
+
+async function handleAdminSummary(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  const feedbackCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM feedback').first();
+  const feedbackAverage = await env.FEEDBACK_DB.prepare('SELECT ROUND(AVG(rating), 1) AS average FROM feedback').first();
+  const interviewCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM interview_requests').first();
+  const newInterviewCount = await env.FEEDBACK_DB.prepare("SELECT COUNT(*) AS count FROM interview_requests WHERE status = 'new'").first();
+  const latestFeedback = await env.FEEDBACK_DB.prepare('SELECT created_at FROM feedback ORDER BY created_at DESC LIMIT 1').first();
+  const latestInterview = await env.FEEDBACK_DB.prepare('SELECT created_at FROM interview_requests ORDER BY created_at DESC LIMIT 1').first();
+
+  return jsonResponse({
+    feedbackCount: feedbackCount?.count || 0,
+    feedbackAverage: feedbackAverage?.average || 0,
+    interviewCount: interviewCount?.count || 0,
+    newInterviewCount: newInterviewCount?.count || 0,
+    latestFeedback: latestFeedback?.created_at || null,
+    latestInterview: latestInterview?.created_at || null,
+  });
+}
+
+async function handleAdminFeedback(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  const { results } = await env.FEEDBACK_DB.prepare(
+    `SELECT id, name, category, rating, comment, contact, created_at, is_public
+     FROM feedback
+     ORDER BY created_at DESC
+     LIMIT 100`
+  ).all();
+
+  return jsonResponse({ items: results || [] });
+}
+
+async function handleAdminInterviews(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  const { results } = await env.FEEDBACK_DB.prepare(
+    `SELECT id, company, position, recruiter, contact, interview_time, channel, message, status, created_at
+     FROM interview_requests
+     ORDER BY created_at DESC
+     LIMIT 100`
+  ).all();
+
+  return jsonResponse({ items: results || [] });
+}
+
+async function handleAdminInterviewStatus(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'PATCH') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  const status = normalizeText(payload.status, 20);
+  if (!id || !INTERVIEW_STATUSES.has(status)) {
+    return jsonResponse({ error: '邀约状态参数无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare(
+    'UPDATE interview_requests SET status = ? WHERE id = ?'
+  ).bind(status, id).run();
+
+  return jsonResponse({ ok: true });
+}
+
 async function handleJobMatch(request, env) {
   if (request.method !== 'POST') {
     return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
@@ -423,6 +633,54 @@ export default {
         return await handleInterview(request, env);
       } catch (error) {
         return jsonResponse({ error: '面试邀约服务暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/login') {
+      try {
+        return await handleAdminLogin(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '管理员登录服务暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/logout') {
+      return handleAdminLogout();
+    }
+
+    if (path === '/api/admin/session') {
+      return handleAdminSession(request, env);
+    }
+
+    if (path === '/api/admin/summary') {
+      try {
+        return await handleAdminSummary(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '后台统计暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/feedback') {
+      try {
+        return await handleAdminFeedback(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '反馈数据暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/interviews') {
+      try {
+        return await handleAdminInterviews(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '邀约数据暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/interview-status') {
+      try {
+        return await handleAdminInterviewStatus(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '邀约状态更新失败' }, { status: 500 });
       }
     }
 

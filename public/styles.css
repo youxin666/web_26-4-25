@@ -1143,6 +1143,199 @@ body.has-modal {
     line-height: 1.65;
 }
 
+.admin-login-panel,
+.admin-console,
+.admin-layout,
+.admin-stats {
+    margin-top: 28px;
+}
+
+.admin-login-panel {
+    display: grid;
+    place-items: center;
+}
+
+.admin-login-card,
+.admin-panel,
+.admin-toolbar,
+.admin-stats article,
+.admin-data-card {
+    border: 1px solid rgba(219, 231, 228, 0.9);
+    border-radius: 8px;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    box-shadow: 0 18px 48px rgba(19, 32, 31, 0.08);
+}
+
+.admin-login-card {
+    display: grid;
+    gap: 16px;
+    width: min(100%, 460px);
+    padding: 26px;
+}
+
+.admin-login-card label {
+    display: grid;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.admin-login-card input,
+.admin-status-select {
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 700;
+    outline: none;
+}
+
+.admin-login-card input {
+    width: 100%;
+    padding: 0 12px;
+}
+
+.admin-login-card input:focus,
+.admin-status-select:focus {
+    border-color: rgba(15, 118, 110, 0.55);
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+}
+
+.admin-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px;
+}
+
+.admin-toolbar h2,
+.admin-panel h2 {
+    margin-top: 4px;
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1.1;
+}
+
+.admin-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admin-stats article {
+    padding: 18px;
+}
+
+.admin-stats span {
+    display: block;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 900;
+}
+
+.admin-stats strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--accent-strong);
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: 20px;
+}
+
+.admin-panel {
+    min-width: 0;
+    padding: 22px;
+}
+
+.admin-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.admin-data-card {
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.74);
+}
+
+.admin-data-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-data-head strong {
+    display: block;
+    color: var(--ink);
+    font-size: 1.06rem;
+}
+
+.admin-data-head p,
+.admin-data-head time,
+.admin-card-meta,
+.admin-card-contact,
+.admin-card-message {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.admin-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.admin-card-meta span {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    background: rgba(217, 239, 235, 0.64);
+    color: var(--accent-strong);
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.admin-card-contact,
+.admin-card-message {
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+
+.admin-card-message {
+    line-height: 1.75;
+}
+
+.admin-status-select {
+    min-width: 100px;
+    padding: 0 10px;
+    color: var(--accent-strong);
+}
+
 .project-panel {
     display: grid;
     grid-template-columns: 1fr minmax(260px, 0.48fr);
@@ -1545,6 +1738,8 @@ body.has-modal {
     .feature-grid,
     .feedback-layout,
     .interview-layout,
+    .admin-layout,
+    .admin-stats,
     .compact-grid {
         grid-template-columns: 1fr;
     }
@@ -1566,6 +1761,16 @@ body.has-modal {
     }
 
     .action-pair .button {
+        width: 100%;
+    }
+
+    .admin-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-toolbar-actions,
+    .admin-toolbar-actions .button {
         width: 100%;
     }
 
@@ -1839,6 +2044,9 @@ body.has-modal {
     .feedback-form,
     .feedback-list-panel,
     .feedback-card,
+    .admin-login-card,
+    .admin-panel,
+    .admin-data-card,
     .interview-summary-card,
     .interview-process article,
     .skill-matrix article,
@@ -1856,6 +2064,8 @@ body.has-modal {
     .info-card p,
     .detail-card li,
     .feedback-card p,
+    .admin-card-contact,
+    .admin-card-message,
     .interview-summary-card p,
     .interview-process p,
     .skill-matrix p,
@@ -1864,6 +2074,17 @@ body.has-modal {
         max-width: min(100%, 22rem);
         overflow-wrap: anywhere;
         word-break: break-word;
+    }
+}
+
+@media (max-width: 520px) {
+    .admin-data-head {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-status-select {
+        width: 100%;
     }
 }
 

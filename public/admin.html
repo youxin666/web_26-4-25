@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理 | 简历网站</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260524-admin">
+</head>
+<body class="detail-page admin-page">
+    <header class="site-header">
+        <a class="brand" href="index.html">主页</a>
+        <nav class="site-nav" aria-label="后台导航">
+            <a href="index.html">简历首页</a>
+            <a href="interview.html">面试邀约</a>
+            <a href="feedback.html">反馈系统</a>
+            <a class="is-active" href="admin.html">后台管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="detail-hero admin-hero">
+            <p class="eyebrow">Admin Console</p>
+            <h1>后台管理系统</h1>
+            <p>用于查看反馈数据、HR 面试邀约和关键统计。后台需要管理员密码登录，数据不会在公开页面展示。</p>
+        </section>
+
+        <section class="admin-login-panel reveal" data-admin-login-panel>
+            <form class="admin-login-card" data-admin-login-form>
+                <div class="section-heading compact-heading">
+                    <p class="eyebrow">Secure Access</p>
+                    <h2>管理员登录</h2>
+                </div>
+                <label>
+                    <span>管理员密码</span>
+                    <input name="password" type="password" autocomplete="current-password" placeholder="输入管理员密码" required>
+                </label>
+                <button class="button primary" type="submit">进入后台</button>
+                <p class="feedback-status" data-admin-login-status data-state="muted">登录后可查看数据库中的反馈与邀约。</p>
+            </form>
+        </section>
+
+        <section class="admin-console" data-admin-console hidden>
+            <div class="admin-toolbar reveal">
+                <div>
+                    <p class="eyebrow">Overview</p>
+                    <h2>数据概览</h2>
+                </div>
+                <div class="admin-toolbar-actions">
+                    <button class="button ghost" type="button" data-admin-refresh>刷新数据</button>
+                    <button class="button primary" type="button" data-admin-logout>退出登录</button>
+                </div>
+            </div>
+
+            <section class="admin-stats reveal" data-admin-stats>
+                <article><span>反馈总数</span><strong>--</strong></article>
+                <article><span>平均评分</span><strong>--</strong></article>
+                <article><span>邀约总数</span><strong>--</strong></article>
+                <article><span>待处理邀约</span><strong>--</strong></article>
+            </section>
+
+            <section class="admin-layout">
+                <article class="admin-panel reveal">
+                    <div class="section-heading compact-heading">
+                        <div>
+                            <p class="eyebrow">Interview Requests</p>
+                            <h2>面试邀约</h2>
+                        </div>
+                        <span class="feedback-count" data-admin-interview-count>0 条</span>
+                    </div>
+                    <div class="admin-list" data-admin-interviews>
+                        <p class="feedback-empty">正在读取邀约...</p>
+                    </div>
+                </article>
+
+                <article class="admin-panel reveal">
+                    <div class="section-heading compact-heading">
+                        <div>
+                            <p class="eyebrow">Feedback</p>
+                            <h2>反馈记录</h2>
+                        </div>
+                        <span class="feedback-count" data-admin-feedback-count>0 条</span>
+                    </div>
+                    <div class="admin-list" data-admin-feedback>
+                        <p class="feedback-empty">正在读取反馈...</p>
+                    </div>
+                </article>
+            </section>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="admin.js?v=20260524-admin"></script>
+</body>
+</html>
