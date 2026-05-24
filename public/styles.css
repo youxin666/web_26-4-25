@@ -116,10 +116,36 @@ main {
 }
 
 .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
     font-family: 'Noto Serif SC', serif;
     font-size: 1.35rem;
     font-weight: 900;
     letter-spacing: 0;
+    color: var(--ink);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.brand::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(15, 118, 110, 0.22);
+    border-radius: 8px;
+    background-color: var(--accent-soft);
+    background-image: url("data:image/svg+xml,%3Csvg%20width%3D%2718%27%20height%3D%2718%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M3%2010.8L12%203.5L21%2010.8%27%20stroke%3D%27%230b4f6c%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M5.5%209.8V20H18.5V9.8%27%20stroke%3D%27%230b4f6c%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M9.5%2020V14H14.5V20%27%20stroke%3D%27%230b4f6c%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.brand:hover {
+    color: var(--accent-strong);
+    transform: translateY(-1px);
 }
 
 .site-nav {
