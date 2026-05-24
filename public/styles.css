@@ -2229,18 +2229,19 @@ body.has-modal {
     .site-header {
         grid-template-columns: 1fr auto;
         align-items: center;
-        min-height: 58px;
-        gap: 8px 10px;
-        padding-top: 8px;
-        padding-bottom: 8px;
+        min-height: 52px;
+        gap: 7px 10px;
+        padding: 7px 12px 7px 10px;
     }
 
     .nav-toggle {
         display: inline-flex;
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
         gap: 3px;
         justify-self: end;
+        border-radius: 8px;
+        transform: translateY(2px);
     }
 
     .nav-toggle span {
@@ -2257,8 +2258,12 @@ body.has-modal {
     }
 
     .brand {
-        min-height: 32px;
+        min-height: 30px;
+        justify-self: start;
         align-self: center;
+        gap: 8px;
+        line-height: 1;
+        transform: translateY(2px);
     }
 
     .brand::before {
@@ -2423,8 +2428,8 @@ body.has-modal {
     .site-header {
         width: calc(100% - 14px);
         margin-top: 8px;
-        min-height: 54px;
-        padding: 7px 10px;
+        min-height: 50px;
+        padding: 7px 12px 7px 10px;
         gap: 8px;
     }
 
@@ -2435,7 +2440,7 @@ body.has-modal {
     }
 
     .brand {
-        font-size: 1.22rem;
+        font-size: 1.14rem;
         line-height: 1;
     }
 
@@ -2599,8 +2604,8 @@ body.has-modal {
     .site-header {
         width: calc(100% - 14px);
         margin-top: 8px;
-        min-height: 54px;
-        padding: 7px 10px;
+        min-height: 50px;
+        padding: 7px 12px 7px 10px;
         gap: 8px;
     }
 
