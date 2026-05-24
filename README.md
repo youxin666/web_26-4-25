@@ -1,6 +1,6 @@
 # Cloudflare Resume Site
 
-这是一个部署在 Cloudflare Workers 上的简历网站项目，可绑定自定义域名。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、反馈系统、邮箱系统入口和 AI 岗位匹配器。
+这是一个部署在 Cloudflare Workers 上的简历网站项目，可绑定自定义域名。项目从原静态页面改造为工程化简历站，包含工作经历、项目经历、技能证书、联系方式、面试邀约系统、反馈系统、邮箱系统入口和 AI 岗位匹配器。
 
 网站重点展示电子信息工程背景、维保电工与智慧家庭工程经历、STM32 项目、Cloudflare 部署实践，以及面向 HR 的岗位匹配能力。
 
@@ -11,6 +11,7 @@
 - 项目经历详情页：展示 STM32 门禁系统、四足机器人等嵌入式项目。
 - 技能教育页：展示教育背景、资格证书和专业技能。
 - 联系方式页：公开半隐藏联系方式，完整电话和邮箱通过查看码接口读取。
+- 面试邀约系统：HR 可提交公司、岗位、联系人、沟通方式和备注，数据写入数据库。
 - 反馈系统：访客可提交反馈，数据写入 Cloudflare D1。
 - 邮箱系统入口：跳转至 `mail.<YOUR_DOMAIN>`。
 - AI 岗位匹配器：HR 粘贴 JD 后生成匹配分数、亮点、差距和总结。
@@ -34,14 +35,17 @@
 │   ├── release.html        # 项目经历详情
 │   ├── rest.html           # 技能、证书与教育经历
 │   ├── player.html         # 联系方式与求职意向
+│   ├── interview.html      # HR 面试邀约系统
 │   ├── feedback.html       # 反馈系统页面
 │   ├── styles.css          # 全站样式
 │   ├── script.js           # 通用交互与动效
 │   ├── feedback.js         # 反馈提交与评论读取
+│   ├── interview.js        # 面试邀约提交逻辑
 │   ├── job-match.js        # AI 岗位匹配器前端逻辑
 │   └── contact-reveal.js   # 联系方式查看码交互
 ├── migrations/
-│   └── 0001_create_feedback.sql
+│   ├── 0001_create_feedback.sql
+│   └── 0002_create_interview_requests.sql
 ├── worker.js               # Workers API 与静态资源服务
 ├── wrangler.toml           # Cloudflare Worker 配置
 └── README.md
@@ -56,6 +60,7 @@
 | `/release` | 项目经历详情 |
 | `/rest` | 技能证书与教育经历 |
 | `/player` | 联系方式 |
+| `/interview` | 面试邀约系统 |
 | `/feedback` | 反馈系统 |
 | `https://mail.<YOUR_DOMAIN>` | 邮箱系统 |
 
@@ -65,6 +70,8 @@
 | --- | --- | --- |
 | `/api/feedback` | `GET` | 读取公开反馈列表 |
 | `/api/feedback` | `POST` | 提交反馈 |
+| `/api/interview` | `POST` | 提交面试邀约 |
+| `/api/interview` | `GET` | 使用查看码读取邀约列表 |
 | `/api/job-match` | `POST` | 根据 JD 生成岗位匹配报告 |
 | `/api/contact-reveal` | `POST` | 使用查看码读取完整电话或邮箱 |
 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试邀约 | 罗文辉个人简历</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260524-interview">
+</head>
+<body class="detail-page interview-page">
+    <header class="site-header">
+        <a class="brand" href="index.html">主页</a>
+        <nav class="site-nav" aria-label="面试邀约导航">
+            <a href="index.html">简历首页</a>
+            <a href="immerse.html">工作经历</a>
+            <a href="release.html">项目经历</a>
+            <a href="player.html">联系方式</a>
+            <a class="is-active" href="interview.html">面试邀约</a>
+            <a href="feedback.html">反馈系统</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="detail-hero interview-hero">
+            <p class="eyebrow">Interview Request</p>
+            <h1>HR 面试邀约</h1>
+            <p>如果岗位方向合适，可以直接留下公司、岗位和沟通方式。邀约信息会写入数据库，仅用于后续求职沟通，不会在公开页面展示。</p>
+        </section>
+
+        <section class="interview-layout">
+            <form class="feedback-form interview-form reveal" data-interview-form>
+                <div class="section-heading compact-heading">
+                    <p class="eyebrow">Request Form</p>
+                    <h2>发送邀约</h2>
+                </div>
+
+                <section class="feedback-group">
+                    <div class="feedback-group-title">
+                        <h3>岗位信息</h3>
+                        <span>用于判断沟通优先级</span>
+                    </div>
+                    <div class="feedback-fields feedback-fields-inline interview-fields-two">
+                        <label>
+                            <span>公司 / 团队</span>
+                            <input name="company" type="text" maxlength="80" autocomplete="organization" placeholder="例如：广州某科技公司" required>
+                        </label>
+                        <label>
+                            <span>岗位名称</span>
+                            <input name="position" type="text" maxlength="80" autocomplete="off" placeholder="例如：设备维护工程师" required>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="feedback-group">
+                    <div class="feedback-group-title">
+                        <h3>联系人信息</h3>
+                        <span>不会公开展示</span>
+                    </div>
+                    <div class="feedback-fields feedback-fields-inline interview-fields-three">
+                        <label>
+                            <span>联系人</span>
+                            <input name="recruiter" type="text" maxlength="50" autocomplete="name" placeholder="例如：陈女士 / HR" required>
+                        </label>
+                        <label>
+                            <span>联系方式</span>
+                            <input name="contact" type="text" maxlength="100" autocomplete="off" placeholder="电话 / 微信 / 邮箱" required>
+                        </label>
+                        <label>
+                            <span>沟通方式</span>
+                            <select name="channel">
+                                <option>电话沟通</option>
+                                <option>微信沟通</option>
+                                <option>邮件沟通</option>
+                                <option>线上面试</option>
+                                <option>线下面试</option>
+                            </select>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="feedback-group">
+                    <div class="feedback-group-title">
+                        <h3>时间与备注</h3>
+                        <span>选填</span>
+                    </div>
+                    <div class="feedback-fields">
+                        <label>
+                            <span>期望沟通时间</span>
+                            <input name="interviewTime" type="text" maxlength="80" autocomplete="off" placeholder="例如：工作日下午 14:00-18:00">
+                        </label>
+                        <label>
+                            <span>岗位补充说明</span>
+                            <textarea name="message" maxlength="600" rows="6" placeholder="可填写岗位要求、工作地点、薪资范围、面试形式或其他注意事项。"></textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <input class="feedback-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                <div class="feedback-actions">
+                    <button class="button primary" type="submit">发送面试邀约</button>
+                    <p class="feedback-status" data-interview-status data-state="muted">提交后会写入数据库，并显示确认结果。</p>
+                </div>
+            </form>
+
+            <aside class="interview-side reveal" aria-label="邀约说明">
+                <article class="interview-summary-card">
+                    <p class="eyebrow">Next Step</p>
+                    <h2>更快完成初步沟通</h2>
+                    <p>HR 不需要额外打开邮箱或复制联系方式，可以直接把岗位信息提交到邀约系统，后续再根据岗位匹配度和时间安排进一步沟通。</p>
+                </article>
+                <div class="interview-process">
+                    <article>
+                        <span>01</span>
+                        <strong>填写岗位</strong>
+                        <p>留下公司、岗位和联系人方式。</p>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <strong>写入数据库</strong>
+                        <p>数据保存到 Cloudflare D1，便于后续跟进。</p>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <strong>安排沟通</strong>
+                        <p>根据岗位方向和时间窗口进行回复。</p>
+                    </article>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="interview.js?v=20260524-interview"></script>
+</body>
+</html>

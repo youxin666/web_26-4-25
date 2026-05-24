@@ -820,6 +820,13 @@ body.has-modal {
     margin-top: 28px;
 }
 
+.interview-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(260px, 0.42fr);
+    gap: 20px;
+    margin-top: 28px;
+}
+
 .feedback-form,
 .feedback-list-panel {
     position: relative;
@@ -837,6 +844,10 @@ body.has-modal {
     gap: 16px;
     align-self: start;
     padding: 24px;
+}
+
+.interview-form {
+    min-width: 0;
 }
 
 .feedback-group {
@@ -879,6 +890,14 @@ body.has-modal {
 
 .feedback-fields-inline {
     grid-template-columns: minmax(0, 1fr) minmax(150px, 0.72fr) minmax(110px, 0.42fr);
+}
+
+.interview-fields-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.interview-fields-three {
+    grid-template-columns: minmax(120px, 0.55fr) minmax(180px, 1fr) minmax(130px, 0.55fr);
 }
 
 .feedback-list-panel {
@@ -1033,6 +1052,95 @@ body.has-modal {
     padding: 18px;
     color: var(--muted);
     font-weight: 700;
+}
+
+.interview-side {
+    display: grid;
+    gap: 16px;
+    align-self: start;
+}
+
+.interview-summary-card,
+.interview-process article {
+    border: 1px solid rgba(219, 231, 228, 0.9);
+    border-radius: 8px;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    box-shadow: 0 18px 48px rgba(19, 32, 31, 0.08);
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    will-change: transform;
+}
+
+.interview-summary-card {
+    padding: 24px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.interview-summary-card h2 {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.08;
+}
+
+.interview-summary-card p:last-child {
+    margin-top: 16px;
+    color: var(--muted);
+    font-weight: 700;
+    line-height: 1.85;
+}
+
+.interview-process {
+    display: grid;
+    gap: 12px;
+}
+
+.interview-process article {
+    position: relative;
+    padding: 18px 18px 18px 72px;
+    overflow: hidden;
+}
+
+.interview-process article:hover,
+.interview-summary-card:hover {
+    border-color: rgba(15, 118, 110, 0.32);
+    box-shadow: 0 20px 42px rgba(11, 79, 108, 0.11);
+}
+
+.interview-process span {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 118, 110, 0.22);
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.interview-process strong {
+    display: block;
+    color: var(--ink);
+    font-size: 1.02rem;
+}
+
+.interview-process p {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.65;
 }
 
 .project-panel {
@@ -1436,6 +1544,7 @@ body.has-modal {
     .contact-grid,
     .feature-grid,
     .feedback-layout,
+    .interview-layout,
     .compact-grid {
         grid-template-columns: 1fr;
     }
@@ -1462,6 +1571,10 @@ body.has-modal {
 
     .feedback-list-panel {
         min-height: auto;
+    }
+
+    .interview-side {
+        grid-template-columns: 1fr;
     }
 
     .match-button {
@@ -1553,6 +1666,7 @@ body.has-modal {
     .detail-hero + .project-layout,
     .detail-hero + .contact-grid,
     .detail-hero + .feedback-layout,
+    .detail-hero + .interview-layout,
     .detail-hero + .section-block {
         margin-top: 24px;
     }
@@ -1621,7 +1735,8 @@ body.has-modal {
 
     .project-layout,
     .contact-grid,
-    .feedback-layout {
+    .feedback-layout,
+    .interview-layout {
         margin-top: 16px;
     }
 
@@ -1656,6 +1771,15 @@ body.has-modal {
 
     .feedback-fields-inline {
         grid-template-columns: 1fr;
+    }
+
+    .interview-fields-two,
+    .interview-fields-three {
+        grid-template-columns: 1fr;
+    }
+
+    .interview-process article {
+        padding: 16px 16px 16px 66px;
     }
 }
 
@@ -1715,8 +1839,11 @@ body.has-modal {
     .feedback-form,
     .feedback-list-panel,
     .feedback-card,
+    .interview-summary-card,
+    .interview-process article,
     .skill-matrix article,
     .project-layout,
+    .interview-layout,
     .match-dialog,
     .two-column,
     .feature-grid,
@@ -1729,6 +1856,8 @@ body.has-modal {
     .info-card p,
     .detail-card li,
     .feedback-card p,
+    .interview-summary-card p,
+    .interview-process p,
     .skill-matrix p,
     .contact-strip p,
     .detail-hero p {

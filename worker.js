@@ -1,4 +1,5 @@
 const FEEDBACK_CATEGORIES = new Set(['网站建议', '简历内容', '项目交流', '招聘沟通', '其他']);
+const INTERVIEW_CHANNELS = new Set(['电话沟通', '微信沟通', '邮件沟通', '线上面试', '线下面试']);
 
 const RESUME_CONTEXT = `
 姓名：罗文辉。求职城市：广州。期望薪资：5-7K。
@@ -252,6 +253,93 @@ async function handleFeedback(request, env) {
   return jsonResponse({ ok: true, item: created }, { status: 201 });
 }
 
+async function handleInterview(request, env) {
+  if (!env.FEEDBACK_DB) {
+    return jsonResponse({ error: '邀约数据库未配置' }, { status: 500 });
+  }
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204 });
+  }
+
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    const code = normalizeText(url.searchParams.get('code'), 60);
+    const expectedCode = normalizeText(env.CONTACT_VIEW_CODE, 60);
+
+    if (!expectedCode || code !== expectedCode) {
+      return jsonResponse({ error: '无权查看邀约列表' }, { status: 403 });
+    }
+
+    const { results } = await env.FEEDBACK_DB.prepare(
+      `SELECT id, company, position, recruiter, contact, interview_time, channel, message, status, created_at
+       FROM interview_requests
+       ORDER BY created_at DESC
+       LIMIT 50`
+    ).all();
+
+    return jsonResponse({ items: results || [] });
+  }
+
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  if (normalizeText(payload.website, 120)) {
+    return jsonResponse({ ok: true });
+  }
+
+  const company = normalizeText(payload.company, 80);
+  const position = normalizeText(payload.position, 80);
+  const recruiter = normalizeText(payload.recruiter, 50);
+  const contact = normalizeText(payload.contact, 100);
+  const interviewTime = normalizeText(payload.interviewTime, 80) || null;
+  const channel = INTERVIEW_CHANNELS.has(payload.channel) ? payload.channel : '电话沟通';
+  const message = normalizeText(payload.message, 600) || null;
+
+  if (company.length < 2) {
+    return jsonResponse({ error: '请填写公司或团队名称' }, { status: 400 });
+  }
+
+  if (position.length < 2) {
+    return jsonResponse({ error: '请填写岗位名称' }, { status: 400 });
+  }
+
+  if (recruiter.length < 2) {
+    return jsonResponse({ error: '请填写联系人称呼' }, { status: 400 });
+  }
+
+  if (contact.length < 5) {
+    return jsonResponse({ error: '请填写有效联系方式' }, { status: 400 });
+  }
+
+  const id = crypto.randomUUID();
+  await env.FEEDBACK_DB.prepare(
+    `INSERT INTO interview_requests (id, company, position, recruiter, contact, interview_time, channel, message)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(id, company, position, recruiter, contact, interviewTime, channel, message).run();
+
+  return jsonResponse({
+    ok: true,
+    item: {
+      id,
+      company,
+      position,
+      recruiter,
+      interview_time: interviewTime,
+      channel,
+      created_at: new Date().toISOString(),
+    },
+  }, { status: 201 });
+}
+
 async function handleJobMatch(request, env) {
   if (request.method !== 'POST') {
     return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
@@ -327,6 +415,14 @@ export default {
         return await handleFeedback(request, env);
       } catch (error) {
         return jsonResponse({ error: '反馈服务暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/interview') {
+      try {
+        return await handleInterview(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '面试邀约服务暂时不可用' }, { status: 500 });
       }
     }
 
