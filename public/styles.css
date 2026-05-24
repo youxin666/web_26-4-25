@@ -90,7 +90,7 @@ a {
 }
 
 main {
-    width: min(1120px, calc(100% - 32px));
+    width: min(1480px, calc(100% - 32px));
     margin: 0 auto;
     padding: 28px 0 72px;
 }
