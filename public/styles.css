@@ -1155,7 +1155,8 @@ body.has-modal {
 }
 
 .admin-login-panel {
-    margin-top: 22px;
+    max-width: 760px;
+    margin: 56px auto 0;
 }
 
 .admin-login-shell,
@@ -1174,15 +1175,13 @@ body.has-modal {
 
 .admin-login-shell {
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.62fr);
-    gap: 24px;
-    align-items: stretch;
-    min-height: min(560px, calc(100vh - 140px));
-    padding: 28px;
+    display: block;
+    min-height: 0;
+    padding: clamp(26px, 4vw, 42px);
     overflow: hidden;
     background:
-        radial-gradient(circle at 10% 12%, rgba(15, 118, 110, 0.13), transparent 20rem),
+        radial-gradient(circle at 86% 14%, rgba(15, 118, 110, 0.16), transparent 17rem),
+        radial-gradient(circle at 10% 82%, rgba(11, 79, 108, 0.1), transparent 15rem),
         linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(238, 245, 243, 0.58)),
         var(--glass);
 }
@@ -1205,27 +1204,24 @@ body.has-modal {
 }
 
 .admin-login-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     min-width: 0;
-    padding: clamp(10px, 3vw, 36px);
+    padding: 0;
 }
 
 .admin-login-copy h1 {
     margin-top: 12px;
     font-family: var(--serif);
-    font-size: clamp(3.6rem, 7vw, 6.8rem);
-    line-height: 0.98;
+    font-size: clamp(3rem, 7vw, 5.4rem);
+    line-height: 1.02;
 }
 
 .admin-login-copy p:not(.eyebrow) {
-    max-width: 720px;
-    margin-top: 24px;
+    max-width: 620px;
+    margin-top: 18px;
     color: var(--muted);
-    font-size: clamp(1.05rem, 2vw, 1.36rem);
+    font-size: clamp(1rem, 2vw, 1.18rem);
     font-weight: 700;
-    line-height: 1.9;
+    line-height: 1.85;
 }
 
 .admin-login-points {
@@ -1251,13 +1247,16 @@ body.has-modal {
 .admin-login-card {
     display: grid;
     gap: 16px;
-    align-self: center;
     width: 100%;
-    padding: 28px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.68)),
-        rgba(255, 255, 255, 0.72);
-    box-shadow: 0 24px 62px rgba(19, 32, 31, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    margin-top: 30px;
+    padding: 26px 0 0;
+    border: 0;
+    border-top: 1px solid rgba(219, 231, 228, 0.92);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .admin-login-card label {
@@ -1861,11 +1860,11 @@ body.has-modal {
     }
 
     .admin-login-copy {
-        padding: 6px;
+        padding: 0;
     }
 
     .admin-login-copy h1 {
-        font-size: clamp(2.9rem, 12vw, 4.6rem);
+        font-size: clamp(2.55rem, 11vw, 4rem);
     }
 
     .admin-toolbar-actions,
