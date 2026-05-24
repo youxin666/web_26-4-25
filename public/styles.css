@@ -899,11 +899,22 @@ body.has-modal {
     justify-content: center;
     border: 1px solid rgba(15, 118, 110, 0.16);
     border-radius: 12px;
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 900;
-    line-height: 1;
-    box-shadow: 0 12px 26px rgba(19, 32, 31, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    color: var(--social-color, var(--accent-strong));
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.48)),
+        var(--social-soft, var(--accent-soft));
+    box-shadow: 0 12px 26px rgba(19, 32, 31, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+.social-icon svg {
+    width: 25px;
+    height: 25px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .social-card strong {
@@ -923,48 +934,20 @@ body.has-modal {
 
 .social-card-redbook {
     --social-glow: rgba(255, 67, 86, 0.22);
-}
-
-.social-card-redbook .social-icon {
-    background: linear-gradient(135deg, #ff4157, #b5162a);
+    --social-color: #d9273f;
+    --social-soft: rgba(255, 67, 86, 0.1);
 }
 
 .social-card-x {
     --social-glow: rgba(19, 32, 31, 0.14);
-}
-
-.social-card-x .social-icon {
-    background: linear-gradient(135deg, #101718, #394b4a);
-    font-family: Georgia, serif;
-    font-size: 1.25rem;
+    --social-color: #13201f;
+    --social-soft: rgba(19, 32, 31, 0.06);
 }
 
 .social-card-instagram {
     --social-glow: rgba(221, 96, 76, 0.2);
-}
-
-.social-card-instagram .social-icon {
-    position: relative;
-    background: linear-gradient(135deg, #f7b267, #db4f7a 48%, #6c63ff);
-}
-
-.social-card-instagram .social-icon::before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.92);
-    border-radius: 7px;
-}
-
-.social-card-instagram .social-icon::after {
-    content: "";
-    position: absolute;
-    right: 13px;
-    top: 13px;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
+    --social-color: #c44a76;
+    --social-soft: linear-gradient(135deg, rgba(247, 178, 103, 0.14), rgba(219, 79, 122, 0.1), rgba(108, 99, 255, 0.1));
 }
 
 .social-mini-list {
