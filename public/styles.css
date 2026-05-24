@@ -953,11 +953,11 @@ body.has-modal {
 
 .redbook-logo-text {
     color: #ffffff;
-    font-size: 0.88rem;
+    font-size: 0.74rem;
     font-weight: 900;
-    letter-spacing: -0.08em;
+    letter-spacing: -0.06em;
     line-height: 1;
-    transform: scaleX(0.96);
+    transform: scaleX(0.94);
 }
 
 .social-card-x {
