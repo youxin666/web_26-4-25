@@ -815,7 +815,8 @@ body.has-modal {
 }
 
 .section-block,
-.contact-strip {
+.contact-strip,
+.social-section {
     margin-top: 28px;
     padding: clamp(24px, 5vw, 42px);
     border: 1px solid var(--line);
@@ -845,10 +846,159 @@ body.has-modal {
     font-weight: 800;
 }
 
+.social-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.social-card {
+    position: relative;
+    min-width: 0;
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(219, 231, 228, 0.92);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.52)),
+        rgba(255, 255, 255, 0.68);
+    box-shadow: 0 16px 36px rgba(19, 32, 31, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    will-change: transform;
+}
+
+.social-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.36;
+    background: radial-gradient(circle at 12% 18%, var(--social-glow, rgba(15, 118, 110, 0.24)), transparent 14rem);
+    pointer-events: none;
+}
+
+.social-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.social-card:hover {
+    border-color: rgba(15, 118, 110, 0.3);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 22px 46px rgba(11, 79, 108, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.social-icon {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 12px 26px rgba(19, 32, 31, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.social-card strong {
+    display: block;
+    color: var(--ink);
+    font-size: 1.06rem;
+}
+
+.social-card small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.social-card-redbook {
+    --social-glow: rgba(255, 67, 86, 0.22);
+}
+
+.social-card-redbook .social-icon {
+    background: linear-gradient(135deg, #ff4157, #b5162a);
+}
+
+.social-card-x {
+    --social-glow: rgba(19, 32, 31, 0.14);
+}
+
+.social-card-x .social-icon {
+    background: linear-gradient(135deg, #101718, #394b4a);
+    font-family: Georgia, serif;
+    font-size: 1.25rem;
+}
+
+.social-card-instagram {
+    --social-glow: rgba(221, 96, 76, 0.2);
+}
+
+.social-card-instagram .social-icon {
+    position: relative;
+    background: linear-gradient(135deg, #f7b267, #db4f7a 48%, #6c63ff);
+}
+
+.social-card-instagram .social-icon::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 7px;
+}
+
+.social-card-instagram .social-icon::after {
+    content: "";
+    position: absolute;
+    right: 13px;
+    top: 13px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.social-mini-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.social-mini-list a {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    color: var(--accent-strong);
+    font-size: 0.88rem;
+    font-weight: 900;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-mini-list a:hover {
+    transform: translateY(-2px);
+    background: var(--accent-soft);
+    box-shadow: 0 12px 26px rgba(11, 79, 108, 0.11);
+}
+
 .feature-grid,
 .detail-grid,
 .skill-matrix,
 .contact-grid,
+.social-grid,
 .feedback-layout {
     display: grid;
     gap: 16px;
@@ -1961,6 +2111,7 @@ body.has-modal {
     .admin-login-shell,
     .admin-layout,
     .admin-stats,
+    .social-grid,
     .compact-grid {
         grid-template-columns: 1fr;
     }
@@ -2281,6 +2432,7 @@ body.has-modal {
     .info-card,
     .detail-card,
     .contact-card,
+    .social-card,
     .match-card,
     .feedback-form,
     .feedback-list-panel,
@@ -2306,6 +2458,7 @@ body.has-modal {
     .info-card p,
     .detail-card li,
     .feedback-card p,
+    .social-card small,
     .admin-card-contact,
     .admin-card-message,
     .interview-summary-card p,
