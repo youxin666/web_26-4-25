@@ -1,10 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const siteHeader = document.querySelector('.site-header');
+    const navToggle = document.querySelector('[data-nav-toggle]');
+    const siteNav = document.querySelector('.site-nav');
 
     document.querySelectorAll('.site-nav a').forEach((link) => {
         const href = link.getAttribute('href') || '';
         if (href === currentPage) {
             link.classList.add('is-active');
+        }
+    });
+
+    const closeNav = () => {
+        siteHeader?.classList.remove('is-nav-open');
+        navToggle?.setAttribute('aria-expanded', 'false');
+    };
+
+    navToggle?.addEventListener('click', () => {
+        const isOpen = siteHeader?.classList.toggle('is-nav-open');
+        navToggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+    });
+
+    siteNav?.addEventListener('click', (event) => {
+        if (event.target.closest('a') && window.matchMedia('(max-width: 860px)').matches) {
+            closeNav();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeNav();
         }
     });
 

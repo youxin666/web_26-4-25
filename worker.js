@@ -1,5 +1,6 @@
 const FEEDBACK_CATEGORIES = new Set(['网站建议', '简历内容', '项目交流', '招聘沟通', '其他']);
 const INTERVIEW_CHANNELS = new Set(['电话沟通', '微信沟通', '邮件沟通', '线上面试', '线下面试']);
+const FEEDBACK_STATUSES = new Set(['new', 'read', 'closed']);
 const INTERVIEW_STATUSES = new Set(['new', 'contacted', 'scheduled', 'closed']);
 const ADMIN_COOKIE_NAME = 'resume_admin_session';
 const ADMIN_SESSION_MAX_AGE = 60 * 60 * 8;
@@ -478,6 +479,7 @@ async function handleAdminSummary(request, env) {
   if (unauthorized) return unauthorized;
 
   const feedbackCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM feedback').first();
+  const newFeedbackCount = await env.FEEDBACK_DB.prepare("SELECT COUNT(*) AS count FROM feedback WHERE status = 'new'").first();
   const feedbackAverage = await env.FEEDBACK_DB.prepare('SELECT ROUND(AVG(rating), 1) AS average FROM feedback').first();
   const interviewCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM interview_requests').first();
   const newInterviewCount = await env.FEEDBACK_DB.prepare("SELECT COUNT(*) AS count FROM interview_requests WHERE status = 'new'").first();
@@ -486,6 +488,7 @@ async function handleAdminSummary(request, env) {
 
   return jsonResponse({
     feedbackCount: feedbackCount?.count || 0,
+    newFeedbackCount: newFeedbackCount?.count || 0,
     feedbackAverage: feedbackAverage?.average || 0,
     interviewCount: interviewCount?.count || 0,
     newInterviewCount: newInterviewCount?.count || 0,
@@ -498,12 +501,31 @@ async function handleAdminFeedback(request, env) {
   const unauthorized = await requireAdmin(request, env);
   if (unauthorized) return unauthorized;
 
-  const { results } = await env.FEEDBACK_DB.prepare(
-    `SELECT id, name, category, rating, comment, contact, created_at, is_public
+  const url = new URL(request.url);
+  const status = normalizeText(url.searchParams.get('status'), 20);
+  const query = normalizeText(url.searchParams.get('q'), 80);
+  const filters = [];
+  const values = [];
+
+  if (FEEDBACK_STATUSES.has(status)) {
+    filters.push('status = ?');
+    values.push(status);
+  }
+
+  if (query) {
+    filters.push('(name LIKE ? OR category LIKE ? OR comment LIKE ? OR contact LIKE ?)');
+    const likeQuery = `%${query}%`;
+    values.push(likeQuery, likeQuery, likeQuery, likeQuery);
+  }
+
+  const statement = env.FEEDBACK_DB.prepare(
+    `SELECT id, name, category, rating, comment, contact, created_at, is_public, status
      FROM feedback
+     ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''}
      ORDER BY created_at DESC
-     LIMIT 100`
-  ).all();
+     LIMIT 200`
+  );
+  const { results } = values.length ? await statement.bind(...values).all() : await statement.all();
 
   return jsonResponse({ items: results || [] });
 }
@@ -512,12 +534,31 @@ async function handleAdminInterviews(request, env) {
   const unauthorized = await requireAdmin(request, env);
   if (unauthorized) return unauthorized;
 
-  const { results } = await env.FEEDBACK_DB.prepare(
+  const url = new URL(request.url);
+  const status = normalizeText(url.searchParams.get('status'), 20);
+  const query = normalizeText(url.searchParams.get('q'), 80);
+  const filters = [];
+  const values = [];
+
+  if (INTERVIEW_STATUSES.has(status)) {
+    filters.push('status = ?');
+    values.push(status);
+  }
+
+  if (query) {
+    filters.push('(company LIKE ? OR position LIKE ? OR recruiter LIKE ? OR contact LIKE ? OR message LIKE ?)');
+    const likeQuery = `%${query}%`;
+    values.push(likeQuery, likeQuery, likeQuery, likeQuery, likeQuery);
+  }
+
+  const statement = env.FEEDBACK_DB.prepare(
     `SELECT id, company, position, recruiter, contact, interview_time, channel, message, status, created_at
      FROM interview_requests
+     ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''}
      ORDER BY created_at DESC
-     LIMIT 100`
-  ).all();
+     LIMIT 200`
+  );
+  const { results } = values.length ? await statement.bind(...values).all() : await statement.all();
 
   return jsonResponse({ items: results || [] });
 }
@@ -547,6 +588,109 @@ async function handleAdminInterviewStatus(request, env) {
     'UPDATE interview_requests SET status = ? WHERE id = ?'
   ).bind(status, id).run();
 
+  return jsonResponse({ ok: true });
+}
+
+async function handleAdminFeedbackStatus(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'PATCH') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  const status = normalizeText(payload.status, 20);
+  if (!id || !FEEDBACK_STATUSES.has(status)) {
+    return jsonResponse({ error: '反馈状态参数无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare(
+    'UPDATE feedback SET status = ? WHERE id = ?'
+  ).bind(status, id).run();
+
+  return jsonResponse({ ok: true });
+}
+
+async function handleAdminFeedbackVisibility(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'PATCH') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  if (!id) {
+    return jsonResponse({ error: '反馈 ID 无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare(
+    'UPDATE feedback SET is_public = ? WHERE id = ?'
+  ).bind(payload.isPublic ? 1 : 0, id).run();
+
+  return jsonResponse({ ok: true });
+}
+
+async function handleAdminFeedbackDelete(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'DELETE') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  if (!id) {
+    return jsonResponse({ error: '反馈 ID 无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare('DELETE FROM feedback WHERE id = ?').bind(id).run();
+  return jsonResponse({ ok: true });
+}
+
+async function handleAdminInterviewDelete(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'DELETE') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  if (!id) {
+    return jsonResponse({ error: '邀约 ID 无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare('DELETE FROM interview_requests WHERE id = ?').bind(id).run();
   return jsonResponse({ ok: true });
 }
 
@@ -681,6 +825,38 @@ export default {
         return await handleAdminInterviewStatus(request, env);
       } catch (error) {
         return jsonResponse({ error: '邀约状态更新失败' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/feedback-status') {
+      try {
+        return await handleAdminFeedbackStatus(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '反馈状态更新失败' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/feedback-visibility') {
+      try {
+        return await handleAdminFeedbackVisibility(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '反馈公开状态更新失败' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/feedback-delete') {
+      try {
+        return await handleAdminFeedbackDelete(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '反馈删除失败' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/admin/interview-delete') {
+      try {
+        return await handleAdminInterviewDelete(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '邀约删除失败' }, { status: 500 });
       }
     }
 

@@ -148,6 +148,51 @@ main {
     transform: translateY(-1px);
 }
 
+.nav-toggle {
+    display: none;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid rgba(15, 118, 110, 0.18);
+    border-radius: 8px;
+    background: rgba(217, 239, 235, 0.64);
+    color: var(--accent-strong);
+    cursor: pointer;
+    transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transform-origin: center;
+    transition: transform 0.24s ease, opacity 0.2s ease;
+}
+
+.nav-toggle:hover {
+    background: rgba(202, 232, 227, 0.9);
+    border-color: rgba(15, 118, 110, 0.34);
+    box-shadow: 0 10px 26px rgba(15, 118, 110, 0.12);
+    transform: translateY(-1px);
+}
+
+.site-header.is-nav-open .nav-toggle span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.site-header.is-nav-open .nav-toggle span:nth-child(2) {
+    opacity: 0;
+}
+
+.site-header.is-nav-open .nav-toggle span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
 .site-nav {
     display: flex;
     justify-content: flex-end;
@@ -1630,6 +1675,58 @@ body.has-modal {
     line-height: 1;
 }
 
+.admin-controls {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.24fr) minmax(180px, 0.24fr);
+    gap: 14px;
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid rgba(219, 231, 228, 0.9);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(238, 245, 243, 0.58)),
+        var(--glass);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    box-shadow: 0 18px 48px rgba(19, 32, 31, 0.07);
+}
+
+.admin-control-field {
+    display: grid;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 900;
+}
+
+.admin-control-field input,
+.admin-control-field select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.94rem;
+    font-weight: 800;
+    outline: none;
+}
+
+.admin-control-field input {
+    padding: 0 13px;
+}
+
+.admin-control-field select {
+    padding: 0 10px;
+}
+
+.admin-control-field input:focus,
+.admin-control-field select:focus {
+    border-color: rgba(15, 118, 110, 0.55);
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+}
+
 .admin-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
@@ -1703,6 +1800,52 @@ body.has-modal {
 
 .admin-card-message {
     line-height: 1.75;
+}
+
+.admin-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.admin-action-button {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid rgba(15, 118, 110, 0.18);
+    border-radius: 6px;
+    background: rgba(217, 239, 235, 0.64);
+    color: var(--accent-strong);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-action-button:hover {
+    border-color: rgba(15, 118, 110, 0.36);
+    background: rgba(202, 232, 227, 0.9);
+    box-shadow: 0 10px 22px rgba(15, 118, 110, 0.11);
+    transform: translateY(-1px);
+}
+
+.admin-action-button.danger {
+    border-color: rgba(180, 62, 62, 0.22);
+    background: rgba(255, 244, 244, 0.9);
+    color: #9b2f2f;
+}
+
+.admin-action-button.danger:hover {
+    border-color: rgba(180, 62, 62, 0.38);
+    background: rgba(255, 232, 232, 0.96);
+    box-shadow: 0 10px 22px rgba(180, 62, 62, 0.1);
+}
+
+.admin-action-button:disabled {
+    cursor: wait;
+    opacity: 0.58;
+    transform: none;
 }
 
 .admin-status-select {
@@ -2084,15 +2227,36 @@ body.has-modal {
 
 @media (max-width: 860px) {
     .site-header {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr auto;
+        gap: 10px 12px;
+    }
+
+    .nav-toggle {
+        display: inline-flex;
     }
 
     .site-nav {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
+        grid-column: 1 / -1;
         justify-content: stretch;
         width: 100%;
+        max-height: 0;
+        margin-top: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px);
+        transition: max-height 0.32s ease, opacity 0.22s ease, transform 0.24s ease, margin-top 0.24s ease;
+    }
+
+    .site-header.is-nav-open .site-nav {
+        max-height: 520px;
+        margin-top: 8px;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
     }
 
     .site-nav a {
@@ -2116,6 +2280,7 @@ body.has-modal {
     .admin-login-shell,
     .admin-layout,
     .admin-stats,
+    .admin-controls,
     .social-grid,
     .compact-grid {
         grid-template-columns: 1fr;
@@ -2483,8 +2648,14 @@ body.has-modal {
         flex-direction: column;
     }
 
-    .admin-status-select {
+    .admin-status-select,
+    .admin-action-button {
         width: 100%;
+    }
+
+    .admin-card-actions {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 }
 

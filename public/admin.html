@@ -7,11 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260525-redbook-logo-size">
+    <link rel="stylesheet" href="styles.css?v=20260525-admin-controls-nav">
 </head>
 <body class="detail-page admin-page">
     <header class="site-header">
         <a class="brand" href="index.html">主页</a>
+        <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" data-nav-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <nav class="site-nav" aria-label="后台导航">
             <a href="index.html">简历首页</a>
             <a href="interview.html">面试邀约</a>
@@ -67,6 +72,32 @@
                 <article><span>待处理邀约</span><strong>--</strong></article>
             </section>
 
+            <section class="admin-controls reveal" aria-label="后台数据筛选">
+                <label class="admin-control-field admin-search-field">
+                    <span>搜索</span>
+                    <input type="search" placeholder="搜索公司、岗位、联系人、评论..." data-admin-search>
+                </label>
+                <label class="admin-control-field">
+                    <span>邀约状态</span>
+                    <select data-admin-interview-filter>
+                        <option value="all">全部邀约</option>
+                        <option value="new">待处理</option>
+                        <option value="contacted">已联系</option>
+                        <option value="scheduled">已安排</option>
+                        <option value="closed">已关闭</option>
+                    </select>
+                </label>
+                <label class="admin-control-field">
+                    <span>反馈状态</span>
+                    <select data-admin-feedback-filter>
+                        <option value="all">全部反馈</option>
+                        <option value="new">未读</option>
+                        <option value="read">已读</option>
+                        <option value="closed">已处理</option>
+                    </select>
+                </label>
+            </section>
+
             <section class="admin-layout">
                 <article class="admin-panel reveal">
                     <div class="section-heading compact-heading">
@@ -97,7 +128,7 @@
         </section>
     </main>
 
-    <script src="script.js?v=20260525-social-links"></script>
-    <script src="admin.js?v=20260524-admin-desktop"></script>
+    <script src="script.js?v=20260525-admin-controls-nav"></script>
+    <script src="admin.js?v=20260525-admin-controls-nav"></script>
 </body>
 </html>

@@ -10,12 +10,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackList = document.querySelector('[data-admin-feedback]');
     const interviewCount = document.querySelector('[data-admin-interview-count]');
     const feedbackCount = document.querySelector('[data-admin-feedback-count]');
+    const searchInput = document.querySelector('[data-admin-search]');
+    const interviewFilter = document.querySelector('[data-admin-interview-filter]');
+    const feedbackFilter = document.querySelector('[data-admin-feedback-filter]');
 
-    const statusLabels = {
+    const state = {
+        interviews: [],
+        feedback: [],
+        query: '',
+        interviewStatus: 'all',
+        feedbackStatus: 'all',
+    };
+
+    const interviewStatusLabels = {
         new: '待处理',
         contacted: '已联系',
         scheduled: '已安排',
         closed: '已关闭',
+    };
+
+    const feedbackStatusLabels = {
+        new: '未读',
+        read: '已读',
+        closed: '已处理',
     };
 
     const setLoginStatus = (message, type = 'muted') => {
@@ -52,22 +69,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
 
-    const setAuthed = (authed) => {
-        if (loginPanel) loginPanel.hidden = authed;
-        if (consolePanel) consolePanel.hidden = !authed;
-        if (!authed) {
-            renderStats({});
-            renderList(interviewList, [], interviewCount, '登录后显示面试邀约。', createInterviewCard);
-            renderList(feedbackList, [], feedbackCount, '登录后显示反馈记录。', createFeedbackCard);
-        }
-    };
-
     const createEmpty = (message) => {
         const empty = document.createElement('p');
         empty.className = 'feedback-empty';
         empty.textContent = message;
         return empty;
     };
+
+    const matchesQuery = (item, fields) => {
+        const query = state.query.trim().toLowerCase();
+        if (!query) return true;
+        return fields.some((field) => String(item[field] || '').toLowerCase().includes(query));
+    };
+
+    const getFilteredInterviews = () => state.interviews.filter((item) => {
+        const statusMatch = state.interviewStatus === 'all' || (item.status || 'new') === state.interviewStatus;
+        return statusMatch && matchesQuery(item, ['company', 'position', 'recruiter', 'contact', 'channel', 'message']);
+    });
+
+    const getFilteredFeedback = () => state.feedback.filter((item) => {
+        const statusMatch = state.feedbackStatus === 'all' || (item.status || 'new') === state.feedbackStatus;
+        return statusMatch && matchesQuery(item, ['name', 'category', 'comment', 'contact']);
+    });
 
     const renderStats = (summary) => {
         if (!stats) return;
@@ -94,6 +117,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return meta;
     };
 
+    const createStatusSelect = (labels, currentValue, onChange) => {
+        const select = document.createElement('select');
+        select.className = 'admin-status-select';
+        Object.entries(labels).forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            option.selected = (currentValue || 'new') === value;
+            select.append(option);
+        });
+        select.addEventListener('change', async () => {
+            select.disabled = true;
+            try {
+                await onChange(select.value);
+                setLoginStatus('状态已更新。', 'success');
+                await loadDashboard();
+            } catch (error) {
+                setLoginStatus(error.message || '状态更新失败', 'error');
+            } finally {
+                select.disabled = false;
+            }
+        });
+        return select;
+    };
+
+    const createActionButton = (label, variant, onClick) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `admin-action-button ${variant || ''}`.trim();
+        button.textContent = label;
+        button.addEventListener('click', async () => {
+            button.disabled = true;
+            try {
+                await onClick();
+                await loadDashboard();
+            } catch (error) {
+                setLoginStatus(error.message || '操作失败', 'error');
+            } finally {
+                button.disabled = false;
+            }
+        });
+        return button;
+    };
+
     const createInterviewCard = (item) => {
         const article = document.createElement('article');
         article.className = 'admin-data-card';
@@ -108,27 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
         position.textContent = item.position || '未填写岗位';
         title.append(company, position);
 
-        const select = document.createElement('select');
-        select.className = 'admin-status-select';
-        Object.entries(statusLabels).forEach(([value, label]) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
-            option.selected = (item.status || 'new') === value;
-            select.append(option);
-        });
-        select.addEventListener('change', async () => {
-            select.disabled = true;
-            try {
-                await requestJson('/api/admin/interview-status', {
-                    method: 'PATCH',
-                    body: JSON.stringify({ id: item.id, status: select.value }),
-                });
-            } catch (error) {
-                setLoginStatus(error.message || '状态更新失败', 'error');
-            } finally {
-                select.disabled = false;
-            }
+        const select = createStatusSelect(interviewStatusLabels, item.status, async (status) => {
+            await requestJson('/api/admin/interview-status', {
+                method: 'PATCH',
+                body: JSON.stringify({ id: item.id, status }),
+            });
         });
 
         head.append(title, select);
@@ -148,7 +199,20 @@ document.addEventListener('DOMContentLoaded', () => {
         message.className = 'admin-card-message';
         message.textContent = item.message || '无补充说明';
 
-        article.append(head, meta, contact, message);
+        const actions = document.createElement('div');
+        actions.className = 'admin-card-actions';
+        actions.append(
+            createActionButton('删除邀约', 'danger', async () => {
+                if (!window.confirm('确定删除这条面试邀约吗？')) return;
+                await requestJson('/api/admin/interview-delete', {
+                    method: 'DELETE',
+                    body: JSON.stringify({ id: item.id }),
+                });
+                setLoginStatus('邀约已删除。', 'success');
+            })
+        );
+
+        article.append(head, meta, contact, message, actions);
         return article;
     };
 
@@ -165,9 +229,18 @@ document.addEventListener('DOMContentLoaded', () => {
         category.textContent = `${item.category || '其他'} · ${item.rating || 5}/5`;
         title.append(name, category);
 
-        const time = document.createElement('time');
-        time.textContent = formatDate(item.created_at);
-        head.append(title, time);
+        const select = createStatusSelect(feedbackStatusLabels, item.status, async (status) => {
+            await requestJson('/api/admin/feedback-status', {
+                method: 'PATCH',
+                body: JSON.stringify({ id: item.id, status }),
+            });
+        });
+        head.append(title, select);
+
+        const meta = createMeta([
+            formatDate(item.created_at),
+            Number(item.is_public) === 1 ? '公开显示' : '已隐藏',
+        ]);
 
         const comment = document.createElement('p');
         comment.className = 'admin-card-message';
@@ -177,7 +250,27 @@ document.addEventListener('DOMContentLoaded', () => {
         contact.className = 'admin-card-contact';
         contact.textContent = `回访信息：${item.contact || '未填写'}`;
 
-        article.append(head, comment, contact);
+        const actions = document.createElement('div');
+        actions.className = 'admin-card-actions';
+        actions.append(
+            createActionButton(Number(item.is_public) === 1 ? '隐藏公开评论' : '恢复公开评论', 'ghost', async () => {
+                await requestJson('/api/admin/feedback-visibility', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ id: item.id, isPublic: Number(item.is_public) !== 1 }),
+                });
+                setLoginStatus('公开状态已更新。', 'success');
+            }),
+            createActionButton('删除反馈', 'danger', async () => {
+                if (!window.confirm('确定删除这条反馈吗？')) return;
+                await requestJson('/api/admin/feedback-delete', {
+                    method: 'DELETE',
+                    body: JSON.stringify({ id: item.id }),
+                });
+                setLoginStatus('反馈已删除。', 'success');
+            })
+        );
+
+        article.append(head, meta, comment, contact, actions);
         return article;
     };
 
@@ -192,15 +285,33 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach((item) => target.append(renderer(item)));
     };
 
+    const renderDashboardLists = () => {
+        renderList(interviewList, getFilteredInterviews(), interviewCount, '当前筛选下没有面试邀约。', createInterviewCard);
+        renderList(feedbackList, getFilteredFeedback(), feedbackCount, '当前筛选下没有反馈。', createFeedbackCard);
+    };
+
     const loadDashboard = async () => {
         const [summary, interviews, feedback] = await Promise.all([
             requestJson('/api/admin/summary'),
             requestJson('/api/admin/interviews'),
             requestJson('/api/admin/feedback'),
         ]);
+        state.interviews = interviews.items || [];
+        state.feedback = feedback.items || [];
         renderStats(summary);
-        renderList(interviewList, interviews.items || [], interviewCount, '暂时没有面试邀约。', createInterviewCard);
-        renderList(feedbackList, feedback.items || [], feedbackCount, '暂时没有反馈。', createFeedbackCard);
+        renderDashboardLists();
+    };
+
+    const setAuthed = (authed) => {
+        if (loginPanel) loginPanel.hidden = authed;
+        if (consolePanel) consolePanel.hidden = !authed;
+        if (!authed) {
+            state.interviews = [];
+            state.feedback = [];
+            renderStats({});
+            renderList(interviewList, [], interviewCount, '登录后显示面试邀约。', createInterviewCard);
+            renderList(feedbackList, [], feedbackCount, '登录后显示反馈记录。', createFeedbackCard);
+        }
     };
 
     const checkSession = async () => {
@@ -237,6 +348,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             if (submitButton) submitButton.disabled = false;
         }
+    });
+
+    searchInput?.addEventListener('input', () => {
+        state.query = searchInput.value;
+        renderDashboardLists();
+    });
+
+    interviewFilter?.addEventListener('change', () => {
+        state.interviewStatus = interviewFilter.value;
+        renderDashboardLists();
+    });
+
+    feedbackFilter?.addEventListener('change', () => {
+        state.feedbackStatus = feedbackFilter.value;
+        renderDashboardLists();
     });
 
     refreshButton?.addEventListener('click', async () => {
