@@ -2228,11 +2228,42 @@ body.has-modal {
 @media (max-width: 860px) {
     .site-header {
         grid-template-columns: 1fr auto;
-        gap: 10px 12px;
+        align-items: center;
+        min-height: 58px;
+        gap: 8px 10px;
+        padding-top: 8px;
+        padding-bottom: 8px;
     }
 
     .nav-toggle {
         display: inline-flex;
+        width: 32px;
+        height: 32px;
+        gap: 3px;
+        justify-self: end;
+    }
+
+    .nav-toggle span {
+        width: 15px;
+        height: 1.6px;
+    }
+
+    .site-header.is-nav-open .nav-toggle span:nth-child(1) {
+        transform: translateY(4.6px) rotate(45deg);
+    }
+
+    .site-header.is-nav-open .nav-toggle span:nth-child(3) {
+        transform: translateY(-4.6px) rotate(-45deg);
+    }
+
+    .brand {
+        min-height: 32px;
+        align-self: center;
+    }
+
+    .brand::before {
+        width: 30px;
+        height: 30px;
     }
 
     .site-nav {
@@ -2392,8 +2423,9 @@ body.has-modal {
     .site-header {
         width: calc(100% - 14px);
         margin-top: 8px;
-        padding: 12px;
-        gap: 12px;
+        min-height: 54px;
+        padding: 7px 10px;
+        gap: 8px;
     }
 
     .site-nav a {
@@ -2404,6 +2436,7 @@ body.has-modal {
 
     .brand {
         font-size: 1.22rem;
+        line-height: 1;
     }
 
     .hero-section,
@@ -2566,8 +2599,9 @@ body.has-modal {
     .site-header {
         width: calc(100% - 14px);
         margin-top: 8px;
-        padding: 12px;
-        gap: 12px;
+        min-height: 54px;
+        padding: 7px 10px;
+        gap: 8px;
     }
 
     .site-nav {
