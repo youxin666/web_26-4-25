@@ -616,17 +616,18 @@ button.button {
 
 .job-matcher textarea {
     width: 100%;
-    height: 128px;
-    min-height: 96px;
-    max-height: 360px;
-    padding: 16px 18px;
+    height: 320px;
+    min-height: 240px;
+    max-height: min(72vh, 760px);
+    padding: 14px 16px;
     border: 1px solid rgba(91, 107, 105, 0.28);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.86);
     color: var(--ink);
-    font: inherit;
-    font-weight: 600;
-    line-height: 1.55;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.52;
     outline: none;
     resize: vertical;
     overflow: auto;
@@ -740,13 +741,24 @@ body.has-modal {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    min-height: 58px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(219, 231, 228, 0.86);
 }
 
 .match-action-buttons {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
     justify-content: flex-end;
+    align-self: center;
+}
+
+.match-action-buttons .button {
+    min-height: 44px;
+    line-height: 1;
 }
 
 .match-dialog-head h2 {
@@ -858,6 +870,11 @@ body.has-modal {
 .match-card li,
 .match-dialog-actions p {
     color: var(--muted);
+}
+
+.match-dialog-actions p {
+    margin: 0;
+    line-height: 1.55;
 }
 
 .match-card ul {
@@ -2442,6 +2459,11 @@ body.has-modal {
         align-items: flex-start;
         flex-direction: column;
     }
+
+    .match-action-buttons,
+    .match-action-buttons .button {
+        width: 100%;
+    }
 }
 
 @media (min-width: 861px) {
@@ -2556,9 +2578,11 @@ body.has-modal {
     }
 
     .job-matcher textarea {
-        height: 136px;
-        min-height: 112px;
-        max-height: 320px;
+        height: 260px;
+        min-height: 210px;
+        max-height: min(68vh, 560px);
+        font-size: 0.8rem;
+        line-height: 1.5;
         border-radius: 16px;
         overflow: auto;
     }

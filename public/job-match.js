@@ -38,6 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const formatJobDescription = (value) => String(value || '')
+        .replace(/\r\n?/g, '\n')
+        .replace(/\u00a0/g, ' ')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/[ \t]*\n[ \t]*/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/([^\n])([【\[]?(?:职位名称|岗位名称|工作地点|薪资范围|经验要求|学历要求|岗位职责|职位职责|工作职责|任职要求|职位要求|加分项|福利待遇|关于我们|公司介绍)[】\]]?[:：])/g, '$1\n\n$2')
+        .replace(/([。；;])\s*((?:负责|参与|完成|熟悉|掌握|具备|能够|优先|要求|协助|推动|保障|优化|设计|开发|维护|支持))/g, '$1\n$2')
+        .split('\n')
+        .map((line) => line.trim())
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
     const fillList = (target, items) => {
         if (!target) return;
         target.replaceChildren();
@@ -90,7 +104,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     textarea?.addEventListener('paste', () => {
-        setStatus('已读取粘贴内容，点击开始匹配即可生成报告。', 'muted');
+        window.setTimeout(() => {
+            textarea.value = formatJobDescription(textarea.value);
+            textarea.scrollTop = 0;
+            setStatus('已自动整理 JD 排版，点击开始匹配即可生成报告。', 'muted');
+        }, 0);
+    });
+
+    textarea?.addEventListener('blur', () => {
+        const formatted = formatJobDescription(textarea.value);
+        if (formatted && formatted !== textarea.value) {
+            textarea.value = formatted;
+        }
     });
     document.querySelectorAll('[data-match-close]').forEach((button) => {
         button.addEventListener('click', closeModal);
