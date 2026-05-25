@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260525-mobile-header-v3">
+    <link rel="stylesheet" href="styles.css?v=20260525-match-copy">
 </head>
 <body class="detail-page contact-page">
     <header class="site-header">
@@ -43,12 +43,25 @@
             <article class="contact-card">
                 <span class="card-label">电话</span>
                 <strong data-contact-phone>180****9758</strong>
-                <button class="reveal-contact-button" type="button" data-reveal-contact="phone" aria-label="输入查看码查看完整手机号">查看</button>
+                <div class="contact-card-actions">
+                    <button class="reveal-contact-button" type="button" data-reveal-contact="phone" aria-label="输入查看码查看完整手机号">查看</button>
+                    <button class="copy-contact-button" type="button" data-copy-contact="phone" disabled>复制电话</button>
+                </div>
             </article>
             <article class="contact-card">
                 <span class="card-label">邮箱</span>
                 <strong data-contact-email>8588***@qq.com</strong>
-                <button class="reveal-contact-button" type="button" data-reveal-contact="email" aria-label="输入查看码查看完整邮箱">查看</button>
+                <div class="contact-card-actions">
+                    <button class="reveal-contact-button" type="button" data-reveal-contact="email" aria-label="输入查看码查看完整邮箱">查看</button>
+                    <button class="copy-contact-button" type="button" data-copy-contact="email" disabled>复制邮箱</button>
+                </div>
+            </article>
+            <article class="contact-card">
+                <span class="card-label">页面链接</span>
+                <strong>858846.xyz/player</strong>
+                <div class="contact-card-actions">
+                    <button class="copy-contact-button" type="button" data-copy-link>复制链接</button>
+                </div>
             </article>
             <article class="contact-card">
                 <span class="card-label">期望城市</span>
@@ -138,6 +151,6 @@
     </main>
 
     <script src="script.js?v=20260525-admin-controls-nav"></script>
-    <script src="contact-reveal.js?v=20260518-contact-reveal"></script>
+    <script src="contact-reveal.js?v=20260525-copy-contact"></script>
 </body>
 </html>

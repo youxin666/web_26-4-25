@@ -483,8 +483,10 @@ async function handleAdminSummary(request, env) {
   const feedbackAverage = await env.FEEDBACK_DB.prepare('SELECT ROUND(AVG(rating), 1) AS average FROM feedback').first();
   const interviewCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM interview_requests').first();
   const newInterviewCount = await env.FEEDBACK_DB.prepare("SELECT COUNT(*) AS count FROM interview_requests WHERE status = 'new'").first();
+  const matchReportCount = await env.FEEDBACK_DB.prepare('SELECT COUNT(*) AS count FROM job_match_reports').first();
   const latestFeedback = await env.FEEDBACK_DB.prepare('SELECT created_at FROM feedback ORDER BY created_at DESC LIMIT 1').first();
   const latestInterview = await env.FEEDBACK_DB.prepare('SELECT created_at FROM interview_requests ORDER BY created_at DESC LIMIT 1').first();
+  const latestMatchReport = await env.FEEDBACK_DB.prepare('SELECT created_at FROM job_match_reports ORDER BY created_at DESC LIMIT 1').first();
 
   return jsonResponse({
     feedbackCount: feedbackCount?.count || 0,
@@ -492,8 +494,10 @@ async function handleAdminSummary(request, env) {
     feedbackAverage: feedbackAverage?.average || 0,
     interviewCount: interviewCount?.count || 0,
     newInterviewCount: newInterviewCount?.count || 0,
+    matchReportCount: matchReportCount?.count || 0,
     latestFeedback: latestFeedback?.created_at || null,
     latestInterview: latestInterview?.created_at || null,
+    latestMatchReport: latestMatchReport?.created_at || null,
   });
 }
 
@@ -554,6 +558,33 @@ async function handleAdminInterviews(request, env) {
   const statement = env.FEEDBACK_DB.prepare(
     `SELECT id, company, position, recruiter, contact, interview_time, channel, message, status, created_at
      FROM interview_requests
+     ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''}
+     ORDER BY created_at DESC
+     LIMIT 200`
+  );
+  const { results } = values.length ? await statement.bind(...values).all() : await statement.all();
+
+  return jsonResponse({ items: results || [] });
+}
+
+async function handleAdminJobMatches(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  const url = new URL(request.url);
+  const query = normalizeText(url.searchParams.get('q'), 80);
+  const filters = [];
+  const values = [];
+
+  if (query) {
+    filters.push('(job_description LIKE ? OR match_level LIKE ? OR summary LIKE ? OR highlights LIKE ? OR gaps LIKE ?)');
+    const likeQuery = `%${query}%`;
+    values.push(likeQuery, likeQuery, likeQuery, likeQuery, likeQuery);
+  }
+
+  const statement = env.FEEDBACK_DB.prepare(
+    `SELECT id, job_description, overall_score, match_level, dimension_scores, highlights, gaps, summary, is_ai_powered, created_at
+     FROM job_match_reports
      ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''}
      ORDER BY created_at DESC
      LIMIT 200`
@@ -694,6 +725,30 @@ async function handleAdminInterviewDelete(request, env) {
   return jsonResponse({ ok: true });
 }
 
+async function handleAdminJobMatchDelete(request, env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  if (request.method !== 'DELETE') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const id = normalizeText(payload.id, 80);
+  if (!id) {
+    return jsonResponse({ error: '匹配记录 ID 无效' }, { status: 400 });
+  }
+
+  await env.FEEDBACK_DB.prepare('DELETE FROM job_match_reports WHERE id = ?').bind(id).run();
+  return jsonResponse({ ok: true });
+}
+
 async function handleJobMatch(request, env) {
   if (request.method !== 'POST') {
     return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
@@ -714,6 +769,54 @@ async function handleJobMatch(request, env) {
   const aiResult = await callMatchModel(jobDescription, env);
   const cloudflareResult = aiResult || await callCloudflareMatchModel(jobDescription, env);
   return jsonResponse({ result: cloudflareResult || buildLocalMatch(jobDescription) });
+}
+
+async function handleJobMatchRecord(request, env) {
+  if (!env.FEEDBACK_DB) {
+    return jsonResponse({ error: '匹配记录数据库未配置' }, { status: 500 });
+  }
+
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: '不支持的请求方法' }, { status: 405 });
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: '请求内容不是有效 JSON' }, { status: 400 });
+  }
+
+  const jobDescription = normalizeText(payload.jobDescription, 6000);
+  if (jobDescription.length < 20) {
+    return jsonResponse({ error: '岗位 JD 内容不足，无法保存' }, { status: 400 });
+  }
+
+  const result = normalizeMatchResult(payload.result || {}, Boolean(payload.result?.isAiPowered));
+  const id = crypto.randomUUID();
+
+  await env.FEEDBACK_DB.prepare(
+    `INSERT INTO job_match_reports (id, job_description, overall_score, match_level, dimension_scores, highlights, gaps, summary, is_ai_powered)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(
+    id,
+    jobDescription,
+    result.overallScore,
+    result.matchLevel,
+    JSON.stringify(result.dimensionScores),
+    JSON.stringify(result.highlights),
+    JSON.stringify(result.gaps),
+    result.summary,
+    result.isAiPowered ? 1 : 0
+  ).run();
+
+  const created = await env.FEEDBACK_DB.prepare(
+    `SELECT id, overall_score, match_level, created_at
+     FROM job_match_reports
+     WHERE id = ?`
+  ).bind(id).first();
+
+  return jsonResponse({ ok: true, item: created }, { status: 201 });
 }
 
 async function handleContactReveal(request, env) {
@@ -828,6 +931,14 @@ export default {
       }
     }
 
+    if (path === '/api/admin/job-matches') {
+      try {
+        return await handleAdminJobMatches(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '岗位匹配记录暂时不可用' }, { status: 500 });
+      }
+    }
+
     if (path === '/api/admin/feedback-status') {
       try {
         return await handleAdminFeedbackStatus(request, env);
@@ -860,11 +971,27 @@ export default {
       }
     }
 
+    if (path === '/api/admin/job-match-delete') {
+      try {
+        return await handleAdminJobMatchDelete(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '匹配记录删除失败' }, { status: 500 });
+      }
+    }
+
     if (path === '/api/job-match') {
       try {
         return await handleJobMatch(request, env);
       } catch (error) {
         return jsonResponse({ error: error.message || '岗位匹配服务暂时不可用' }, { status: 500 });
+      }
+    }
+
+    if (path === '/api/job-match-record') {
+      try {
+        return await handleJobMatchRecord(request, env);
+      } catch (error) {
+        return jsonResponse({ error: '匹配记录保存失败' }, { status: 500 });
       }
     }
 

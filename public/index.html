@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260525-mobile-header-v3">
+    <link rel="stylesheet" href="styles.css?v=20260525-match-copy">
 </head>
 <body class="resume-home">
     <header class="site-header">
@@ -248,12 +248,15 @@
 
             <div class="match-dialog-actions">
                 <p data-match-source>结果由岗位描述和公开简历信息生成。</p>
-                <button class="button primary" type="button" data-match-close>关闭</button>
+                <div class="match-action-buttons">
+                    <button class="button ghost" type="button" data-match-save>保存本次匹配记录</button>
+                    <button class="button primary" type="button" data-match-close>关闭</button>
+                </div>
             </div>
         </section>
     </div>
 
     <script src="script.js?v=20260525-admin-controls-nav"></script>
-    <script src="job-match.js?v=20260518-job-label"></script>
+    <script src="job-match.js?v=20260525-match-save"></script>
 </body>
 </html>

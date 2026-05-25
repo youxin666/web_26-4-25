@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const gaps = document.querySelector('[data-match-gaps]');
     const summary = document.querySelector('[data-match-summary]');
     const source = document.querySelector('[data-match-source]');
+    const saveButton = document.querySelector('[data-match-save]');
+    let latestJobDescription = '';
+    let latestResult = null;
 
     const metrics = [
         ['education', '学历背景'],
@@ -72,6 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
         renderBars(result.dimensionScores);
         fillList(highlights, result.highlights);
         fillList(gaps, result.gaps);
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = '保存本次匹配记录';
+        }
         modal.hidden = false;
         document.body.classList.add('has-modal');
     };
@@ -88,6 +95,41 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-match-close]').forEach((button) => {
         button.addEventListener('click', closeModal);
     });
+
+    saveButton?.addEventListener('click', async () => {
+        if (!latestJobDescription || !latestResult) {
+            setStatus('请先生成匹配报告，再保存记录。', 'error');
+            return;
+        }
+
+        saveButton.disabled = true;
+        saveButton.textContent = '保存中...';
+
+        try {
+            const response = await fetch('/api/job-match-record', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    jobDescription: latestJobDescription,
+                    result: latestResult,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || '保存失败');
+            }
+            saveButton.textContent = '已保存';
+            setStatus('匹配记录已保存到后台。', 'success');
+        } catch (error) {
+            saveButton.disabled = false;
+            saveButton.textContent = '保存本次匹配记录';
+            setStatus(error.message || '保存失败，请稍后再试。', 'error');
+        }
+    });
+
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeModal();
     });
@@ -117,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error(data.error || '岗位匹配失败');
             }
+            latestJobDescription = jobDescription;
+            latestResult = data.result;
             openModal(data.result);
             setStatus('匹配报告已生成，可继续粘贴新的岗位描述。', 'success');
         } catch (error) {

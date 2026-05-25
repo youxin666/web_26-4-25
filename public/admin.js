@@ -8,8 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const stats = document.querySelector('[data-admin-stats]');
     const interviewList = document.querySelector('[data-admin-interviews]');
     const feedbackList = document.querySelector('[data-admin-feedback]');
+    const matchList = document.querySelector('[data-admin-matches]');
     const interviewCount = document.querySelector('[data-admin-interview-count]');
     const feedbackCount = document.querySelector('[data-admin-feedback-count]');
+    const matchCount = document.querySelector('[data-admin-match-count]');
     const searchInput = document.querySelector('[data-admin-search]');
     const interviewFilter = document.querySelector('[data-admin-interview-filter]');
     const feedbackFilter = document.querySelector('[data-admin-feedback-filter]');
@@ -17,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         interviews: [],
         feedback: [],
+        matches: [],
         query: '',
         interviewStatus: 'all',
         feedbackStatus: 'all',
@@ -92,13 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return statusMatch && matchesQuery(item, ['name', 'category', 'comment', 'contact']);
     });
 
+    const getFilteredMatches = () => state.matches.filter((item) => (
+        matchesQuery(item, ['job_description', 'match_level', 'summary', 'highlights', 'gaps'])
+    ));
+
     const renderStats = (summary) => {
         if (!stats) return;
         const values = [
             summary.feedbackCount || 0,
             summary.feedbackAverage ? `${summary.feedbackAverage}/5` : '--',
             summary.interviewCount || 0,
-            summary.newInterviewCount || 0,
+            summary.matchReportCount || 0,
         ];
 
         Array.from(stats.querySelectorAll('strong')).forEach((node, index) => {
@@ -159,6 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         return button;
+    };
+
+    const parseList = (value) => {
+        if (Array.isArray(value)) return value;
+        try {
+            const parsed = JSON.parse(value || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
     };
 
     const createInterviewCard = (item) => {
@@ -274,6 +291,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return article;
     };
 
+    const createMatchCard = (item) => {
+        const article = document.createElement('article');
+        article.className = 'admin-data-card admin-match-card';
+
+        const head = document.createElement('div');
+        head.className = 'admin-data-head';
+        const title = document.createElement('div');
+        const score = document.createElement('strong');
+        score.textContent = `${item.overall_score || 0}/100 · ${item.match_level || '未分级'}`;
+        const time = document.createElement('p');
+        time.textContent = formatDate(item.created_at);
+        title.append(score, time);
+        head.append(title);
+
+        const meta = createMeta([
+            Number(item.is_ai_powered) === 1 ? 'AI 生成' : '本地评估',
+        ]);
+
+        const jd = document.createElement('p');
+        jd.className = 'admin-card-message admin-card-jd';
+        jd.textContent = `JD：${item.job_description || '未记录岗位描述'}`;
+
+        const highlights = document.createElement('p');
+        highlights.className = 'admin-card-message';
+        const highlightText = parseList(item.highlights).slice(0, 3).join('；');
+        highlights.textContent = `亮点：${highlightText || '暂无亮点记录'}`;
+
+        const summary = document.createElement('p');
+        summary.className = 'admin-card-contact';
+        summary.textContent = `总结：${item.summary || '暂无总结'}`;
+
+        const actions = document.createElement('div');
+        actions.className = 'admin-card-actions';
+        actions.append(
+            createActionButton('删除记录', 'danger', async () => {
+                if (!window.confirm('确定删除这条岗位匹配记录吗？')) return;
+                await requestJson('/api/admin/job-match-delete', {
+                    method: 'DELETE',
+                    body: JSON.stringify({ id: item.id }),
+                });
+                setLoginStatus('匹配记录已删除。', 'success');
+            })
+        );
+
+        article.append(head, meta, jd, highlights, summary, actions);
+        return article;
+    };
+
     const renderList = (target, items, countNode, emptyMessage, renderer) => {
         if (!target) return;
         target.replaceChildren();
@@ -286,16 +351,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderDashboardLists = () => {
+        renderList(matchList, getFilteredMatches(), matchCount, '当前筛选下没有岗位匹配记录。', createMatchCard);
         renderList(interviewList, getFilteredInterviews(), interviewCount, '当前筛选下没有面试邀约。', createInterviewCard);
         renderList(feedbackList, getFilteredFeedback(), feedbackCount, '当前筛选下没有反馈。', createFeedbackCard);
     };
 
     const loadDashboard = async () => {
-        const [summary, interviews, feedback] = await Promise.all([
+        const [summary, matches, interviews, feedback] = await Promise.all([
             requestJson('/api/admin/summary'),
+            requestJson('/api/admin/job-matches'),
             requestJson('/api/admin/interviews'),
             requestJson('/api/admin/feedback'),
         ]);
+        state.matches = matches.items || [];
         state.interviews = interviews.items || [];
         state.feedback = feedback.items || [];
         renderStats(summary);
@@ -308,7 +376,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!authed) {
             state.interviews = [];
             state.feedback = [];
+            state.matches = [];
             renderStats({});
+            renderList(matchList, [], matchCount, '登录后显示岗位匹配记录。', createMatchCard);
             renderList(interviewList, [], interviewCount, '登录后显示面试邀约。', createInterviewCard);
             renderList(feedbackList, [], feedbackCount, '登录后显示反馈记录。', createFeedbackCard);
         }

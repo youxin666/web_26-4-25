@@ -742,6 +742,13 @@ body.has-modal {
     gap: 16px;
 }
 
+.match-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 .match-dialog-head h2 {
     margin-top: 6px;
     font-size: clamp(1.6rem, 3vw, 2.25rem);
@@ -1733,6 +1740,10 @@ body.has-modal {
     gap: 20px;
 }
 
+.admin-panel-wide {
+    grid-column: 1 / -1;
+}
+
 .admin-panel {
     min-width: 0;
     padding: 22px;
@@ -1800,6 +1811,13 @@ body.has-modal {
 
 .admin-card-message {
     line-height: 1.75;
+}
+
+.admin-card-jd {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .admin-card-actions {
@@ -2124,6 +2142,40 @@ body.has-modal {
     font-weight: 900;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.copy-contact-button {
+    width: max-content;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(11, 79, 108, 0.18);
+    border-radius: 6px;
+    color: var(--accent-strong);
+    background: rgba(255, 255, 255, 0.72);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.copy-contact-button:hover {
+    border-color: rgba(11, 79, 108, 0.34);
+    background: rgba(255, 255, 255, 0.96);
+    transform: translateY(-1px);
+}
+
+.copy-contact-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    transform: none;
 }
 
 .reveal-contact-button:hover {
