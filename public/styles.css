@@ -1367,6 +1367,12 @@ body.has-modal {
     --social-soft: linear-gradient(135deg, rgba(247, 178, 103, 0.14), rgba(219, 79, 122, 0.1), rgba(108, 99, 255, 0.1));
 }
 
+.social-card-instagram .social-icon svg {
+    width: 36px;
+    height: 36px;
+    stroke-width: 1.55;
+}
+
 .social-mini-list {
     display: flex;
     flex-wrap: wrap;
