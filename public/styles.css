@@ -1033,9 +1033,21 @@ body.has-modal {
 .architecture-map {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(190px, 0.28fr) 64px minmax(220px, 0.32fr) minmax(0, 1fr);
     gap: 16px;
-    align-items: center;
+}
+
+.arch-main-flow {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) 72px minmax(0, 1.08fr);
+    gap: 16px;
+    align-items: stretch;
+    padding: 18px;
+    border: 1px solid rgba(219, 231, 228, 0.8);
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 28% 20%, rgba(15, 118, 110, 0.12), transparent 13rem),
+        rgba(255, 255, 255, 0.42);
 }
 
 .arch-node {
@@ -1085,16 +1097,35 @@ body.has-modal {
 }
 
 .arch-flow {
+    position: relative;
     height: 3px;
+    align-self: center;
     border-radius: 999px;
     background: linear-gradient(90deg, rgba(15, 118, 110, 0.12), var(--accent), rgba(11, 79, 108, 0.32));
     box-shadow: 0 0 18px rgba(15, 118, 110, 0.22);
 }
 
+.arch-flow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-top: 3px solid rgba(11, 79, 108, 0.58);
+    border-right: 3px solid rgba(11, 79, 108, 0.58);
+    transform: translateY(-50%) rotate(45deg);
+    border-radius: 1px;
+}
+
 .arch-branches {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.arch-branches .arch-node {
+    min-height: 136px;
 }
 
 .case-layout {
@@ -2589,6 +2620,12 @@ body.has-modal {
     }
 }
 
+@media (max-width: 1180px) {
+    .arch-branches {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 860px) {
     .site-header {
         grid-template-columns: 1fr auto;
@@ -2667,6 +2704,7 @@ body.has-modal {
     .hero-section,
     .project-panel,
     .architecture-map,
+    .arch-main-flow,
     .case-layout,
     .job-matcher-bar,
     .match-matrix,
@@ -2691,8 +2729,20 @@ body.has-modal {
     .arch-flow {
         width: 3px;
         height: 42px;
+        align-self: center;
         justify-self: center;
         background: linear-gradient(180deg, rgba(15, 118, 110, 0.12), var(--accent), rgba(11, 79, 108, 0.32));
+    }
+
+    .arch-flow::after {
+        right: 50%;
+        top: auto;
+        bottom: -1px;
+        transform: translateX(50%) rotate(135deg);
+    }
+
+    .arch-main-flow {
+        padding: 14px;
     }
 
     .arch-branches,
@@ -3039,6 +3089,7 @@ body.has-modal {
     .contact-card,
     .social-card,
     .product-console,
+    .arch-main-flow,
     .arch-node,
     .case-summary,
     .case-steps article,
