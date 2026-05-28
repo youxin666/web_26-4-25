@@ -2479,15 +2479,15 @@ body.has-modal {
 
 .reveal-contact-button {
     width: max-content;
-    min-height: 30px;
-    margin-top: 8px;
-    padding: 0 10px;
+    min-height: 26px;
+    margin-top: 6px;
+    padding: 0 8px;
     border: 1px solid rgba(15, 118, 110, 0.22);
-    border-radius: 6px;
+    border-radius: 5px;
     color: var(--accent-strong);
     background: rgba(217, 239, 235, 0.72);
     font: inherit;
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     font-weight: 900;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
@@ -2496,20 +2496,20 @@ body.has-modal {
 .contact-card-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 6px;
 }
 
 .copy-contact-button {
     width: max-content;
-    min-height: 30px;
-    padding: 0 10px;
+    min-height: 26px;
+    padding: 0 8px;
     border: 1px solid rgba(11, 79, 108, 0.18);
-    border-radius: 6px;
+    border-radius: 5px;
     color: var(--accent-strong);
     background: rgba(255, 255, 255, 0.72);
     font: inherit;
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     font-weight: 900;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
