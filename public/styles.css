@@ -207,9 +207,9 @@ main {
 
 .site-nav.grouped-nav {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(max-content, 1fr) max-content;
     align-items: center;
-    gap: 12px 18px;
+    gap: 10px 14px;
 }
 
 .nav-main,
@@ -217,18 +217,18 @@ main {
     min-width: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .nav-main {
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .nav-tools {
     justify-content: flex-end;
-    flex-wrap: wrap;
-    padding-left: 14px;
+    flex-wrap: nowrap;
+    padding-left: 12px;
     border-left: 1px solid rgba(15, 118, 110, 0.16);
 }
 
@@ -241,11 +241,15 @@ main {
     min-height: 36px;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 0 13px;
+    gap: 6px;
+    padding: 0 10px;
     border-radius: 6px;
     overflow: hidden;
     transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.grouped-nav a {
+    font-size: 0.9rem;
 }
 
 .site-nav a::after {
@@ -2666,6 +2670,35 @@ body.has-modal {
 @media (max-width: 1180px) {
     .arch-branches {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1480px) and (min-width: 861px) {
+    .site-header {
+        gap: 16px;
+        padding-inline: 14px;
+    }
+
+    .grouped-nav a {
+        min-height: 34px;
+        padding: 0 8px;
+        font-size: 0.84rem;
+    }
+
+    .site-nav a::before {
+        width: 14px;
+        height: 14px;
+        mask-size: 14px 14px;
+        -webkit-mask-size: 14px 14px;
+    }
+
+    .nav-main,
+    .nav-tools {
+        gap: 4px;
+    }
+
+    .nav-tools {
+        padding-left: 10px;
     }
 }
 
