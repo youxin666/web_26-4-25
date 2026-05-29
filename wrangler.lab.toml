@@ -1,0 +1,14 @@
+name = "resume-web-lab"
+account_id = "7722052fdf1845b1b5e987938bb735f3"
+compatibility_date = "2026-05-29"
+main = "./lab-worker.js"
+workers_dev = false
+
+[assets]
+directory = "./lab-public"
+binding = "ASSETS"
+run_worker_first = true
+
+[[routes]]
+pattern = "lab.858846.xyz"
+custom_domain = true

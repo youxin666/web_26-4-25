@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Lab | 技术作品实验室</title>
+    <meta name="description" content="基于 Cloudflare Workers 的技术作品实验室，展示设备巡检、招聘工具、数据库和前端交互能力。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260529-lab">
+</head>
+<body>
+    <header class="lab-header">
+        <a class="lab-brand" href="/">Web Lab</a>
+        <nav aria-label="作品实验室导航">
+            <a href="#demo">巡检 Demo</a>
+            <a href="#stack">技术架构</a>
+            <a href="#cases">能力模块</a>
+            <a href="https://858846.xyz">返回简历</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="lab-hero">
+            <div>
+                <p class="eyebrow">Cloudflare Workers / D1 / Frontend</p>
+                <h1>技术作品实验室</h1>
+                <p class="lead">这是简历站之外的独立作品子站，用真实交互展示网站设计、Cloudflare 部署、数据流设计和设备维护场景理解。</p>
+                <div class="hero-actions">
+                    <a class="button primary" href="#demo">体验巡检工单</a>
+                    <a class="button ghost" href="#stack">查看架构</a>
+                </div>
+            </div>
+            <aside class="lab-panel" aria-label="上线能力概览">
+                <span>Live Site</span>
+                <strong>lab.858846.xyz</strong>
+                <p>独立 Worker 子站，可作为招聘沟通时的外链作品入口。</p>
+                <div class="panel-grid">
+                    <small>Static Assets</small>
+                    <small>Worker Routing</small>
+                    <small>Responsive UI</small>
+                    <small>Demo Workflow</small>
+                </div>
+            </aside>
+        </section>
+
+        <section id="demo" class="section demo-section">
+            <div class="section-head">
+                <p class="eyebrow">Maintenance Demo</p>
+                <h2>设备巡检工单 Demo</h2>
+                <p>围绕弱电机房、设备维护和现场巡检场景，模拟从发现问题到记录处理状态的轻量流程。</p>
+            </div>
+            <div class="demo-layout">
+                <form class="workorder-form" data-workorder-form>
+                    <label>
+                        巡检区域
+                        <select name="area">
+                            <option>弱电机房</option>
+                            <option>会议室设备</option>
+                            <option>家庭宽带现场</option>
+                            <option>空调与照明</option>
+                        </select>
+                    </label>
+                    <label>
+                        问题类型
+                        <select name="type">
+                            <option>设备运行异常</option>
+                            <option>网络连接不稳定</option>
+                            <option>安全隐患记录</option>
+                            <option>用户现场需求</option>
+                        </select>
+                    </label>
+                    <label>
+                        优先级
+                        <select name="priority">
+                            <option>普通</option>
+                            <option>较高</option>
+                            <option>紧急</option>
+                        </select>
+                    </label>
+                    <label class="full">
+                        巡检备注
+                        <textarea name="note" rows="4" placeholder="例如：机柜温度正常，交换机 3 号端口偶发丢包，已记录并建议复测。"></textarea>
+                    </label>
+                    <button class="button primary" type="submit">生成工单</button>
+                </form>
+                <div class="workorder-board">
+                    <div class="board-head">
+                        <strong>最近记录</strong>
+                        <button type="button" data-clear-workorders>清空 Demo</button>
+                    </div>
+                    <div class="workorder-list" data-workorder-list></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stack" class="section stack-section">
+            <div class="section-head">
+                <p class="eyebrow">Architecture</p>
+                <h2>子站部署架构</h2>
+                <p>子站独立 Worker 部署，主站只作为入口链接，后续可继续加数据库、API 和更多 Demo。</p>
+            </div>
+            <div class="stack-flow">
+                <article>
+                    <span>01</span>
+                    <strong>HR 访问外链</strong>
+                    <p>从简历站或招聘软件打开 lab 子域。</p>
+                </article>
+                <article>
+                    <span>02</span>
+                    <strong>Cloudflare Worker</strong>
+                    <p>托管静态资源，控制缓存和路由。</p>
+                </article>
+                <article>
+                    <span>03</span>
+                    <strong>交互 Demo</strong>
+                    <p>展示表单、状态、列表和响应式布局。</p>
+                </article>
+                <article>
+                    <span>04</span>
+                    <strong>后续数据库</strong>
+                    <p>可接 D1 保存真实工单或浏览记录。</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="cases" class="section case-section">
+            <div class="section-head">
+                <p class="eyebrow">Capability Map</p>
+                <h2>可展示的能力模块</h2>
+            </div>
+            <div class="case-grid">
+                <article>
+                    <span>Design</span>
+                    <strong>前端设计表达</strong>
+                    <p>浅色玻璃质感、紧凑卡片、移动端适配和清晰信息层级。</p>
+                </article>
+                <article>
+                    <span>Cloud</span>
+                    <strong>云端部署能力</strong>
+                    <p>Workers 静态资源托管、自定义域名、缓存策略和子站拆分。</p>
+                </article>
+                <article>
+                    <span>Product</span>
+                    <strong>岗位场景理解</strong>
+                    <p>把设备巡检、工单处理和问题闭环转成可操作的页面流程。</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js?v=20260529-lab"></script>
+</body>
+</html>
