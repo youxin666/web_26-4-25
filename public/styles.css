@@ -207,9 +207,10 @@ main {
 
 .site-nav.grouped-nav {
     display: grid;
-    grid-template-columns: minmax(max-content, 1fr) max-content;
+    grid-template-columns: max-content max-content;
+    justify-content: end;
     align-items: center;
-    gap: 10px 14px;
+    gap: 8px;
 }
 
 .nav-main,
@@ -221,15 +222,15 @@ main {
 }
 
 .nav-main {
-    justify-content: center;
+    justify-content: flex-end;
     flex-wrap: nowrap;
 }
 
 .nav-tools {
     justify-content: flex-end;
     flex-wrap: nowrap;
-    padding-left: 12px;
-    border-left: 1px solid rgba(15, 118, 110, 0.16);
+    padding-left: 6px;
+    border-left: 1px solid rgba(15, 118, 110, 0.12);
 }
 
 .nav-tools a {
@@ -2698,7 +2699,7 @@ body.has-modal {
     }
 
     .nav-tools {
-        padding-left: 10px;
+        padding-left: 5px;
     }
 }
 
