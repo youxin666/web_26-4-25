@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPage = window.location.pathname.split('/').pop() || 'home';
     const siteHeader = document.querySelector('.site-header');
     const navToggle = document.querySelector('[data-nav-toggle]');
     const siteNav = document.querySelector('.site-nav');

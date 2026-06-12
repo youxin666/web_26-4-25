@@ -1010,9 +1010,9 @@ export default {
     }
 
     const assetRequest = path === '/'
-      ? requestForAsset(request, '/intro.html')
+      ? requestForAsset(request, '/intro')
       : path === '/home'
-        ? requestForAsset(request, '/index.html')
+        ? requestForAsset(request, '/home')
         : request;
     const assetResponse = await env.ASSETS.fetch(assetRequest);
 
