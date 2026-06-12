@@ -39,6 +39,12 @@ function normalizeText(value, maxLength) {
     .slice(0, maxLength);
 }
 
+function requestForAsset(request, pathname) {
+  const url = new URL(request.url);
+  url.pathname = pathname;
+  return new Request(url.toString(), request);
+}
+
 function base64UrlEncode(value) {
   const bytes = value instanceof ArrayBuffer ? new Uint8Array(value) : new TextEncoder().encode(String(value));
   let binary = '';
@@ -1003,7 +1009,12 @@ export default {
       }
     }
 
-    const assetResponse = await env.ASSETS.fetch(request);
+    const assetRequest = path === '/'
+      ? requestForAsset(request, '/intro.html')
+      : path === '/home'
+        ? requestForAsset(request, '/index.html')
+        : request;
+    const assetResponse = await env.ASSETS.fetch(assetRequest);
 
     if (assetResponse.status === 404) {
       return assetResponse;
@@ -1012,9 +1023,11 @@ export default {
     const body = await assetResponse.arrayBuffer();
     const headers = new Headers(assetResponse.headers);
 
-    if (path.endsWith('.css') || path.endsWith('.js')) {
+    const assetPath = new URL(assetRequest.url).pathname;
+
+    if (assetPath.endsWith('.css') || assetPath.endsWith('.js')) {
       headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-    } else if (path.endsWith('.html') || path === '/') {
+    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home') {
       headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
     }
 
