@@ -409,7 +409,7 @@ main {
     display: grid;
     grid-template-columns: minmax(0, 1.48fr) minmax(320px, 0.52fr);
     gap: clamp(24px, 4vw, 56px);
-    align-items: end;
+    align-items: center;
     padding: clamp(40px, 6vw, 76px);
 }
 
@@ -445,6 +445,11 @@ main {
 .detail-hero > * {
     position: relative;
     z-index: 1;
+}
+
+.hero-copy {
+    align-self: center;
+    transform: translateY(-40px);
 }
 
 .eyebrow {
@@ -3074,6 +3079,10 @@ body.has-modal {
     .hero-copy h1 {
         font-size: 3.6rem;
         white-space: normal;
+    }
+
+    .hero-copy {
+        transform: none;
     }
 
     .job-matcher {
