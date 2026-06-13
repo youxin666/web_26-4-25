@@ -86,25 +86,31 @@ a {
 
 .intro-orbit {
     position: absolute;
-    width: min(38vw, 340px);
+    width: min(44vw, 440px);
     aspect-ratio: 1;
-    right: 2%;
-    top: -8%;
-    border: 14px solid rgba(20, 125, 119, 0.06);
-    border-radius: 50%;
+    right: -4%;
+    top: -22%;
     transform-origin: center;
-    animation:
-        orbitIn 1.2s cubic-bezier(0.2, 0.9, 0.2, 1) both,
-        orbitPulse 3.8s ease-in-out 1.1s infinite;
+    animation: orbitIn 1.2s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
-.intro-orbit span {
+.intro-orbit span:first-child {
+    display: block;
+    position: absolute;
+    inset: 0;
+    border: 18px solid rgba(20, 125, 119, 0.055);
+    border-radius: 50%;
+    transform-origin: center;
+    animation: orbitPulse 3.6s ease-in-out 1.1s infinite;
+}
+
+.intro-orbit span:not(:first-child) {
     display: none;
 }
 
 .intro-orbit span:nth-child(1) {
-    left: 16%;
-    top: 20%;
+    left: 0;
+    top: 0;
 }
 
 .intro-orbit span:nth-child(2) {
@@ -258,24 +264,24 @@ a {
 }
 
 @keyframes orbitIn {
-    from { opacity: 0; transform: scale(0.9) rotate(-10deg); border-width: 10px; }
-    to { opacity: 1; transform: scale(1) rotate(0); border-width: 14px; }
+    from { opacity: 0; transform: scale(0.9) rotate(-8deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
 }
 
 @keyframes orbitPulse {
     0% {
-        transform: scale(0.98);
-        border-width: 14px;
+        transform: scale(0.95);
+        border-width: 18px;
         border-color: rgba(20, 125, 119, 0.052);
     }
     50% {
-        transform: scale(1.04);
-        border-width: 30px;
-        border-color: rgba(20, 125, 119, 0.085);
+        transform: scale(1.06);
+        border-width: 44px;
+        border-color: rgba(20, 125, 119, 0.092);
     }
     100% {
-        transform: scale(0.98);
-        border-width: 14px;
+        transform: scale(0.95);
+        border-width: 18px;
         border-color: rgba(20, 125, 119, 0.052);
     }
 }
@@ -296,6 +302,12 @@ a {
     .intro-stage {
         min-height: calc(100vh - 24px);
         justify-items: stretch;
+    }
+
+    .intro-orbit {
+        width: min(76vw, 320px);
+        right: -30%;
+        top: -16%;
     }
 
     .intro-console {
