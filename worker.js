@@ -1013,6 +1013,8 @@ export default {
       ? requestForAsset(request, '/intro')
       : path === '/home'
         ? requestForAsset(request, '/home')
+        : path === '/about'
+          ? requestForAsset(request, '/about')
         : path === '/posts'
           ? requestForAsset(request, '/posts')
         : request;
@@ -1029,7 +1031,7 @@ export default {
 
     if (assetPath.endsWith('.css') || assetPath.endsWith('.js')) {
       headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home' || path === '/posts') {
+    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home' || path === '/about' || path === '/posts') {
       headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
     }
 

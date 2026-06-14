@@ -44,6 +44,7 @@
 │   ├── intro.html          # 出场动画页
 │   ├── home.html           # 个人展示首页
 │   ├── index.html          # 首页副本
+│   ├── about.html          # 关于本站、架构和联系入口
 │   ├── posts.html          # 文章与技术记录列表
 │   ├── immerse.html        # 工作经历详情
 │   ├── release.html        # 项目经历详情
@@ -76,6 +77,7 @@
 | --- | --- |
 | `/` | 出场动画页 |
 | `/home` | 个人展示首页 |
+| `/about` | 关于本站 |
 | `/posts` | 文章与技术记录 |
 | `/immerse` | 工作经历详情 |
 | `/release` | 项目经历详情 |
