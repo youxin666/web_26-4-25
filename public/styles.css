@@ -1393,6 +1393,76 @@ body.has-modal {
         rgba(255, 255, 255, 0.72);
 }
 
+.site-footer {
+    width: min(1480px, calc(100% - 32px));
+    margin: 10px auto 28px;
+    padding: 22px clamp(18px, 3.4vw, 34px);
+    border: 1px solid rgba(219, 231, 228, 0.92);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(238, 245, 243, 0.62)),
+        rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(18px) saturate(1.22);
+    -webkit-backdrop-filter: blur(18px) saturate(1.22);
+    box-shadow: 0 16px 40px rgba(19, 32, 31, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
+
+.footer-links,
+.footer-badges,
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+.footer-links {
+    justify-content: center;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.footer-links a {
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-strong);
+    transform: translateY(-1px);
+}
+
+.footer-badges {
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.footer-badges span {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 999px;
+    background: rgba(217, 239, 235, 0.62);
+    color: var(--accent-strong);
+    font-size: 0.75rem;
+    font-weight: 900;
+}
+
+.footer-bottom {
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(219, 231, 228, 0.9);
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.footer-bottom a {
+    color: var(--accent-strong);
+}
+
 .architecture-map {
     position: relative;
     display: grid;
@@ -3521,6 +3591,24 @@ body.has-modal {
     .section-heading h2,
     .contact-strip h2 {
         font-size: 2rem;
+    }
+
+    .site-footer {
+        width: min(100% - 18px, 1120px);
+        margin-bottom: 20px;
+        padding: 18px;
+    }
+
+    .footer-links,
+    .footer-badges,
+    .footer-bottom {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 6px;
     }
 
     .project-detail-block .section-heading h2 {
