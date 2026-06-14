@@ -37,6 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const canAnimate = !motionQuery.matches;
 
     if (canAnimate) {
+        let scrollTicking = false;
+        const updateScrollMotion = () => {
+            const progress = Math.min(window.scrollY / 900, 1).toFixed(3);
+            document.documentElement.style.setProperty('--scroll-progress', progress);
+            scrollTicking = false;
+        };
+
+        updateScrollMotion();
+
+        window.addEventListener('scroll', () => {
+            if (!scrollTicking) {
+                window.requestAnimationFrame(updateScrollMotion);
+                scrollTicking = true;
+            }
+        }, { passive: true });
+
         window.addEventListener('pointermove', (event) => {
             document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
             document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
@@ -49,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const y = (event.clientY - rect.top) / rect.height - 0.5;
                 card.style.setProperty('--tilt-x', `${(-y * 3.5).toFixed(2)}deg`);
                 card.style.setProperty('--tilt-y', `${(x * 4.5).toFixed(2)}deg`);
+                card.style.setProperty('--card-x', `${event.clientX - rect.left}px`);
+                card.style.setProperty('--card-y', `${event.clientY - rect.top}px`);
             }, { passive: true });
 
             card.addEventListener('pointerleave', () => {
