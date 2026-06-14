@@ -1,4 +1,4 @@
-const FEEDBACK_CATEGORIES = new Set(['网站建议', '简历内容', '项目交流', '招聘沟通', '其他']);
+const FEEDBACK_CATEGORIES = new Set(['网站建议', '内容建议', '项目交流', '招聘沟通', '其他']);
 const INTERVIEW_CHANNELS = new Set(['电话沟通', '微信沟通', '邮件沟通', '线上面试', '线下面试']);
 const FEEDBACK_STATUSES = new Set(['new', 'read', 'closed']);
 const INTERVIEW_STATUSES = new Set(['new', 'contacted', 'scheduled', 'closed']);
@@ -1013,6 +1013,8 @@ export default {
       ? requestForAsset(request, '/intro')
       : path === '/home'
         ? requestForAsset(request, '/home')
+        : path === '/posts'
+          ? requestForAsset(request, '/posts')
         : request;
     const assetResponse = await env.ASSETS.fetch(assetRequest);
 
@@ -1027,7 +1029,7 @@ export default {
 
     if (assetPath.endsWith('.css') || assetPath.endsWith('.js')) {
       headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home') {
+    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home' || path === '/posts') {
       headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
     }
 

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章 | 个人展示站</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260614-personal-site">
+</head>
+<body class="resume-home">
+    <header class="site-header">
+        <a class="brand" href="/home">主页</a>
+        <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" data-nav-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="site-nav grouped-nav" aria-label="文章导航">
+            <span class="nav-main">
+                <a href="/home#about">关于本站</a>
+                <a class="is-active" href="posts.html">文章</a>
+                <a href="/home#site-project">网站作品</a>
+                <a href="/home#project">项目经历</a>
+                <a href="/home#experience">简历</a>
+                <a href="player.html">联系方式</a>
+            </span>
+            <span class="nav-tools">
+                <a href="feedback.html">反馈系统</a>
+                <a href="https://lab.858846.xyz">技术实验室<span class="external-arrow" aria-hidden="true">↗</span></a>
+                <a href="https://mail.858846.xyz">邮箱系统<span class="external-arrow" aria-hidden="true">↗</span></a>
+            </span>
+        </nav>
+    </header>
+
+    <main>
+        <section class="detail-hero">
+            <p class="eyebrow">Journal</p>
+            <h1>文章与技术记录</h1>
+            <p>这里会逐步沉淀网站建设、Cloudflare 部署、数据库设计、AI 工具、嵌入式项目和新工作中的测试学习。当前先把已完成的技术模块整理成文章入口。</p>
+        </section>
+
+        <section class="section-block post-page-layout reveal">
+            <div class="post-list">
+                <article id="cloudflare-worker" class="post-card featured-post">
+                    <div>
+                        <span class="post-category">Cloudflare</span>
+                        <p class="post-meta">站点架构 · 静态优先 · Worker 路由</p>
+                        <h3>把个人展示站部署到 Cloudflare Workers</h3>
+                        <p>记录从静态页面、出场动画、自定义域名到 Worker 路由的完整上线过程。重点会写清楚为什么把文章做成静态页面，以及如何通过缓存策略减少免费额度压力。</p>
+                    </div>
+                    <a class="post-link" href="/home#architecture">查看架构图</a>
+                </article>
+
+                <article id="d1-feedback" class="post-card">
+                    <div>
+                        <span class="post-category">Database</span>
+                        <p class="post-meta">D1 · 反馈系统 · 后台管理</p>
+                        <h3>D1 数据库如何承接反馈、邀约和匹配记录</h3>
+                        <p>反馈、面试邀约和岗位匹配报告需要留存，因此使用 D1；文章、作品、简历这些高频浏览内容保持静态，避免每次访问都打数据库。</p>
+                    </div>
+                    <a class="post-link" href="admin.html">查看后台入口</a>
+                </article>
+
+                <article id="ai-job-matcher" class="post-card">
+                    <div>
+                        <span class="post-category">AI Workflow</span>
+                        <p class="post-meta">JD 分析 · 报告保存 · 交互设计</p>
+                        <h3>AI 岗位匹配器的产品路径</h3>
+                        <p>从 HR 粘贴 JD、自动排版、生成匹配矩阵，到保存本次匹配记录并进入后台查看，拆成一个完整的小型产品闭环。</p>
+                    </div>
+                    <a class="post-link" href="/home#job-matcher-title">体验匹配器</a>
+                </article>
+
+                <article id="stm32-project" class="post-card">
+                    <div>
+                        <span class="post-category">Embedded</span>
+                        <p class="post-meta">STM32 · 门禁系统 · 四足机器人</p>
+                        <h3>把嵌入式项目写成可阅读的项目复盘</h3>
+                        <p>后续会把毕业设计门禁系统和四足机器人整理成项目文章：需求、硬件、软件、测试、问题处理和最终成果分别展开。</p>
+                    </div>
+                    <a class="post-link" href="release.html">查看项目页</a>
+                </article>
+            </div>
+
+            <aside class="post-side" aria-label="文章侧栏">
+                <article class="post-side-card quota-note">
+                    <p class="eyebrow">Free Tier Friendly</p>
+                    <h3>免费额度设计原则</h3>
+                    <ul>
+                        <li>文章优先静态 HTML，不依赖数据库读取。</li>
+                        <li>D1 只用于反馈、邀约、匹配报告等必要写入。</li>
+                        <li>CSS/JS 使用缓存版本号，减少重复加载压力。</li>
+                        <li>动效在浏览器本地执行，不额外消耗 API 请求。</li>
+                    </ul>
+                </article>
+                <article class="post-side-card">
+                    <h3>后续可写方向</h3>
+                    <ul>
+                        <li>垃圾回收环保科技公司的测试工作记录。</li>
+                        <li>Cloudflare Workers 的路由和缓存实践。</li>
+                        <li>D1 表结构、后台管理和数据闭环。</li>
+                        <li>STM32 项目从论文到作品页的整理方法。</li>
+                    </ul>
+                </article>
+                <article class="post-side-card">
+                    <h3>快速入口</h3>
+                    <div class="pill-list">
+                        <a href="/home#site-project">网站作品</a>
+                        <a href="/home#experience">简历速览</a>
+                        <a href="feedback.html">反馈系统</a>
+                    </div>
+                </article>
+            </aside>
+        </section>
+    </main>
+
+    <script src="script.js?v=20260614-motion-polish"></script>
+</body>
+</html>

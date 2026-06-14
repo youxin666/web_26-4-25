@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人技术作品站</title>
+    <title>个人展示站</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260614-console-balance">
+    <link rel="stylesheet" href="styles.css?v=20260614-personal-site">
 </head>
 <body class="resume-home">
     <header class="site-header">
@@ -17,12 +17,13 @@
             <span></span>
             <span></span>
         </button>
-        <nav class="site-nav grouped-nav" aria-label="简历导航">
+        <nav class="site-nav grouped-nav" aria-label="个人站导航">
             <span class="nav-main">
-                <a href="#strengths">个人优势</a>
-                <a href="#experience">工作经历</a>
+                <a href="#about">关于本站</a>
+                <a href="#posts">文章</a>
                 <a href="#site-project">网站作品</a>
                 <a href="#project">项目经历</a>
+                <a href="#experience">简历</a>
                 <a href="#skills">技能证书</a>
                 <a href="player.html">联系方式</a>
             </span>
@@ -38,22 +39,22 @@
     <main>
         <section class="hero-section">
             <div class="hero-copy">
-                <p class="eyebrow">Resume Website / Cloudflare / AI Workflow</p>
-                <h1>技术作品站</h1>
-                <p class="hero-lead">这是一个部署在 Cloudflare 上的个人技术作品网站，集成 AI 岗位匹配、D1 数据库、面试邀约、反馈系统、后台管理和邮箱系统入口，用真实上线页面展示技术实现与设计表达。</p>
+                <p class="eyebrow">Personal Site / Cloudflare / Notes</p>
+                <h1>个人展示站</h1>
+                <p class="hero-lead">这里不再只是简历页面，而是一个持续更新的个人展示网站：记录技术实践、项目过程、工作观察和学习笔记。简历、AI 岗位匹配、反馈系统、邮箱入口和技术实验室都会作为站内模块存在。</p>
                 <div class="hero-actions">
-                    <a class="button primary" href="#site-project">查看网站作品</a>
+                    <a class="button primary" href="#posts">阅读文章</a>
+                    <a class="button ghost" href="#site-project">查看网站作品</a>
                     <a class="button ghost" href="https://lab.858846.xyz">技术实验室<span class="external-arrow" aria-hidden="true">↗</span></a>
-                    <a class="button ghost" href="interview.html">发送邀约</a>
                 </div>
                 <div class="hero-proof-strip" aria-label="网站能力摘要">
-                    <span>Workers 静态站</span>
-                    <span>D1 数据库</span>
-                    <span>AI 匹配报告</span>
-                    <span>后台管理</span>
+                    <span>文章沉淀</span>
+                    <span>项目展示</span>
+                    <span>Cloudflare 部署</span>
+                    <span>轻量数据功能</span>
                 </div>
             </div>
-            <aside class="product-console" aria-label="网站能力控制台">
+            <aside class="product-console" aria-label="个人站模块控制台">
                 <div class="console-head">
                     <span class="status-dot"></span>
                     <div>
@@ -63,29 +64,29 @@
                 </div>
                 <div class="console-grid">
                     <article>
-                        <span>AI</span>
-                        <strong>岗位匹配</strong>
-                        <small>JD 分析与报告保存</small>
+                        <span>Posts</span>
+                        <strong>文章记录</strong>
+                        <small>技术实践与阶段复盘</small>
                     </article>
                     <article>
-                        <span>DB</span>
-                        <strong>D1 存储</strong>
-                        <small>反馈 / 邀约 / 匹配记录</small>
+                        <span>Works</span>
+                        <strong>作品项目</strong>
+                        <small>网站、嵌入式与实验室</small>
                     </article>
                     <article>
-                        <span>CMS</span>
-                        <strong>后台管理</strong>
-                        <small>状态跟进与数据查看</small>
+                        <span>Resume</span>
+                        <strong>简历模块</strong>
+                        <small>经历、证书与联系方式</small>
                     </article>
                     <article>
-                        <span>UX</span>
-                        <strong>移动适配</strong>
-                        <small>HR 快速浏览路径</small>
+                        <span>Data</span>
+                        <strong>轻量互动</strong>
+                        <small>反馈、邀约与后台查看</small>
                     </article>
                 </div>
                 <div class="console-footer">
-                    <span>求职意向</span>
-                    <strong>广州 · 5-7K</strong>
+                    <span>更新方向</span>
+                    <strong>技术 / 工作 / 生活</strong>
                 </div>
             </aside>
         </section>
@@ -106,45 +107,100 @@
             <p class="job-matcher-note" data-job-match-status>HR 可直接粘贴岗位描述，系统会自动总结匹配度、亮点和差距。</p>
         </section>
 
-        <section class="quick-tags" aria-label="核心能力">
-            <span>低压电工证</span>
-            <span>电子信息工程</span>
-            <span>弱电机房巡检</span>
-            <span>家庭宽带维护</span>
-            <span>STM32</span>
-            <span>EDA / Keil / Proteus</span>
+        <section class="quick-tags" aria-label="内容分类">
+            <span>Cloudflare Workers</span>
+            <span>D1 数据库</span>
+            <span>AI Workflow</span>
+            <span>嵌入式项目</span>
+            <span>测试记录</span>
+            <span>工作复盘</span>
+        </section>
+
+        <section id="about" class="section-block portal-section reveal">
+            <div class="portal-copy">
+                <p class="eyebrow">About This Site</p>
+                <h2>从简历页变成可长期更新的个人主页</h2>
+                <p>网站会继续保留简历与招聘沟通入口，但首页的主线改为内容与作品展示。后续写的帖子会沉淀在文章区，之前做过的 Cloudflare 部署、D1 数据库、反馈系统、邮箱系统和 AI 岗位匹配，也会拆成一篇篇技术记录。</p>
+            </div>
+            <div class="portal-widgets" aria-label="站点栏目">
+                <article>
+                    <span>01</span>
+                    <strong>文章</strong>
+                    <p>记录实现过程、踩坑、复盘和新工作中的测试学习。</p>
+                </article>
+                <article>
+                    <span>02</span>
+                    <strong>作品</strong>
+                    <p>展示已上线的网站、实验室入口和嵌入式项目。</p>
+                </article>
+                <article>
+                    <span>03</span>
+                    <strong>简历</strong>
+                    <p>作为站内一个栏目保留，方便需要时快速查看。</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="posts" class="section-block posts-section reveal">
+            <div class="section-heading">
+                <p class="eyebrow">Journal</p>
+                <h2>近期文章</h2>
+                <a class="text-link" href="posts.html">进入文章列表</a>
+            </div>
+            <div class="post-grid">
+                <article class="post-card featured-post">
+                    <div>
+                        <span class="post-category">Cloudflare</span>
+                        <h3>把个人站部署到 Cloudflare Workers</h3>
+                        <p>从静态资源托管、自定义域名、缓存策略到 Worker 路由，整理本站上线的核心流程。</p>
+                    </div>
+                    <a class="post-link" href="posts.html#cloudflare-worker">阅读记录</a>
+                </article>
+                <article class="post-card">
+                    <span class="post-category">Database</span>
+                    <h3>D1 如何承接反馈、邀约和匹配记录</h3>
+                    <p>把数据库只用在需要写入的地方，公开页面尽量静态化，降低免费额度压力。</p>
+                    <a class="post-link" href="posts.html#d1-feedback">查看思路</a>
+                </article>
+                <article class="post-card">
+                    <span class="post-category">AI</span>
+                    <h3>AI 岗位匹配器的页面与接口设计</h3>
+                    <p>从 JD 粘贴、报告生成、保存记录到后台查看，拆解这个小工具的产品路径。</p>
+                    <a class="post-link" href="posts.html#ai-job-matcher">查看思路</a>
+                </article>
+            </div>
         </section>
 
         <section id="architecture" class="section-block architecture-section reveal">
             <div class="section-heading">
                 <p class="eyebrow">Architecture</p>
-                <h2>本站技术架构</h2>
+                <h2>个人站技术架构</h2>
                 <a class="text-link" href="admin.html">后台管理</a>
             </div>
             <div class="architecture-map" aria-label="网站技术架构图">
                 <div class="arch-main-flow">
                     <article class="arch-node arch-node-user">
-                        <span>HR</span>
+                        <span>Visitor</span>
                         <strong>访问网站</strong>
-                        <p>浏览简历、粘贴 JD、提交邀约</p>
+                        <p>阅读文章、浏览作品、查看简历</p>
                     </article>
                     <div class="arch-flow" aria-hidden="true"></div>
                     <article class="arch-node arch-node-worker">
                         <span>Worker</span>
                         <strong>Cloudflare Workers</strong>
-                        <p>静态资源托管、API 路由、访问控制</p>
+                        <p>静态页面托管、API 路由、访问控制</p>
                     </article>
                 </div>
                 <div class="arch-branches">
                     <article class="arch-node">
-                        <span>AI</span>
-                        <strong>岗位匹配器</strong>
-                        <p>生成匹配分、亮点、差距与总结</p>
+                        <span>Posts</span>
+                        <strong>静态文章</strong>
+                        <p>优先使用 HTML 页面，减少运行时请求</p>
                     </article>
                     <article class="arch-node">
                         <span>D1</span>
-                        <strong>数据库</strong>
-                        <p>保存反馈、邀约、匹配报告</p>
+                        <strong>按需写入</strong>
+                        <p>只保存反馈、邀约、匹配报告</p>
                     </article>
                     <article class="arch-node">
                         <span>Admin</span>
@@ -168,14 +224,14 @@
         <section id="site-project" class="section-block site-case reveal">
             <div class="section-heading">
                 <p class="eyebrow">Case Study</p>
-                <h2>这个网站如何做出来</h2>
+                <h2>网站作品案例</h2>
                 <a class="text-link" href="feedback.html">提交体验反馈</a>
             </div>
             <div class="case-layout">
                 <article class="case-summary">
                     <span class="card-label">Website Project</span>
-                    <h3>从简历页面到可交互招聘工具</h3>
-                    <p>围绕招聘软件投递场景，把简历站做成可验证能力的线上作品：HR 可以快速看经历，也可以直接粘贴 JD 生成匹配报告、发送面试邀约或留下反馈。</p>
+                    <h3>一个持续进化的个人展示系统</h3>
+                    <p>网站从简历页起步，逐步扩展为文章、作品、反馈、邀约、后台和实验室入口。它本身就是一个可展示的项目：既能表达设计能力，也能展示 Cloudflare 全栈轻量部署经验。</p>
                     <div class="case-metrics">
                         <div><strong>8+</strong><span>公开页面</span></div>
                         <div><strong>5+</strong><span>Worker API</span></div>
@@ -186,7 +242,7 @@
                     <article>
                         <span>01</span>
                         <h3>需求设计</h3>
-                        <p>以 HR 快速判断为目标，重构首屏、项目、联系方式、邀约和反馈路径。</p>
+                        <p>从单一简历目标调整为个人展示站，梳理文章、作品、简历和联系方式的层级。</p>
                     </article>
                     <article>
                         <span>02</span>
@@ -201,7 +257,7 @@
                     <article>
                         <span>04</span>
                         <h3>数据闭环</h3>
-                        <p>用 D1 保存反馈、面试邀约和 AI 匹配记录，再通过后台管理系统查看和处理。</p>
+                        <p>把 D1 写入控制在反馈、邀约和匹配记录上，文章内容优先静态化，兼顾免费额度。</p>
                     </article>
                 </div>
             </div>
@@ -209,8 +265,8 @@
 
         <section id="strengths" class="section-block reveal">
             <div class="section-heading">
-                <p class="eyebrow">Strengths</p>
-                <h2>个人优势</h2>
+                <p class="eyebrow">Profile</p>
+                <h2>简历速览</h2>
             </div>
             <div class="feature-grid">
                 <article class="feature-card">
@@ -231,7 +287,7 @@
         <section id="experience" class="section-block reveal">
             <div class="section-heading">
                 <p class="eyebrow">Experience</p>
-                <h2>工作经历</h2>
+                <h2>简历中的工作经历</h2>
                 <a class="text-link" href="immerse.html">查看详细职责</a>
             </div>
             <div class="timeline">
@@ -239,7 +295,7 @@
                     <time>2026.04-2026.05</time>
                     <div>
                         <h3>广州番禺云启信息科技有限公司 · AI 辅助网站开发与云端部署</h3>
-                        <p>使用 Vibe Coding 方式完成个人简历网站改版，基于 Cloudflare Workers 部署静态站，配置自定义域名、D1 数据库、邮箱系统、反馈系统和 AI 岗位匹配器。</p>
+                        <p>使用 Vibe Coding 方式完成个人展示站改版，基于 Cloudflare Workers 部署静态站，配置自定义域名、D1 数据库、邮箱系统、反馈系统和 AI 岗位匹配器。</p>
                     </div>
                 </article>
                 <article class="timeline-item">
@@ -315,8 +371,8 @@
         <section id="contact" class="contact-strip reveal">
             <div>
                 <p class="eyebrow">Contact</p>
-                <h2>可提供完整简历与证书材料</h2>
-                <p>公开页面仅展示半隐藏联系方式，如需进一步沟通，可通过完整简历信息联系，也可以进入邮箱系统查看相关记录。</p>
+                <h2>联系、关注与进一步沟通</h2>
+                <p>公开页面仅展示半隐藏联系方式。可以查看联系方式、关注社交媒体、进入技术实验室，也可以通过反馈系统留下建议。</p>
                 <div class="social-mini-list" aria-label="社交媒体">
                     <a href="https://www.xiaohongshu.com/user/profile/5fa7c641000000000100312f" target="_blank" rel="noopener noreferrer">小红书<span class="external-arrow" aria-hidden="true">↗</span></a>
                     <a href="https://x.com/rowanwebber857" target="_blank" rel="noopener noreferrer">X<span class="external-arrow" aria-hidden="true">↗</span></a>
