@@ -133,25 +133,29 @@ main {
     -webkit-backdrop-filter: blur(22px) saturate(1.45);
     box-shadow: 0 12px 32px rgba(19, 32, 31, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
     animation: headerDrop 0.72s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    overflow: visible;
 }
 
 .brand {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    min-height: 42px;
+    min-height: 48px;
+    padding-block: 2px;
     font-family: 'Noto Serif SC', serif;
     font-size: 1.35rem;
     font-weight: 900;
+    line-height: 1.22;
     letter-spacing: 0;
     color: var(--ink);
     transition: color 0.2s ease, transform 0.2s ease;
+    overflow: visible;
 }
 
 .brand::before {
     content: "";
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     flex: 0 0 auto;
     border: 1px solid rgba(15, 118, 110, 0.22);
     border-radius: 8px;
@@ -248,6 +252,12 @@ main {
     transform: translateY(-2px) scale(1.03);
     border-color: rgba(15, 118, 110, 0.38);
     box-shadow: 0 20px 42px rgba(15, 118, 110, 0.18);
+}
+
+.theme-toggle.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(18px) scale(0.88);
 }
 
 .theme-toggle[data-theme="dark"] span {
@@ -3297,11 +3307,12 @@ body.has-modal {
 
     .brand {
         font-size: 1.18rem;
+        min-height: 42px;
     }
 
     .brand::before {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         background-size: 17px 17px;
     }
 
@@ -3375,12 +3386,12 @@ body.has-modal {
     }
 
     .brand {
-        min-height: 30px;
+        min-height: 36px;
         justify-self: start;
         align-self: center;
         gap: 8px;
-        line-height: 1;
-        transform: translateY(2px);
+        line-height: 1.16;
+        transform: none;
     }
 
     .brand::before {
