@@ -1395,16 +1395,9 @@ body.has-modal {
 
 .site-footer {
     width: min(1480px, calc(100% - 32px));
-    margin: 10px auto 28px;
-    padding: 22px clamp(18px, 3.4vw, 34px);
-    border: 1px solid rgba(219, 231, 228, 0.92);
-    border-radius: 8px;
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(238, 245, 243, 0.62)),
-        rgba(255, 255, 255, 0.68);
-    backdrop-filter: blur(18px) saturate(1.22);
-    -webkit-backdrop-filter: blur(18px) saturate(1.22);
-    box-shadow: 0 16px 40px rgba(19, 32, 31, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+    margin: 18px auto 30px;
+    padding: 4px clamp(18px, 3.4vw, 34px) 0;
+    color: var(--muted);
 }
 
 .footer-links,
@@ -1433,7 +1426,7 @@ body.has-modal {
 
 .footer-badges {
     justify-content: center;
-    margin-top: 16px;
+    margin-top: 14px;
 }
 
 .footer-badges span {
@@ -1443,7 +1436,7 @@ body.has-modal {
     padding: 0 10px;
     border: 1px solid rgba(15, 118, 110, 0.16);
     border-radius: 999px;
-    background: rgba(217, 239, 235, 0.62);
+    background: rgba(217, 239, 235, 0.54);
     color: var(--accent-strong);
     font-size: 0.75rem;
     font-weight: 900;
@@ -1451,9 +1444,9 @@ body.has-modal {
 
 .footer-bottom {
     justify-content: space-between;
-    margin-top: 18px;
+    margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid rgba(219, 231, 228, 0.9);
+    border-top: 1px solid rgba(91, 107, 105, 0.18);
     color: var(--muted);
     font-size: 0.9rem;
     font-weight: 800;
@@ -3596,7 +3589,7 @@ body.has-modal {
     .site-footer {
         width: min(100% - 18px, 1120px);
         margin-bottom: 20px;
-        padding: 18px;
+        padding: 0 10px;
     }
 
     .footer-links,
