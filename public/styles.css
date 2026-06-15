@@ -1,4 +1,5 @@
 :root {
+    color-scheme: light;
     --bg: #f5f8f7;
     --surface: #ffffff;
     --surface-strong: #eef5f3;
@@ -15,6 +16,22 @@
     --pointer-x: 50vw;
     --pointer-y: 18vh;
     --scroll-progress: 0;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #071211;
+    --surface: #0d1b1a;
+    --surface-strong: #132826;
+    --ink: #e9f4f1;
+    --muted: #a7bab6;
+    --line: rgba(136, 186, 178, 0.24);
+    --accent: #35c0ad;
+    --accent-strong: #80d7ff;
+    --accent-soft: rgba(33, 96, 88, 0.72);
+    --warning: #f1c36d;
+    --shadow: 0 28px 78px rgba(0, 0, 0, 0.38);
+    --glass: rgba(13, 27, 26, 0.72);
 }
 
 * {
@@ -182,6 +199,66 @@ main {
     border-color: rgba(15, 118, 110, 0.34);
     box-shadow: 0 10px 26px rgba(15, 118, 110, 0.12);
     transform: translateY(-1px);
+}
+
+.theme-toggle {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 45;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 118, 110, 0.2);
+    border-radius: 999px;
+    color: var(--accent-strong);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(18px) saturate(1.35);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    box-shadow: 0 16px 34px rgba(19, 32, 31, 0.14);
+    cursor: pointer;
+    transition: transform 0.22s ease, color 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.theme-toggle span {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: inset -5px -5px 0 rgba(255, 255, 255, 0.86);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.theme-toggle span::before,
+.theme-toggle span::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: inherit;
+    border: 1px solid currentColor;
+    opacity: 0;
+    transform: scale(0.74);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    border-color: rgba(15, 118, 110, 0.38);
+    box-shadow: 0 20px 42px rgba(15, 118, 110, 0.18);
+}
+
+.theme-toggle[data-theme="dark"] span {
+    transform: rotate(-24deg);
+    box-shadow: inset -8px -3px 0 var(--surface);
+}
+
+.theme-toggle[data-theme="light"] span::before,
+.theme-toggle[data-theme="light"] span::after {
+    opacity: 0.58;
+    transform: scale(1);
 }
 
 .site-header.is-nav-open .nav-toggle span:nth-child(1) {
@@ -3852,6 +3929,252 @@ body.has-modal {
 
     .project-detail-block .section-heading h2 {
         font-size: 1.42rem;
+    }
+}
+
+:root[data-theme="dark"] body {
+    background:
+        linear-gradient(135deg, rgba(53, 192, 173, 0.13), transparent 30%),
+        linear-gradient(315deg, rgba(128, 215, 255, 0.1), transparent 32%),
+        var(--bg);
+}
+
+:root[data-theme="dark"] body::before {
+    background:
+        radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(53, 192, 173, 0.2), transparent 21rem),
+        radial-gradient(circle at 14% 22%, rgba(128, 215, 255, 0.14), transparent 24rem),
+        radial-gradient(circle at 86% 68%, rgba(241, 195, 109, 0.08), transparent 20rem);
+    filter: blur(6px);
+}
+
+:root[data-theme="dark"] body::after {
+    opacity: 0.28;
+    background-image:
+        linear-gradient(rgba(53, 192, 173, 0.11) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(53, 192, 173, 0.1) 1px, transparent 1px),
+        linear-gradient(115deg, transparent 0 46%, rgba(128, 215, 255, 0.08) 46% 47%, transparent 47% 100%);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.28));
+}
+
+:root[data-theme="dark"] .site-header,
+:root[data-theme="dark"] .hero-section,
+:root[data-theme="dark"] .detail-hero,
+:root[data-theme="dark"] .section-block,
+:root[data-theme="dark"] .contact-strip,
+:root[data-theme="dark"] .social-section,
+:root[data-theme="dark"] .architecture-section,
+:root[data-theme="dark"] .portal-section,
+:root[data-theme="dark"] .feature-card,
+:root[data-theme="dark"] .info-card,
+:root[data-theme="dark"] .detail-card,
+:root[data-theme="dark"] .contact-card,
+:root[data-theme="dark"] .social-card,
+:root[data-theme="dark"] .post-card,
+:root[data-theme="dark"] .post-side-card,
+:root[data-theme="dark"] .job-matcher,
+:root[data-theme="dark"] .profile-card,
+:root[data-theme="dark"] .feedback-form,
+:root[data-theme="dark"] .feedback-list-panel,
+:root[data-theme="dark"] .feedback-group,
+:root[data-theme="dark"] .feedback-card,
+:root[data-theme="dark"] .feedback-empty,
+:root[data-theme="dark"] .interview-summary-card,
+:root[data-theme="dark"] .interview-process article,
+:root[data-theme="dark"] .admin-login-shell,
+:root[data-theme="dark"] .admin-login-card,
+:root[data-theme="dark"] .admin-panel,
+:root[data-theme="dark"] .admin-toolbar,
+:root[data-theme="dark"] .admin-stats article,
+:root[data-theme="dark"] .admin-data-card,
+:root[data-theme="dark"] .admin-controls,
+:root[data-theme="dark"] .match-dialog,
+:root[data-theme="dark"] .match-card,
+:root[data-theme="dark"] .product-console,
+:root[data-theme="dark"] .console-grid article,
+:root[data-theme="dark"] .arch-node,
+:root[data-theme="dark"] .arch-main-flow,
+:root[data-theme="dark"] .case-summary,
+:root[data-theme="dark"] .case-steps article,
+:root[data-theme="dark"] .skill-matrix article {
+    border-color: rgba(136, 186, 178, 0.22);
+    background: rgba(13, 27, 26, 0.72);
+    box-shadow: 0 24px 66px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(221, 255, 249, 0.05);
+}
+
+:root[data-theme="dark"] .hero-section,
+:root[data-theme="dark"] .detail-hero,
+:root[data-theme="dark"] .project-panel,
+:root[data-theme="dark"] .admin-login-shell,
+:root[data-theme="dark"] .portal-section {
+    background:
+        radial-gradient(circle at 88% 12%, rgba(53, 192, 173, 0.12), transparent 22rem),
+        linear-gradient(115deg, rgba(14, 31, 30, 0.94) 0 56%, rgba(15, 58, 54, 0.82) 100%),
+        var(--glass);
+}
+
+:root[data-theme="dark"] .hero-section::after,
+:root[data-theme="dark"] .detail-hero::after,
+:root[data-theme="dark"] .project-panel::before {
+    opacity: 0.5;
+    border-color: rgba(53, 192, 173, 0.16);
+}
+
+:root[data-theme="dark"] .hero-section::before,
+:root[data-theme="dark"] .detail-hero::before,
+:root[data-theme="dark"] .admin-login-shell::before {
+    opacity: 0.36;
+    background:
+        linear-gradient(rgba(53, 192, 173, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(53, 192, 173, 0.08) 1px, transparent 1px);
+}
+
+:root[data-theme="dark"] .site-nav a,
+:root[data-theme="dark"] .footer-links a {
+    color: #b7c9c5;
+}
+
+:root[data-theme="dark"] .site-nav a:hover,
+:root[data-theme="dark"] .site-nav a.is-active,
+:root[data-theme="dark"] .footer-links a:hover,
+:root[data-theme="dark"] .brand:hover {
+    color: var(--accent-strong);
+}
+
+:root[data-theme="dark"] .site-nav a.is-active,
+:root[data-theme="dark"] .site-nav a:hover,
+:root[data-theme="dark"] .nav-toggle,
+:root[data-theme="dark"] .theme-toggle,
+:root[data-theme="dark"] .hero-proof-strip span,
+:root[data-theme="dark"] .post-category,
+:root[data-theme="dark"] .footer-badges span,
+:root[data-theme="dark"] .feedback-count,
+:root[data-theme="dark"] .admin-login-points span,
+:root[data-theme="dark"] .admin-card-meta span,
+:root[data-theme="dark"] .project-role,
+:root[data-theme="dark"] .reveal-contact-button,
+:root[data-theme="dark"] .copy-contact-button,
+:root[data-theme="dark"] .admin-action-button,
+:root[data-theme="dark"] .interview-process span {
+    border-color: rgba(53, 192, 173, 0.24);
+    background: rgba(33, 96, 88, 0.46);
+}
+
+:root[data-theme="dark"] .brand::before {
+    border-color: rgba(53, 192, 173, 0.32);
+    background-color: rgba(33, 96, 88, 0.58);
+    box-shadow: inset 0 1px 0 rgba(221, 255, 249, 0.1);
+}
+
+:root[data-theme="dark"] .button.ghost,
+:root[data-theme="dark"] .feedback-form input,
+:root[data-theme="dark"] .feedback-form select,
+:root[data-theme="dark"] .feedback-form textarea,
+:root[data-theme="dark"] .job-matcher textarea,
+:root[data-theme="dark"] .admin-login-card input,
+:root[data-theme="dark"] .admin-status-select,
+:root[data-theme="dark"] .admin-control-field input,
+:root[data-theme="dark"] .admin-control-field select {
+    color: var(--ink);
+    border-color: rgba(136, 186, 178, 0.24);
+    background: rgba(7, 18, 17, 0.74);
+}
+
+:root[data-theme="dark"] .feedback-form input::placeholder,
+:root[data-theme="dark"] .feedback-form textarea::placeholder,
+:root[data-theme="dark"] .job-matcher textarea::placeholder,
+:root[data-theme="dark"] .admin-login-card input::placeholder,
+:root[data-theme="dark"] .admin-control-field input::placeholder {
+    color: rgba(167, 186, 182, 0.72);
+}
+
+:root[data-theme="dark"] .button.primary,
+:root[data-theme="dark"] .match-button,
+:root[data-theme="dark"] .intro-button {
+    color: #f7fffd;
+    background: linear-gradient(135deg, #12887f, #0a5f78);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+:root[data-theme="dark"] .button.ghost:hover,
+:root[data-theme="dark"] .copy-contact-button:hover,
+:root[data-theme="dark"] .reveal-contact-button:hover,
+:root[data-theme="dark"] .admin-action-button:hover {
+    background: rgba(45, 125, 115, 0.58);
+}
+
+:root[data-theme="dark"] .feature-card::after,
+:root[data-theme="dark"] .info-card::after,
+:root[data-theme="dark"] .detail-card::after,
+:root[data-theme="dark"] .contact-card::after {
+    background: radial-gradient(circle at var(--card-x, 50%) var(--card-y, 0%), rgba(53, 192, 173, 0.18), transparent 42%);
+}
+
+:root[data-theme="dark"] .project-panel {
+    color: #ecfffb;
+    background:
+        radial-gradient(circle at 82% 16%, rgba(128, 215, 255, 0.18), transparent 22rem),
+        linear-gradient(135deg, #0a4d48, #07394f);
+}
+
+:root[data-theme="dark"] .project-stats div,
+:root[data-theme="dark"] .console-grid span,
+:root[data-theme="dark"] .match-score-orb,
+:root[data-theme="dark"] .social-icon {
+    border-color: rgba(136, 186, 178, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="dark"] .match-modal-backdrop {
+    background: rgba(0, 0, 0, 0.58);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+:root[data-theme="dark"] .match-dialog {
+    background:
+        radial-gradient(circle at 16% 18%, rgba(53, 192, 173, 0.18), transparent 20rem),
+        rgba(12, 24, 23, 0.94);
+}
+
+:root[data-theme="dark"] .match-bar-track,
+:root[data-theme="dark"] .intro-progress,
+:root[data-theme="dark"] .timeline::before {
+    background: rgba(136, 186, 178, 0.16);
+}
+
+:root[data-theme="dark"] .admin-action-button.danger {
+    color: #ffc7c7;
+    border-color: rgba(255, 128, 128, 0.26);
+    background: rgba(90, 31, 31, 0.48);
+}
+
+:root[data-theme="dark"] .admin-action-button.danger:hover {
+    background: rgba(120, 38, 38, 0.56);
+}
+
+:root[data-theme="dark"] .site-footer {
+    color: var(--muted);
+}
+
+:root[data-theme="dark"] .footer-bottom {
+    border-color: rgba(136, 186, 178, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #071211;
+        --surface: #0d1b1a;
+        --surface-strong: #132826;
+        --ink: #e9f4f1;
+        --muted: #a7bab6;
+        --line: rgba(136, 186, 178, 0.24);
+        --accent: #35c0ad;
+        --accent-strong: #80d7ff;
+        --accent-soft: rgba(33, 96, 88, 0.72);
+        --warning: #f1c36d;
+        --shadow: 0 28px 78px rgba(0, 0, 0, 0.38);
+        --glass: rgba(13, 27, 26, 0.72);
     }
 }
 

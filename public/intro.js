@@ -1,3 +1,9 @@
+const storedTheme = localStorage.getItem('site-theme');
+const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const introTheme = storedTheme || (systemThemeQuery.matches ? 'dark' : 'light');
+document.documentElement.dataset.theme = introTheme;
+document.documentElement.style.colorScheme = introTheme;
+
 const statusNode = document.querySelector('[data-intro-status]');
 const steps = ['连接 Worker...', '加载 D1 数据...', '准备 AI 模块...', '进入主界面...'];
 let stepIndex = 0;

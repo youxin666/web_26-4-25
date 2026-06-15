@@ -1,8 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const root = document.documentElement;
+    const storedTheme = localStorage.getItem('site-theme');
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applyTheme = (theme) => {
+        const resolvedTheme = theme || (systemThemeQuery.matches ? 'dark' : 'light');
+        root.dataset.theme = resolvedTheme;
+        root.style.colorScheme = resolvedTheme;
+    };
+
+    applyTheme(storedTheme);
+
     const currentPage = window.location.pathname.split('/').pop() || 'home';
     const siteHeader = document.querySelector('.site-header');
     const navToggle = document.querySelector('[data-nav-toggle]');
     const siteNav = document.querySelector('.site-nav');
+
+    const themeToggle = document.createElement('button');
+    themeToggle.type = 'button';
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换深色模式');
+    themeToggle.innerHTML = '<span aria-hidden="true"></span>';
+    document.body.append(themeToggle);
+
+    const syncThemeButton = () => {
+        const isDark = root.dataset.theme === 'dark';
+        themeToggle.dataset.theme = isDark ? 'dark' : 'light';
+        themeToggle.title = isDark ? '切换到浅色模式' : '切换到深色模式';
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+    };
+
+    syncThemeButton();
+
+    themeToggle.addEventListener('click', () => {
+        const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('site-theme', nextTheme);
+        applyTheme(nextTheme);
+        syncThemeButton();
+    });
+
+    systemThemeQuery.addEventListener('change', () => {
+        if (!localStorage.getItem('site-theme')) {
+            applyTheme();
+            syncThemeButton();
+        }
+    });
 
     document.querySelectorAll('.site-nav a').forEach((link) => {
         const href = link.getAttribute('href') || '';
