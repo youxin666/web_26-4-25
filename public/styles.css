@@ -203,8 +203,8 @@ main {
 
 .theme-toggle {
     position: fixed;
-    right: 18px;
-    bottom: 18px;
+    right: max(18px, calc((100vw - 1480px) / 2 + 18px));
+    bottom: 124px;
     z-index: 45;
     width: 44px;
     height: 44px;
@@ -245,7 +245,7 @@ main {
 }
 
 .theme-toggle:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.03);
     border-color: rgba(15, 118, 110, 0.38);
     box-shadow: 0 20px 42px rgba(15, 118, 110, 0.18);
 }
@@ -3801,6 +3801,18 @@ body.has-modal {
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
+    }
+
+    .theme-toggle {
+        right: 12px;
+        bottom: 104px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .theme-toggle span {
+        width: 16px;
+        height: 16px;
     }
 
     main {
