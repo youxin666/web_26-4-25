@@ -4787,15 +4787,16 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
 .article-stream.is-cylinder {
   position: absolute;
   z-index: 3;
-  top: auto;
+  top: 37%;
   left: auto;
-  right: 5.5rem;
-  bottom: 0.75rem;
-  width: clamp(30rem, 48%, 42rem);
-  height: 18rem;
+  right: 0.75rem;
+  bottom: auto;
+  width: clamp(18rem, 30%, 24rem);
+  height: 26rem;
   display: block;
   perspective: 760px;
-  perspective-origin: 50% 18%;
+  perspective-origin: 42% 50%;
+  transform: none;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   will-change: transform, opacity;
@@ -5781,12 +5782,13 @@ body.site-search-open { overflow: hidden; }
   .article-stream.is-cylinder {
     top: auto;
     left: auto;
-    right: 1.75rem;
-    bottom: 1rem;
-    width: min(68vw, 16rem);
-    height: 9rem;
+    right: 0.75rem;
+    bottom: 0.9rem;
+    width: min(54vw, 13rem);
+    height: 13rem;
     perspective: 560px;
-    perspective-origin: 50% 16%;
+    perspective-origin: 42% 50%;
+    transform: none;
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
   }

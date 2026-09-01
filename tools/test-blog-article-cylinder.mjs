@@ -43,19 +43,21 @@ assert.doesNotMatch(
   'cylinder must stay still until the user interacts'
 );
 assert.match(script, /function renderArcCardStack\(activeIndex, compact\)/, 'desktop and mobile need one responsive arc-stack renderer');
-assert.match(script, /var leftEndpointX = compact \? -4 : -70/, 'both layouts need a stable lower-left arc endpoint');
-assert.match(script, /var pullDistance = compact \? 28 : 28/, 'the active card should pull only 28px from the left endpoint');
 assert.match(script, /var stackSlot = modulo\(index - activeIndex, cards\.length\)/, 'mobile cards must use cyclic slots relative to the active article');
 assert.match(script, /card\.classList\.toggle\('is-pulled', stackSlot === 0\)/, 'the active mobile card must be pulled out of the stack');
-assert.match(script, /var arcT = pulled \? 0 : \(stackSlot - 1\) \/ Math\.max\(1, cards\.length - 2\)/, 'stack cards need a normalized arc position');
-assert.match(script, /var theta = arcT \* Math\.PI/, 'non-active cards must span a full 180-degree arc');
-assert.match(script, /centerX - radiusX \* Math\.cos\(theta\)/, 'semicircle X positions must follow cosine from left to right');
-assert.match(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'semicircle Y positions must form an upper arch');
-assert.match(script, /Math\.atan2\(-radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'card rotation must follow the ellipse tangent');
+assert.match(script, /var arcT = pulled \? 0\.5 : \(stackSlot - 1\) \/ Math\.max\(1, cards\.length - 2\)/, 'stack cards need a normalized vertical arc position');
+assert.match(script, /var theta = -Math\.PI \/ 2 \+ arcT \* Math\.PI/, 'cards must span a vertical 180-degree arc');
+assert.match(script, /centerX - radiusX \* Math\.cos\(theta\)/, 'vertical semicircle X must bulge left at its midpoint');
+assert.match(script, /centerY \+ radiusY \* Math\.sin\(theta\)/, 'vertical semicircle Y must run from top to bottom');
+assert.match(script, /var pullDistance = compact \? 20 : 20/, 'the active card should pull only 20px from the left midpoint');
+assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must sit left of the arc midpoint');
+assert.match(script, /var y = pulled \? centerY/, 'the active card must stay vertically centered');
+assert.match(script, /var depth = pulled \? 1 : Math\.cos\(theta\)/, 'depth must peak at the left midpoint');
+assert.match(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'card rotation must follow the vertical ellipse tangent');
 assert.match(script, /rotateX\(' \+ tilt\.toFixed\(2\) \+ 'deg\)/, 'cards need a consistent overhead tilt');
 assert.match(script, /translate3d\([\s\S]*depthZ\.toFixed\(2\) \+ 'px\)/, 'card depth must use the 3D axis');
 assert.match(script, /card\.style\.zIndex = String\(pulled \? 40 : depthOrder\)/, 'depth ordering must follow the overhead arc');
-assert.doesNotMatch(script, /Math\.sin\(arcT \* Math\.PI \* 0\.5\)/, 'the previous quarter arc must be removed');
+assert.doesNotMatch(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'the previous horizontal upper arch must be removed');
 assert.doesNotMatch(script, /var y = pulled \? 8 : 12 - Math\.min\(stackSlot - 1, 8\) \* 3/, 'mobile stack must not retain the old diagonal line');
 assert.match(script, /renderArcCardStack\(getActiveIndex\(\), isCompact\)/, 'all viewports must render the responsive extracted arc stack');
 assert.match(script, /pointerdown[\s\S]*pointermove[\s\S]*pointerup/, 'cylinder must support pointer dragging');
@@ -63,7 +65,7 @@ assert.match(script, /ArrowLeft[\s\S]*ArrowRight[\s\S]*Enter/, 'cylinder must su
 assert.match(script, /prefers-reduced-motion:\s*reduce/, 'cylinder must respect reduced motion');
 assert.match(styles, /\.article-cylinder-stage[\s\S]*perspective:/, 'styles need a perspective stage');
 assert.match(styles, /\.article-cylinder-preview\s*\{/, 'styles need a large active preview');
-assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*right:\s*5\.5rem/, 'the arc stack must sit fully inside the lower-right of the stage');
+assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*clamp\(18rem, 30%, 24rem\)[\s\S]*height:\s*26rem/, 'desktop needs a tall narrow stack footprint');
 assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item[\s\S]*height:\s*clamp\(6\.8rem,/, 'image-only cylinder cards must be substantially smaller');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-cylinder-preview/s, 'mobile needs a dedicated preview composition');
 assert.match(
@@ -85,10 +87,10 @@ assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*transform-style:\
 assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item,[\s\S]*transform-style:\s*preserve-3d/, 'cards must retain overhead transforms');
 assert.doesNotMatch(styles, /\.article-stream\.is-cylinder \.article-list-item h3\s*\{/, 'image-only cylinder thumbnails must not reserve a title row');
 assert.match(styles, /width:\s*var\(--cylinder-card-width, 84px\)[\s\S]*height:\s*clamp\(6\.8rem, 15vh, 9\.5rem\)/, 'desktop arc cards must use the narrow image-only proportion');
-assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*width:\s*min\(68vw, 16rem\)/s, 'mobile card stack must use a compact lower-right footprint');
+assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*min\(54vw, 13rem\)[\s\S]*height:\s*13rem/s, 'mobile needs a compact vertical footprint');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-cylinder-preview-media\s*\{\s*height:\s*clamp\(11rem, 28vh, 15rem\)/s, 'mobile active preview image must be shorter than the previous 21rem maximum');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-stream\.is-cylinder \.article-list-item\.is-pulled[\s\S]*box-shadow:/s, 'the extracted mobile card needs distinct depth emphasis');
-assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*clamp\(30rem, 48%, 42rem\)/, 'desktop arc stack needs a bounded lower-right footprint');
+assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*clamp\(18rem, 30%, 24rem\)/, 'desktop vertical arc needs a bounded right-side footprint');
 assert.match(styles, /-webkit-backface-visibility:\s*hidden[\s\S]*will-change:\s*transform, opacity/, 'cylinder cards need stable GPU compositing without back-face flashes');
 assert.match(styles, /\.article-layout-toggle/, 'styles need the compact topbar layout control');
 assert.match(styles, /\.ri-layout-row-line::before[\s\S]*-webkit-mask:/, 'single-column control needs a local icon fallback');
