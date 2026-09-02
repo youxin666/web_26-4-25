@@ -61,6 +61,18 @@ assert.doesNotMatch(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'the pr
 assert.doesNotMatch(script, /var y = pulled \? 8 : 12 - Math\.min\(stackSlot - 1, 8\) \* 3/, 'mobile stack must not retain the old diagonal line');
 assert.match(script, /renderArcCardStack\(getActiveIndex\(\), isCompact\)/, 'all viewports must render the responsive extracted arc stack');
 assert.match(script, /pointerdown[\s\S]*pointermove[\s\S]*pointerup/, 'cylinder must support pointer dragging');
+assert.match(script, /event\.target\.closest\('\.article-cylinder-preview a'\)/, 'preview links must bypass cylinder drag handling');
+assert.doesNotMatch(
+  script,
+  /function onPointerDown\(event\)[\s\S]*?setPointerCapture[\s\S]*?function onPointerMove/,
+  'pointer capture must not begin before an actual drag'
+);
+assert.match(
+  script,
+  /function onPointerMove\(event\)[\s\S]*?Math\.abs\(delta\) > 5[\s\S]*?setPointerCapture/,
+  'pointer capture should begin only after the drag threshold'
+);
+assert.match(script, /delta \* 0\.7/, 'desktop and mobile dragging should switch cards with a short gesture');
 assert.match(script, /ArrowLeft[\s\S]*ArrowRight[\s\S]*Enter/, 'cylinder must support keyboard navigation');
 assert.match(script, /prefers-reduced-motion:\s*reduce/, 'cylinder must respect reduced motion');
 assert.match(styles, /\.article-cylinder-stage[\s\S]*perspective:/, 'styles need a perspective stage');

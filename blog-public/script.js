@@ -1506,18 +1506,22 @@
 
     function onPointerDown(event) {
       if (event.button !== undefined && event.button !== 0) return;
+      if (event.target.closest('.article-cylinder-preview a')) return;
       pointerState = { id: event.pointerId, startX: event.clientX, lastX: event.clientX, startAngle: angle, moved: false };
       targetAngle = null;
       stage.classList.add('is-dragging');
-      if (stage.setPointerCapture && event.pointerId !== undefined) stage.setPointerCapture(event.pointerId);
     }
 
     function onPointerMove(event) {
       if (!pointerState || (event.pointerId !== undefined && event.pointerId !== pointerState.id)) return;
       var delta = event.clientX - pointerState.startX;
-      if (Math.abs(delta) > 5) pointerState.moved = true;
+      if (Math.abs(delta) > 5 && !pointerState.moved) {
+        pointerState.moved = true;
+        if (stage.setPointerCapture && event.pointerId !== undefined) stage.setPointerCapture(event.pointerId);
+      }
+      if (pointerState.moved) event.preventDefault();
       pointerState.lastX = event.clientX;
-      angle = pointerState.startAngle + delta * 0.24;
+      angle = pointerState.startAngle + delta * 0.7;
       renderCylinder();
     }
 
