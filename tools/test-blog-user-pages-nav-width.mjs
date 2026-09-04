@@ -11,6 +11,6 @@ assert.match(styles, new RegExp(`\\.bookmarks-shell \\{ ${desktopWidth.replace(/
 assert.match(styles, /\.bookmarks-shell \{ width: min\(100% - 1rem, 44rem\); \}/);
 assert.match(worker, /<div class="bookmarks-shell">/);
 assert.doesNotMatch(worker, /<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">/);
-assert.match(worker, /styles\.css\?v=20260904-wide-arc-low-damping/);
+assert.match(worker, /styles\.css\?v=20260904-horizontal-slide-arc/);
 
 console.log('user page navigation-width checks passed');

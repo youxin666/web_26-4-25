@@ -43,26 +43,26 @@ assert.doesNotMatch(
   'cylinder must stay still until the user interacts'
 );
 assert.match(script, /function renderArcCardStack\(activeIndex, compact\)/, 'desktop and mobile need one responsive arc-stack renderer');
-assert.match(script, /var stackSlot = modulo\(index - activeIndex, cards\.length\)/, 'mobile cards must use cyclic slots relative to the active article');
+assert.match(script, /var phaseProgress = -angle \/ step - Math\.round\(-angle \/ step\)/, 'arc rendering must retain normalized fractional drag progress');
+assert.match(script, /var stackSlot = modulo\(index - activeIndex, cards\.length\) - phaseProgress/, 'cards must move continuously with the pointer between article slots');
 assert.match(script, /card\.classList\.toggle\('is-pulled', stackSlot === 0\)/, 'the active mobile card must be pulled out of the stack');
-assert.match(script, /var arcT = pulled \? 0\.5 : \(stackSlot - 1\) \/ Math\.max\(1, cards\.length - 2\)/, 'stack cards need a normalized vertical arc position');
-assert.match(script, /var theta = -Math\.PI \/ 2 \+ arcT \* Math\.PI/, 'cards must span a vertical 180-degree arc');
-assert.match(script, /centerX - radiusX \* Math\.cos\(theta\)/, 'vertical semicircle X must bulge left at its midpoint');
-assert.match(script, /centerY \+ radiusY \* Math\.sin\(theta\)/, 'vertical semicircle Y must run from top to bottom');
+assert.match(script, /var arcT = pulled \? 0 : \(stackSlot - 1\) \/ Math\.max\(1, cards\.length - 2\)/, 'stack cards need a normalized horizontal arc position');
+assert.match(script, /var theta = arcT \* Math\.PI/, 'cards must span a horizontal 180-degree arc');
+assert.match(script, /centerX - radiusX \* Math\.cos\(theta\)/, 'horizontal semicircle must travel from left to right');
+assert.match(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'horizontal semicircle must rise through its midpoint like the reference');
 assert.match(script, /var pullDistance = compact \? 20 : 20/, 'the active card should pull only 20px from the left midpoint');
-assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must sit left of the arc midpoint');
-assert.match(script, /var y = pulled \? centerY/, 'the active card must stay vertically centered');
-assert.match(script, /var radiusX = compact \? 190 : 92/, 'mobile arc must expand into the broad reference semicircle');
-assert.match(script, /var radiusY = compact \? 125 : 178/, 'mobile arc needs enough vertical sweep for the reference half ellipse');
-assert.match(script, /var centerX = compact \? 140 : 74/, 'mobile arc center must sit near the right edge so the half ellipse opens left');
-assert.match(script, /var depth = pulled \? 1 : Math\.cos\(theta\)/, 'depth must peak at the left midpoint');
+assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must pull slightly from the arc left edge');
+assert.match(script, /var y = pulled \? baselineY/, 'the active card must remain on the arc baseline');
+assert.match(script, /var radiusX = compact \? 185 : 230/, 'the horizontal arc must spread broadly like a slide carousel');
+assert.match(script, /var radiusY = compact \? 72 : 108/, 'the horizontal arc must use a shallow front-facing rise');
+assert.match(script, /var depth = pulled \? 1 : Math\.sin\(theta\)/, 'depth must peak at the upper midpoint');
 assert.doesNotMatch(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'arc position must not tilt cards along the ellipse tangent');
 assert.match(script, /var rotation = 0/, 'all arc thumbnails must remain vertically upright');
 assert.match(script, /rotateZ\(0deg\)/, 'rendered arc thumbnails must not receive planar rotation');
-assert.match(script, /rotateX\(' \+ tilt\.toFixed\(2\) \+ 'deg\)/, 'cards need a consistent overhead tilt');
+assert.doesNotMatch(script, /rotateX\(/, 'thumbnail cards must face the reader instead of using an overhead tilt');
 assert.match(script, /translate3d\([\s\S]*depthZ\.toFixed\(2\) \+ 'px\)/, 'card depth must use the 3D axis');
 assert.match(script, /card\.style\.zIndex = String\(pulled \? 40 : depthOrder\)/, 'depth ordering must follow the overhead arc');
-assert.doesNotMatch(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'the previous horizontal upper arch must be removed');
+assert.doesNotMatch(script, /centerY \+ radiusY \* Math\.sin\(theta\)/, 'the mistaken vertical semicircle must be removed');
 assert.doesNotMatch(script, /var y = pulled \? 8 : 12 - Math\.min\(stackSlot - 1, 8\) \* 3/, 'mobile stack must not retain the old diagonal line');
 assert.match(script, /renderArcCardStack\(getActiveIndex\(\), isCompact\)/, 'all viewports must render the responsive extracted arc stack');
 assert.match(script, /pointerdown[\s\S]*pointermove[\s\S]*pointerup/, 'cylinder must support pointer dragging');
@@ -74,10 +74,10 @@ assert.doesNotMatch(
 );
 assert.match(
   script,
-  /function onPointerMove\(event\)[\s\S]*?Math\.abs\(delta\) > 5[\s\S]*?setPointerCapture/,
-  'pointer capture should begin only after the drag threshold'
+  /function onPointerMove\(event\)[\s\S]*?Math\.abs\(delta\) > 2[\s\S]*?setPointerCapture/,
+  'pointer capture should begin after a light horizontal drag'
 );
-assert.match(script, /delta \* 1\.5/, 'desktop and mobile dragging should switch cards within roughly 24 pixels');
+assert.match(script, /delta \* 3/, 'desktop and mobile dragging should switch cards within roughly 12 pixels');
 assert.match(script, /elapsed \/ 80/, 'inertial snapping must settle promptly without heavy damping');
 assert.match(
   script,
@@ -146,5 +146,6 @@ assert.match(styles, /\.ri-layout-grid-line::before[\s\S]*-webkit-mask:/, 'doubl
 assert.match(styles, /\.article-layout-cylinder-icon::before[\s\S]*-webkit-mask:/, 'cylinder control needs a distinct local carousel icon');
 assert.match(script, /cylinder:\s*'article-layout-cylinder-icon'/, 'cylinder control should not reuse the refresh icon');
 assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*article-cylinder/, 'cylinder motion needs a reduced-motion override');
+assert.match(styles, /\.article-cylinder-stage\.is-dragging \.article-list-item[\s\S]*transition:\s*none\s*!important/, 'cards must follow the pointer without the mobile transition overriding drag');
 
 console.log('article cylinder contract passed');

@@ -1421,28 +1421,28 @@
 
     function renderArcCardStack(activeIndex, compact) {
       ring.style.transform = 'none';
+      var phaseProgress = -angle / step - Math.round(-angle / step);
       cards.forEach(function (card, index) {
-        var stackSlot = modulo(index - activeIndex, cards.length);
+        var stackSlot = modulo(index - activeIndex, cards.length) - phaseProgress;
         var pulled = stackSlot === 0;
-        var arcT = pulled ? 0.5 : (stackSlot - 1) / Math.max(1, cards.length - 2);
-        var theta = -Math.PI / 2 + arcT * Math.PI;
+        var arcT = pulled ? 0 : (stackSlot - 1) / Math.max(1, cards.length - 2);
+        var theta = arcT * Math.PI;
         var pullDistance = compact ? 20 : 20;
-        var radiusX = compact ? 190 : 92;
-        var radiusY = compact ? 125 : 178;
-        var centerX = compact ? 140 : 74;
-        var centerY = compact ? 0 : 0;
-        var depth = pulled ? 1 : Math.cos(theta);
+        var radiusX = compact ? 185 : 230;
+        var radiusY = compact ? 72 : 108;
+        var centerX = compact ? 80 : 110;
+        var baselineY = compact ? 45 : 60;
+        var depth = pulled ? 1 : Math.sin(theta);
         var x = pulled ? centerX - radiusX - pullDistance : centerX - radiusX * Math.cos(theta);
-        var y = pulled ? centerY : centerY + radiusY * Math.sin(theta);
+        var y = pulled ? baselineY : baselineY - radiusY * Math.sin(theta);
         var rotation = 0;
-        var tilt = pulled ? 52 : 58;
         var scale = pulled ? 1 : 0.8 + depth * 0.14;
         var opacity = pulled ? 1 : 0.72 + depth * 0.2;
         var depthZ = pulled ? 24 : -((1 - depth) * (compact ? 26 : 48));
         var depthOrder = 12 + Math.round(depth * 16) - Math.min(stackSlot, 6);
         card.classList.toggle('is-pulled', stackSlot === 0);
         card.style.zIndex = String(pulled ? 40 : depthOrder);
-        card.style.transform = 'translate3d(calc(-50% + ' + x.toFixed(2) + 'px), calc(-50% + ' + y.toFixed(2) + 'px), ' + depthZ.toFixed(2) + 'px) rotateX(' + tilt.toFixed(2) + 'deg) rotateZ(0deg) scale(' + scale.toFixed(3) + ')';
+        card.style.transform = 'translate3d(calc(-50% + ' + x.toFixed(2) + 'px), calc(-50% + ' + y.toFixed(2) + 'px), ' + depthZ.toFixed(2) + 'px) rotateZ(0deg) scale(' + scale.toFixed(3) + ')';
         card.style.setProperty('--cylinder-card-opacity', opacity.toFixed(3));
         card.style.setProperty('--cylinder-depth', depth.toFixed(3));
       });
@@ -1521,7 +1521,7 @@
     function onPointerMove(event) {
       if (!pointerState || (event.pointerId !== undefined && event.pointerId !== pointerState.id)) return;
       var delta = event.clientX - pointerState.startX;
-      if (Math.abs(delta) > 5 && !pointerState.moved) {
+      if (Math.abs(delta) > 2 && !pointerState.moved) {
         pointerState.moved = true;
         if (stage.setPointerCapture && event.pointerId !== undefined) stage.setPointerCapture(event.pointerId);
       }
@@ -1531,7 +1531,7 @@
       pointerState.velocityX = (event.clientX - pointerState.lastX) / elapsed;
       pointerState.lastX = event.clientX;
       pointerState.lastTime = now;
-      angle = pointerState.startAngle + delta * 1.5;
+      angle = pointerState.startAngle + delta * 3;
       renderCylinder();
     }
 

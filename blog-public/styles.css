@@ -4954,6 +4954,10 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
 .article-cylinder-stage.is-dragging,
 .article-cylinder-stage.is-dragging * { cursor: grabbing !important; }
 
+.article-cylinder-stage.is-dragging .article-list-item {
+  transition: none !important;
+}
+
 [data-theme="dark"] body[data-article-layout="cylinder"] .article-cylinder-stage {
   background:
     radial-gradient(circle at 50% 42%, rgba(226, 146, 194, 0.14), transparent 40%),
