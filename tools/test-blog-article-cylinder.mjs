@@ -66,6 +66,9 @@ assert.doesNotMatch(script, /centerY \+ radiusY \* Math\.sin\(theta\)/, 'the mis
 assert.doesNotMatch(script, /var y = pulled \? 8 : 12 - Math\.min\(stackSlot - 1, 8\) \* 3/, 'mobile stack must not retain the old diagonal line');
 assert.match(script, /renderArcCardStack\(getActiveIndex\(\), isCompact\)/, 'all viewports must render the responsive extracted arc stack');
 assert.match(script, /pointerdown[\s\S]*pointermove[\s\S]*pointerup/, 'cylinder must support pointer dragging');
+assert.match(script, /function onNativeDragStart\(event\)\s*\{\s*event\.preventDefault\(\);\s*\}/, 'thumbnail links must not start the browser native drag ghost');
+assert.match(script, /ring\.addEventListener\('dragstart', onNativeDragStart\)/, 'the thumbnail ring must suppress native link and image dragging');
+assert.match(script, /ring\.removeEventListener\('dragstart', onNativeDragStart\)/, 'native drag suppression must be cleaned up with the cylinder controller');
 assert.match(script, /event\.target\.closest\('\.article-cylinder-preview a'\)/, 'preview links must bypass cylinder drag handling');
 assert.doesNotMatch(
   script,

@@ -1518,6 +1518,10 @@
       stage.classList.add('is-dragging');
     }
 
+    function onNativeDragStart(event) {
+      event.preventDefault();
+    }
+
     function onPointerMove(event) {
       if (!pointerState || (event.pointerId !== undefined && event.pointerId !== pointerState.id)) return;
       var delta = event.clientX - pointerState.startX;
@@ -1601,6 +1605,7 @@
     }
 
     stage.addEventListener('pointerdown', onPointerDown);
+    ring.addEventListener('dragstart', onNativeDragStart);
     stage.addEventListener('pointermove', onPointerMove);
     stage.addEventListener('pointerup', onPointerUp);
     stage.addEventListener('pointercancel', onPointerUp);
@@ -1621,6 +1626,7 @@
         window.cancelAnimationFrame(resizeFrame);
         window.clearTimeout(resumeTimer);
         stage.removeEventListener('pointerdown', onPointerDown);
+        ring.removeEventListener('dragstart', onNativeDragStart);
         stage.removeEventListener('pointermove', onPointerMove);
         stage.removeEventListener('pointerup', onPointerUp);
         stage.removeEventListener('pointercancel', onPointerUp);
