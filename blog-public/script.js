@@ -1427,9 +1427,9 @@
         var arcT = pulled ? 0.5 : (stackSlot - 1) / Math.max(1, cards.length - 2);
         var theta = -Math.PI / 2 + arcT * Math.PI;
         var pullDistance = compact ? 20 : 20;
-        var radiusX = compact ? 38 : 92;
-        var radiusY = compact ? 82 : 178;
-        var centerX = compact ? 30 : 74;
+        var radiusX = compact ? 190 : 92;
+        var radiusY = compact ? 125 : 178;
+        var centerX = compact ? 140 : 74;
         var centerY = compact ? 0 : 0;
         var depth = pulled ? 1 : Math.cos(theta);
         var x = pulled ? centerX - radiusX - pullDistance : centerX - radiusX * Math.cos(theta);
@@ -1488,7 +1488,7 @@
           angle = targetAngle;
           targetAngle = null;
         } else {
-          angle += difference * Math.min(1, elapsed / 115);
+          angle += difference * Math.min(1, elapsed / 80);
         }
       }
       renderCylinder();
@@ -1531,7 +1531,7 @@
       pointerState.velocityX = (event.clientX - pointerState.lastX) / elapsed;
       pointerState.lastX = event.clientX;
       pointerState.lastTime = now;
-      angle = pointerState.startAngle + delta * 0.7;
+      angle = pointerState.startAngle + delta * 1.5;
       renderCylinder();
     }
 

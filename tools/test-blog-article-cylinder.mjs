@@ -52,6 +52,9 @@ assert.match(script, /centerY \+ radiusY \* Math\.sin\(theta\)/, 'vertical semic
 assert.match(script, /var pullDistance = compact \? 20 : 20/, 'the active card should pull only 20px from the left midpoint');
 assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must sit left of the arc midpoint');
 assert.match(script, /var y = pulled \? centerY/, 'the active card must stay vertically centered');
+assert.match(script, /var radiusX = compact \? 190 : 92/, 'mobile arc must expand into the broad reference semicircle');
+assert.match(script, /var radiusY = compact \? 125 : 178/, 'mobile arc needs enough vertical sweep for the reference half ellipse');
+assert.match(script, /var centerX = compact \? 140 : 74/, 'mobile arc center must sit near the right edge so the half ellipse opens left');
 assert.match(script, /var depth = pulled \? 1 : Math\.cos\(theta\)/, 'depth must peak at the left midpoint');
 assert.doesNotMatch(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'arc position must not tilt cards along the ellipse tangent');
 assert.match(script, /var rotation = 0/, 'all arc thumbnails must remain vertically upright');
@@ -74,7 +77,8 @@ assert.match(
   /function onPointerMove\(event\)[\s\S]*?Math\.abs\(delta\) > 5[\s\S]*?setPointerCapture/,
   'pointer capture should begin only after the drag threshold'
 );
-assert.match(script, /delta \* 0\.7/, 'desktop and mobile dragging should switch cards with a short gesture');
+assert.match(script, /delta \* 1\.5/, 'desktop and mobile dragging should switch cards within roughly 24 pixels');
+assert.match(script, /elapsed \/ 80/, 'inertial snapping must settle promptly without heavy damping');
 assert.match(
   script,
   /pointerState = \{[\s\S]*lastTime:[\s\S]*velocityX:/,
