@@ -1507,7 +1507,15 @@
     function onPointerDown(event) {
       if (event.button !== undefined && event.button !== 0) return;
       if (event.target.closest('.article-cylinder-preview a')) return;
-      pointerState = { id: event.pointerId, startX: event.clientX, lastX: event.clientX, startAngle: angle, moved: false };
+      pointerState = {
+        id: event.pointerId,
+        startX: event.clientX,
+        lastX: event.clientX,
+        lastTime: event.timeStamp || performance.now(),
+        velocityX: 0,
+        startAngle: angle,
+        moved: false
+      };
       targetAngle = null;
       stage.classList.add('is-dragging');
     }
@@ -1520,7 +1528,11 @@
         if (stage.setPointerCapture && event.pointerId !== undefined) stage.setPointerCapture(event.pointerId);
       }
       if (pointerState.moved) event.preventDefault();
+      var now = event.timeStamp || performance.now();
+      var elapsed = Math.max(1, now - pointerState.lastTime);
+      pointerState.velocityX = (event.clientX - pointerState.lastX) / elapsed;
       pointerState.lastX = event.clientX;
+      pointerState.lastTime = now;
       angle = pointerState.startAngle + delta * 0.7;
       renderCylinder();
     }
@@ -1528,9 +1540,14 @@
     function onPointerUp(event) {
       if (!pointerState || (event.pointerId !== undefined && event.pointerId !== pointerState.id)) return;
       var wasMoved = pointerState.moved;
+      var releaseVelocity = Math.max(-1.6, Math.min(1.6, pointerState.velocityX));
+      var projectedAngle = wasMoved ? angle + releaseVelocity * 150 : angle;
+      if (wasMoved && Math.abs(pointerState.velocityX) > 0.15 && Math.abs(projectedAngle - angle) < step) {
+        projectedAngle = angle + Math.sign(pointerState.velocityX) * step;
+      }
       pointerState = null;
       stage.classList.remove('is-dragging');
-      targetAngle = closestAngleFor(getActiveIndex());
+      targetAngle = Math.round(projectedAngle / step) * step;
       if (wasMoved) {
         stage.setAttribute('data-cylinder-dragged', 'true');
         window.setTimeout(function () { stage.removeAttribute('data-cylinder-dragged'); }, 80);

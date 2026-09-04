@@ -75,6 +75,26 @@ assert.match(
 assert.match(script, /delta \* 0\.7/, 'desktop and mobile dragging should switch cards with a short gesture');
 assert.match(
   script,
+  /pointerState = \{[\s\S]*lastTime:[\s\S]*velocityX:/,
+  'dragging must track time and horizontal velocity so a short flick can keep moving after release'
+);
+assert.match(
+  script,
+  /function onPointerUp\(event\)[\s\S]*Math\.max\(-[\d.]+, Math\.min\([\d.]+, pointerState\.velocityX\)\)[\s\S]*projectedAngle/,
+  'release must project a clamped inertial angle instead of immediately snapping back'
+);
+assert.match(
+  script,
+  /Math\.abs\(pointerState\.velocityX\)\s*>\s*0\.15[\s\S]*Math\.sign\(pointerState\.velocityX\) \* step/,
+  'a quick short flick must advance at least one article'
+);
+assert.match(
+  script,
+  /var projectedAngle = wasMoved \? angle \+ releaseVelocity \* 150 : angle/,
+  'movement below the drag threshold must not receive inertial projection'
+);
+assert.match(
+  script,
   /function onClick\(event\)[\s\S]*?var index = cards\.indexOf\(card\);\s*event\.preventDefault\(\);\s*if \(index !== activeCard\)/,
   'thumbnail clicks must always prevent article navigation before optionally selecting a card'
 );
