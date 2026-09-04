@@ -1434,9 +1434,7 @@
         var depth = pulled ? 1 : Math.cos(theta);
         var x = pulled ? centerX - radiusX - pullDistance : centerX - radiusX * Math.cos(theta);
         var y = pulled ? centerY : centerY + radiusY * Math.sin(theta);
-        var tangentRadians = pulled ? Math.PI / 2 : Math.atan2(radiusY * Math.cos(theta), radiusX * Math.sin(theta));
-        var tangentDegrees = tangentRadians * 180 / Math.PI - 90;
-        var rotation = pulled ? 0 : Math.max(-34, Math.min(34, tangentDegrees));
+        var rotation = 0;
         var tilt = pulled ? 52 : 58;
         var scale = pulled ? 1 : 0.8 + depth * 0.14;
         var opacity = pulled ? 1 : 0.72 + depth * 0.2;
@@ -1444,7 +1442,7 @@
         var depthOrder = 12 + Math.round(depth * 16) - Math.min(stackSlot, 6);
         card.classList.toggle('is-pulled', stackSlot === 0);
         card.style.zIndex = String(pulled ? 40 : depthOrder);
-        card.style.transform = 'translate3d(calc(-50% + ' + x.toFixed(2) + 'px), calc(-50% + ' + y.toFixed(2) + 'px), ' + depthZ.toFixed(2) + 'px) rotateX(' + tilt.toFixed(2) + 'deg) rotateZ(' + rotation.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
+        card.style.transform = 'translate3d(calc(-50% + ' + x.toFixed(2) + 'px), calc(-50% + ' + y.toFixed(2) + 'px), ' + depthZ.toFixed(2) + 'px) rotateX(' + tilt.toFixed(2) + 'deg) rotateZ(0deg) scale(' + scale.toFixed(3) + ')';
         card.style.setProperty('--cylinder-card-opacity', opacity.toFixed(3));
         card.style.setProperty('--cylinder-depth', depth.toFixed(3));
       });

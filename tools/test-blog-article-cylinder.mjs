@@ -53,7 +53,9 @@ assert.match(script, /var pullDistance = compact \? 20 : 20/, 'the active card s
 assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must sit left of the arc midpoint');
 assert.match(script, /var y = pulled \? centerY/, 'the active card must stay vertically centered');
 assert.match(script, /var depth = pulled \? 1 : Math\.cos\(theta\)/, 'depth must peak at the left midpoint');
-assert.match(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'card rotation must follow the vertical ellipse tangent');
+assert.doesNotMatch(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'arc position must not tilt cards along the ellipse tangent');
+assert.match(script, /var rotation = 0/, 'all arc thumbnails must remain vertically upright');
+assert.match(script, /rotateZ\(0deg\)/, 'rendered arc thumbnails must not receive planar rotation');
 assert.match(script, /rotateX\(' \+ tilt\.toFixed\(2\) \+ 'deg\)/, 'cards need a consistent overhead tilt');
 assert.match(script, /translate3d\([\s\S]*depthZ\.toFixed\(2\) \+ 'px\)/, 'card depth must use the 3D axis');
 assert.match(script, /card\.style\.zIndex = String\(pulled \? 40 : depthOrder\)/, 'depth ordering must follow the overhead arc');
