@@ -113,6 +113,7 @@ assert.match(script, /ArrowLeft[\s\S]*ArrowRight[\s\S]*Enter/, 'cylinder must su
 assert.match(script, /prefers-reduced-motion:\s*reduce/, 'cylinder must respect reduced motion');
 assert.match(styles, /\.article-cylinder-stage[\s\S]*perspective:/, 'styles need a perspective stage');
 assert.match(styles, /\.article-cylinder-preview\s*\{/, 'styles need a large active preview');
+assert.match(styles, /\.article-cylinder-preview-host[\s\S]*width:\s*min\(60%, 40rem\)/, 'desktop preview must leave a dedicated right-side lane for the thumbnail arc');
 assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*clamp\(18rem, 30%, 24rem\)[\s\S]*height:\s*26rem/, 'desktop needs a tall narrow stack footprint');
 assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item[\s\S]*height:\s*clamp\(6\.8rem,/, 'image-only cylinder cards must be substantially smaller');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-cylinder-preview/s, 'mobile needs a dedicated preview composition');

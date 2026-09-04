@@ -4808,7 +4808,7 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
   position: absolute;
   z-index: 2;
   inset: clamp(1.25rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 2.5rem) auto;
-  width: min(70%, 46rem);
+  width: min(60%, 40rem);
   transition: opacity 160ms ease;
 }
 
