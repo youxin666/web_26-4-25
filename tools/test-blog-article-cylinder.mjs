@@ -73,6 +73,16 @@ assert.match(
   'pointer capture should begin only after the drag threshold'
 );
 assert.match(script, /delta \* 0\.7/, 'desktop and mobile dragging should switch cards with a short gesture');
+assert.match(
+  script,
+  /function onClick\(event\)[\s\S]*?var index = cards\.indexOf\(card\);\s*event\.preventDefault\(\);\s*if \(index !== activeCard\)/,
+  'thumbnail clicks must always prevent article navigation before optionally selecting a card'
+);
+assert.doesNotMatch(
+  script,
+  /function onClick\(event\)[\s\S]*?window\.location\.href = link\.href[\s\S]*?function onKeyDown/,
+  'thumbnail click handling must never navigate to an article'
+);
 assert.match(script, /ArrowLeft[\s\S]*ArrowRight[\s\S]*Enter/, 'cylinder must support keyboard navigation');
 assert.match(script, /prefers-reduced-motion:\s*reduce/, 'cylinder must respect reduced motion');
 assert.match(styles, /\.article-cylinder-stage[\s\S]*perspective:/, 'styles need a perspective stage');

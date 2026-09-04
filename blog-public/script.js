@@ -1545,15 +1545,10 @@
         return;
       }
       var index = cards.indexOf(card);
+      event.preventDefault();
       if (index !== activeCard) {
-        event.preventDefault();
         event.stopPropagation();
         rotateTo(index);
-        return;
-      }
-      if (!event.target.closest('a, button')) {
-        var link = card.querySelector('.article-cylinder-card-link');
-        if (link) window.location.href = link.href;
       }
     }
 
