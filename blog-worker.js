@@ -17,6 +17,13 @@ import {
   markNotificationRead,
   markAllNotificationsRead
 } from './blog-notifications.js';
+import {
+  PROFILE_LIMITS,
+  validateProfileInput,
+  detectAvatarType,
+  privateProfileDto,
+  publicProfileDto
+} from './blog-user-profiles.js';
 export { CustomerServiceHub };
 
 const ADMIN_COOKIE_NAME = 'blog_admin_session';
@@ -25,6 +32,7 @@ const USER_COOKIE_NAME = 'blog_user_session';
 const USER_SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 const USER_ARTICLE_JSON_MAX_BYTES = 256 * 1024;
 const USER_ARTICLE_MULTIPART_OVERHEAD_BYTES = 256 * 1024;
+const USER_PROFILE_JSON_MAX_BYTES = 16 * 1024;
 const PASSWORD_HASH_ITERATIONS = 100000;
 let blogCommentsSchemaReady = false;
 
@@ -3428,6 +3436,150 @@ async function handleUserSession(request, env) {
   return jsonResponse({ authenticated: Boolean(user), user });
 }
 
+const USER_PROFILE_SELECT = `SELECT user.id, user.email, user.display_name, user.avatar_key,
+       user.avatar_mime_type, user.bio, user.created_at, user.updated_at,
+       COUNT(article.id) AS published_count
+FROM blog_users AS user
+LEFT JOIN blog_user_articles AS article
+  ON article.user_id = user.id AND article.status = 'published'
+WHERE user.id = ?
+GROUP BY user.id`;
+
+async function loadUserProfile(env, userId) {
+  return env.BLOG_DB.prepare(USER_PROFILE_SELECT).bind(userId).first();
+}
+
+async function handleGetUserProfile(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.response) return auth.response;
+  try {
+    const row = await loadUserProfile(env, auth.user.id);
+    return jsonResponse({ profile: privateProfileDto(row) });
+  } catch {
+    return jsonResponse({ error: 'USER_DATABASE_UNAVAILABLE' }, { status: 503 });
+  }
+}
+
+async function readProfileJson(request) {
+  const mediaType = (request.headers.get('Content-Type') || '').split(';', 1)[0].trim().toLowerCase();
+  if (mediaType !== 'application/json') return { response: jsonResponse({ error: 'UNSUPPORTED_MEDIA_TYPE' }, { status: 415 }) };
+  const length = request.headers.get('Content-Length');
+  if (/^\d+$/.test(length || '') && Number(length) > USER_PROFILE_JSON_MAX_BYTES) {
+    return { response: jsonResponse({ error: 'PAYLOAD_TOO_LARGE' }, { status: 413 }) };
+  }
+  try {
+    const text = await request.text();
+    if (new TextEncoder().encode(text).byteLength > USER_PROFILE_JSON_MAX_BYTES) {
+      return { response: jsonResponse({ error: 'PAYLOAD_TOO_LARGE' }, { status: 413 }) };
+    }
+    return { body: JSON.parse(text), response: null };
+  } catch {
+    return { response: jsonResponse({ error: 'INVALID_JSON' }, { status: 400 }) };
+  }
+}
+
+async function handleUpdateUserProfile(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.response) return auth.response;
+  const originResponse = requireSameOrigin(request);
+  if (originResponse) return originResponse;
+  const parsed = await readProfileJson(request);
+  if (parsed.response) return parsed.response;
+  const validation = validateProfileInput(parsed.body);
+  if (!validation.ok) return jsonResponse({ error: validation.error, field: validation.field }, { status: 400 });
+  const now = new Date().toISOString();
+  try {
+    await env.BLOG_DB.prepare(
+      'UPDATE blog_users SET display_name = ?, bio = ?, updated_at = ? WHERE id = ?'
+    ).bind(validation.displayName, validation.bio, now, auth.user.id).run();
+    const row = await loadUserProfile(env, auth.user.id);
+    return jsonResponse({ profile: privateProfileDto(row) });
+  } catch {
+    return jsonResponse({ error: 'USER_DATABASE_UNAVAILABLE' }, { status: 503 });
+  }
+}
+
+async function handleGetPublicUserProfile(_request, env, userId) {
+  if (!env.BLOG_DB) return jsonResponse({ error: 'USER_DATABASE_UNAVAILABLE' }, { status: 503 });
+  try {
+    const row = await loadUserProfile(env, userId);
+    if (!row) return jsonResponse({ error: 'PROFILE_NOT_FOUND' }, { status: 404 });
+    return jsonResponse({ profile: publicProfileDto(row) });
+  } catch {
+    return jsonResponse({ error: 'USER_DATABASE_UNAVAILABLE' }, { status: 503 });
+  }
+}
+
+async function handleUploadUserAvatar(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.response) return auth.response;
+  const originResponse = requireSameOrigin(request);
+  if (originResponse) return originResponse;
+  if (!env.BLOG_MEDIA) return mediaStorageUnavailable();
+  const mediaType = (request.headers.get('Content-Type') || '').toLowerCase();
+  if (!mediaType.startsWith('multipart/form-data;')) return jsonResponse({ error: 'UNSUPPORTED_MEDIA_TYPE' }, { status: 415 });
+  const declaredLength = request.headers.get('Content-Length');
+  if (/^\d+$/.test(declaredLength || '') && Number(declaredLength) > PROFILE_LIMITS.avatarBytes + USER_ARTICLE_MULTIPART_OVERHEAD_BYTES) {
+    return jsonResponse({ error: 'AVATAR_TOO_LARGE' }, { status: 413 });
+  }
+  const parsed = await readBoundedMultipartFormData(request);
+  if (parsed.response) return parsed.response;
+  const avatars = parsed.form.getAll('avatar');
+  const file = avatars[0];
+  if (avatars.length !== 1 || !file || typeof file.arrayBuffer !== 'function' || typeof file.size !== 'number') {
+    return jsonResponse({ error: 'AVATAR_REQUIRED' }, { status: 400 });
+  }
+  if (file.size > PROFILE_LIMITS.avatarBytes) return jsonResponse({ error: 'AVATAR_TOO_LARGE' }, { status: 413 });
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const detectedMime = detectAvatarType(bytes.subarray(0, 16));
+  if (!detectedMime || normalizeImageMimeType(file.type) !== detectedMime) {
+    return jsonResponse({ error: 'INVALID_AVATAR_TYPE' }, { status: 400 });
+  }
+  const extension = imageExtension(detectedMime);
+  const objectKey = `user-avatars/${auth.user.id}/${crypto.randomUUID()}.${extension}`;
+  let previous;
+  try {
+    previous = await env.BLOG_DB.prepare('SELECT avatar_key FROM blog_users WHERE id = ? LIMIT 1').bind(auth.user.id).first();
+    await env.BLOG_MEDIA.put(objectKey, bytes, {
+      httpMetadata: { contentType: detectedMime },
+      customMetadata: { userId: auth.user.id }
+    });
+    await env.BLOG_DB.prepare(
+      'UPDATE blog_users SET avatar_key = ?, avatar_mime_type = ?, updated_at = ? WHERE id = ?'
+    ).bind(objectKey, detectedMime, new Date().toISOString(), auth.user.id).run();
+  } catch {
+    try { await env.BLOG_MEDIA.delete(objectKey); } catch {}
+    return jsonResponse({ error: 'AVATAR_UPLOAD_FAILED' }, { status: 503 });
+  }
+  if (previous?.avatar_key && previous.avatar_key !== objectKey) {
+    try { await env.BLOG_MEDIA.delete(previous.avatar_key); } catch {}
+  }
+  const row = await loadUserProfile(env, auth.user.id);
+  return jsonResponse({ profile: privateProfileDto(row) });
+}
+
+async function handleGetUserAvatar(_request, env, userId) {
+  if (!env.BLOG_DB) return mediaDatabaseUnavailable();
+  if (!env.BLOG_MEDIA) return mediaStorageUnavailable();
+  let row;
+  try {
+    row = await env.BLOG_DB.prepare(
+      'SELECT avatar_key, avatar_mime_type FROM blog_users WHERE id = ? LIMIT 1'
+    ).bind(userId).first();
+  } catch {
+    return mediaDatabaseUnavailable();
+  }
+  if (!row?.avatar_key) return jsonResponse({ error: 'MEDIA_NOT_FOUND' }, { status: 404 });
+  let object;
+  try { object = await env.BLOG_MEDIA.get(row.avatar_key); } catch { return mediaStorageUnavailable(); }
+  if (!object) return jsonResponse({ error: 'MEDIA_NOT_FOUND' }, { status: 404 });
+  return new Response(object.body, { headers: {
+    'Content-Type': row.avatar_mime_type || object.httpMetadata?.contentType || 'application/octet-stream',
+    'Cache-Control': 'public, max-age=300',
+    'X-Content-Type-Options': 'nosniff'
+  } });
+}
+
 // ─── Comments API (D1-backed) ────────────────────────────────
 
 async function ensureBlogCommentsSchema(env) {
@@ -3457,7 +3609,7 @@ async function handleGetComments(request, env, permalink) {
   try {
     await ensureBlogCommentsSchema(env);
     const { results } = await env.BLOG_DB.prepare(
-      `SELECT id, parent_id, author_name, content, created_at
+      `SELECT id, parent_id, user_id, author_name, content, created_at
        FROM blog_comments
        WHERE article_permalink = ? AND status = 'approved'
        ORDER BY created_at ASC LIMIT 200`
@@ -3542,7 +3694,7 @@ async function handlePostComment(request, env, ctx, permalink) {
     return jsonResponse({
       ok: true,
       stored: Boolean(stored),
-      comment: { id, parent_id: parentId, author_name: authorName, content, created_at: createdAt }
+      comment: { id, parent_id: parentId, user_id: currentUser?.id || null, userId: currentUser?.id || null, author_name: authorName, content, created_at: createdAt }
     });
   } catch (e) {
     return jsonResponse({ error: 'Unable to save comment' }, { status: 503 });
@@ -3703,6 +3855,29 @@ export default {
 
     if (pathname === '/api/auth/session' && method === 'GET') {
       return handleUserSession(request, env);
+    }
+
+    if (pathname === '/api/user/profile') {
+      if (method === 'GET') return handleGetUserProfile(request, env);
+      if (method === 'PUT') return handleUpdateUserProfile(request, env);
+      return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
+    }
+
+    if (pathname === '/api/user/avatar') {
+      if (method === 'POST') return handleUploadUserAvatar(request, env);
+      return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
+    }
+
+    const publicUserProfileMatch = pathname.match(/^\/api\/users\/([^/]+)\/profile$/);
+    if (publicUserProfileMatch) {
+      if (method === 'GET') return handleGetPublicUserProfile(request, env, decodeURIComponent(publicUserProfileMatch[1]));
+      return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
+    }
+
+    const userAvatarMatch = pathname.match(/^\/media\/user-avatar\/([^/]+)$/);
+    if (userAvatarMatch) {
+      if (method === 'GET') return handleGetUserAvatar(request, env, decodeURIComponent(userAvatarMatch[1]));
+      return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
     }
 
     if (pathname === '/api/notifications' && method === 'GET') {
