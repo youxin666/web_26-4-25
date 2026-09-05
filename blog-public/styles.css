@@ -4835,13 +4835,13 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
   text-transform: uppercase;
 }
 
-.article-cylinder-preview-title { width: fit-content; max-width: 100%; }
+.article-cylinder-preview-title { width: 100%; max-width: 100%; }
 
 .article-cylinder-preview-title h2 {
-  max-width: 42rem;
+  max-width: 100%;
   margin: 0;
   color: var(--anzhiyu-ink);
-  font-size: clamp(1.8rem, 3.1vw, 3.5rem);
+  font-size: clamp(1.4rem, 2vw, 2rem);
   line-height: 1.08;
   letter-spacing: -0.035em;
 }
@@ -5781,8 +5781,11 @@ body.site-search-open { overflow: hidden; }
   }
 
   .article-cylinder-preview-title h2 {
-    max-width: 92%;
-    font-size: clamp(1.55rem, 7.6vw, 2.2rem);
+    max-width: 100%;
+    font-size: clamp(1.15rem, 5vw, 1.4rem);
+    line-height: 1.35;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   .article-cylinder-preview-media { height: clamp(11rem, 28vh, 15rem); }

@@ -1457,7 +1457,9 @@
       var media = previewHost.querySelector('.article-cylinder-preview-media');
       if (media) {
         var mediaBottom = media.getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
-        var arcTop = Math.max(0, mediaBottom - (isCompact ? 20 : 90));
+        var radiusY = isCompact ? 74 : 112;
+        var halfCardHeight = (isCompact ? 70 : 100) * 0.525;
+        var arcTop = Math.max(0, mediaBottom + (isCompact ? -10 : -26) + radiusY + halfCardHeight - ring.offsetHeight / 2);
         ring.style.top = arcTop + 'px';
         ring.style.bottom = 'auto';
         stage.style.height = Math.max(stage.offsetHeight, previewHost.offsetHeight + 48, arcTop + ring.offsetHeight + 20) + 'px';
