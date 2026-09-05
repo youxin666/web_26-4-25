@@ -4763,6 +4763,10 @@ body[data-article-layout="cylinder"] .article-cylinder-stage {
   -webkit-user-select: none;
 }
 
+body[data-article-layout="cylinder"] .article-cylinder-stage {
+  overflow-anchor: none;
+}
+
 body[data-article-layout="cylinder"] .article-cylinder-stage::before,
 body[data-article-layout="cylinder"] .article-cylinder-stage::after {
   content: '';
@@ -4785,6 +4789,8 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
 }
 
 .article-stream.is-cylinder {
+  touch-action: none;
+  overscroll-behavior: contain;
   position: absolute;
   z-index: 3;
   top: 37%;
@@ -4805,6 +4811,7 @@ body[data-article-layout="cylinder"] .article-cylinder-stage::after {
 .article-stream.is-cylinder.is-loading { opacity: 0.55; }
 
 .article-cylinder-preview-host {
+  overflow-anchor: none;
   position: absolute;
   z-index: 2;
   inset: clamp(1.25rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 2.5rem) auto;

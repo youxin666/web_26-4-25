@@ -14,6 +14,6 @@ assert.match(
   /\.auth-shell\s*\{\s*grid-template-columns:\s*1fr;[^}]*width:\s*min\(100%\s*-\s*1rem,\s*34rem\);[^}]*padding-inline:\s*0;/s,
   'mobile login content should retain its compact single-column layout',
 );
-assert.match(worker, /styles\.css\?v=20260905-centered-side-arc/, 'login width update should retain a fresh stylesheet cache key');
+assert.match(worker, /styles\.css\?v=20260905-carousel-scroll-lock/, 'login width update should retain a fresh stylesheet cache key');
 
 console.log('Login fluid width contract passed.');
