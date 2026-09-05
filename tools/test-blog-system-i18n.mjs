@@ -31,8 +31,8 @@ assert.match(worker, /data-i18n="home\.heroTitleMotion"/, 'home hero second line
 assert.match(script, /'home\.signal': '个人刊物'/, 'Chinese home signal must not remain English');
 assert.match(script, /'home\.heroTitleLead': '思绪在'/, 'Chinese home hero first line must not remain English');
 assert.match(script, /'home\.heroTitleMotion': '流动'/, 'Chinese home hero second line must not remain English');
-assert.match(worker, /script\.js\?v=20260905-landscape-thumbnails/, 'the current production script needs a fresh cache key');
-assert.match(worker, /styles\.css\?v=20260905-landscape-thumbnails/, 'the current production stylesheet needs a fresh cache key');
+assert.match(worker, /script\.js\?v=20260905-centered-side-arc/, 'the current production script needs a fresh cache key');
+assert.match(worker, /styles\.css\?v=20260905-centered-side-arc/, 'the current production stylesheet needs a fresh cache key');
 assert.doesNotMatch(worker, /script\.js\?v=20260820-static-three-card-cylinder/, 'stale main-script cache keys must not survive the language-order fix');
 assert.match(script, /blog:languagechange/, 'independent interfaces need a live language-change event');
 assert.match(

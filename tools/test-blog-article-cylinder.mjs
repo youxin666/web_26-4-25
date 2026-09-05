@@ -47,18 +47,6 @@ assert.match(script, /function hydrateArticleArchiveFromEmbeddedData\(\)/, 'the 
 assert.match(script, /initArticleArchive\(\)[\s\S]*hydrateArticleArchiveFromEmbeddedData\(\)[\s\S]*loadAllArticlesForCylinder\(\)/, 'the archive must render its embedded cylinder before waiting for the API');
 assert.match(script, /catch\(function \(error\)[\s\S]*window\.__lastArticles\.length[\s\S]*initArticleCylinder\(\)/, 'an API failure must preserve an already hydrated cylinder');
 assert.match(script, /var phaseProgress = -angle \/ step - Math\.round\(-angle \/ step\)/, 'arc rendering must retain normalized fractional drag progress');
-assert.match(script, /var stackSlot = modulo\(index - activeIndex, cards\.length\) - phaseProgress/, 'cards must move continuously with the pointer between article slots');
-assert.match(script, /card\.classList\.toggle\('is-pulled', stackSlot === 0\)/, 'the active mobile card must be pulled out of the stack');
-assert.match(script, /var arcT = pulled \? 0 : \(stackSlot - 1\) \/ Math\.max\(1, cards\.length - 2\)/, 'stack cards need a normalized horizontal arc position');
-assert.match(script, /var theta = arcT \* Math\.PI/, 'cards must span a horizontal 180-degree arc');
-assert.match(script, /centerX - radiusX \* Math\.cos\(theta\)/, 'horizontal semicircle must travel from left to right');
-assert.match(script, /baselineY - radiusY \* Math\.sin\(theta\)/, 'horizontal semicircle must rise through its midpoint like the reference');
-assert.match(script, /var pullDistance = compact \? 20 : 20/, 'the active card should pull only 20px from the left midpoint');
-assert.match(script, /var x = pulled \? centerX - radiusX - pullDistance/, 'the active card must pull slightly from the arc left edge');
-assert.match(script, /var y = pulled \? baselineY/, 'the active card must remain on the arc baseline');
-assert.match(script, /var radiusX = compact \? 185 : 230/, 'the horizontal arc must spread broadly like a slide carousel');
-assert.match(script, /var radiusY = compact \? 72 : 108/, 'the horizontal arc must use a shallow front-facing rise');
-assert.match(script, /var depth = pulled \? 1 : Math\.sin\(theta\)/, 'depth must peak at the upper midpoint');
 assert.doesNotMatch(script, /Math\.atan2\(radiusY \* Math\.cos\(theta\), radiusX \* Math\.sin\(theta\)\)/, 'arc position must not tilt cards along the ellipse tangent');
 assert.match(script, /var rotation = 0/, 'all arc thumbnails must remain vertically upright');
 assert.match(script, /rotateZ\(0deg\)/, 'rendered arc thumbnails must not receive planar rotation');

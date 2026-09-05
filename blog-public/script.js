@@ -1423,24 +1423,24 @@
       ring.style.transform = 'none';
       var phaseProgress = -angle / step - Math.round(-angle / step);
       cards.forEach(function (card, index) {
-        var stackSlot = modulo(index - activeIndex, cards.length) - phaseProgress;
-        var pulled = stackSlot === 0;
-        var arcT = pulled ? 0 : (stackSlot - 1) / Math.max(1, cards.length - 2);
-        var theta = arcT * Math.PI;
-        var pullDistance = compact ? 20 : 20;
-        var radiusX = compact ? 185 : 230;
-        var radiusY = compact ? 72 : 108;
-        var centerX = compact ? 80 : 110;
-        var baselineY = compact ? 45 : 60;
-        var depth = pulled ? 1 : Math.sin(theta);
-        var x = pulled ? centerX - radiusX - pullDistance : centerX - radiusX * Math.cos(theta);
-        var y = pulled ? baselineY : baselineY - radiusY * Math.sin(theta);
+        var stackSlot = modulo(index - activeIndex + cards.length / 2 - phaseProgress, cards.length) - cards.length / 2;
+        var pullWeight = Math.max(0, 1 - Math.abs(stackSlot));
+        var pulled = Math.abs(stackSlot) < 0.5;
+        var theta = stackSlot / Math.max(1, cards.length - 1) * Math.PI;
+        var pullDistance = compact ? 10 : 14;
+        var radiusX = compact ? 130 : 175;
+        var radiusY = compact ? 74 : 112;
+        var centerX = compact ? 105 : 120;
+        var baselineY = 0;
+        var depth = Math.max(0, Math.cos(theta));
+        var x = centerX - radiusX * Math.cos(theta) - pullDistance * pullWeight;
+        var y = baselineY + radiusY * Math.sin(theta);
         var rotation = 0;
         var scale = pulled ? 1 : 0.8 + depth * 0.14;
         var opacity = pulled ? 1 : 0.72 + depth * 0.2;
         var depthZ = pulled ? 24 : -((1 - depth) * (compact ? 26 : 48));
-        var depthOrder = 12 + Math.round(depth * 16) - Math.min(stackSlot, 6);
-        card.classList.toggle('is-pulled', stackSlot === 0);
+        var depthOrder = 12 + Math.round(depth * 16);
+        card.classList.toggle('is-pulled', pulled);
         card.style.zIndex = String(pulled ? 40 : depthOrder);
         card.style.transform = 'translate3d(calc(-50% + ' + x.toFixed(2) + 'px), calc(-50% + ' + y.toFixed(2) + 'px), ' + depthZ.toFixed(2) + 'px) rotateZ(0deg) scale(' + scale.toFixed(3) + ')';
         card.style.setProperty('--cylinder-card-opacity', opacity.toFixed(3));
@@ -1451,6 +1451,17 @@
     function renderCylinder() {
       renderArcCardStack(getActiveIndex(), isCompact);
       syncActiveCard();
+    }
+
+    function positionArcNearPreview() {
+      var media = previewHost.querySelector('.article-cylinder-preview-media');
+      if (media) {
+        var mediaBottom = media.getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
+        var arcTop = Math.max(0, mediaBottom - (isCompact ? 20 : 90));
+        ring.style.top = arcTop + 'px';
+        ring.style.bottom = 'auto';
+        stage.style.height = Math.max(previewHost.offsetHeight + 48, arcTop + ring.offsetHeight + 20) + 'px';
+      }
     }
 
     function closestAngleFor(index) {
@@ -1473,6 +1484,7 @@
       stage.style.setProperty('--cylinder-card-width', isCompact ? '112px' : '160px');
       stage.style.setProperty('--cylinder-radius', '0px');
       renderCylinder();
+      positionArcNearPreview();
     }
 
     function isPaused() {
@@ -1617,11 +1629,17 @@
     stage.addEventListener('focusout', onFocusOut);
     window.addEventListener('resize', onResize, { passive: true });
     document.addEventListener('visibilitychange', onVisibilityChange);
+    var previewResizeObserver = new ResizeObserver(positionArcNearPreview);
+    previewResizeObserver.observe(previewHost);
     setGeometry();
     animationFrame = window.requestAnimationFrame(animate);
 
     return {
       cleanup: function () {
+        previewResizeObserver.disconnect();
+        stage.style.height = '';
+        ring.style.top = '';
+        ring.style.bottom = '';
         window.cancelAnimationFrame(animationFrame);
         window.cancelAnimationFrame(resizeFrame);
         window.clearTimeout(resumeTimer);
