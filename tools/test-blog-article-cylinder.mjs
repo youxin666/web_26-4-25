@@ -34,7 +34,7 @@ assert.doesNotMatch(cylinderRenderer, /<h3>|<p|article-meta/, 'cylinder thumbnai
 assert.doesNotMatch(script, /rotateY\(' \+ \(index \* step\) \+ 'deg\) translateZ\(' \+ radius \+ 'px\)/, 'desktop cards must no longer use a 3D cylinder surface');
 assert.match(
   script,
-  /stage\.style\.setProperty\('--cylinder-card-width', isCompact \? '48px' : '84px'\)/,
+  /stage\.style\.setProperty\('--cylinder-card-width', isCompact \? '112px' : '160px'\)/,
   'desktop arc thumbnails must stay larger than mobile but secondary to the preview'
 );
 assert.doesNotMatch(
@@ -121,7 +121,7 @@ assert.match(styles, /\.article-cylinder-stage[\s\S]*perspective:/, 'styles need
 assert.match(styles, /\.article-cylinder-preview\s*\{/, 'styles need a large active preview');
 assert.match(styles, /\.article-cylinder-preview-host[\s\S]*width:\s*min\(60%, 40rem\)/, 'desktop preview must leave a dedicated right-side lane for the thumbnail arc');
 assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*clamp\(18rem, 30%, 24rem\)[\s\S]*height:\s*26rem/, 'desktop needs a tall narrow stack footprint');
-assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item[\s\S]*height:\s*clamp\(6\.8rem,/, 'image-only cylinder cards must be substantially smaller');
+assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item[\s\S]*aspect-ratio:\s*8 \/ 5/, 'image-only cylinder cards must use landscape cover proportions');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-cylinder-preview/s, 'mobile needs a dedicated preview composition');
 assert.match(
   styles,
@@ -141,7 +141,7 @@ assert.doesNotMatch(
 assert.match(styles, /\.article-stream\.is-cylinder\s*\{[\s\S]*transform-style:\s*preserve-3d/, 'the arc stack must preserve its 3D children');
 assert.match(styles, /\.article-stream\.is-cylinder \.article-list-item,[\s\S]*transform-style:\s*preserve-3d/, 'cards must retain overhead transforms');
 assert.doesNotMatch(styles, /\.article-stream\.is-cylinder \.article-list-item h3\s*\{/, 'image-only cylinder thumbnails must not reserve a title row');
-assert.match(styles, /width:\s*var\(--cylinder-card-width, 84px\)[\s\S]*height:\s*clamp\(6\.8rem, 15vh, 9\.5rem\)/, 'desktop arc cards must use the narrow image-only proportion');
+assert.match(styles, /width:\s*var\(--cylinder-card-width, 160px\)[\s\S]*height:\s*auto;[\s\S]*aspect-ratio:\s*8 \/ 5/, 'desktop arc cards must use landscape image-only proportions');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-stream\.is-cylinder\s*\{[\s\S]*width:\s*min\(54vw, 13rem\)[\s\S]*height:\s*13rem/s, 'mobile needs a compact vertical footprint');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-cylinder-preview-media\s*\{\s*height:\s*clamp\(11rem, 28vh, 15rem\)/s, 'mobile active preview image must be shorter than the previous 21rem maximum');
 assert.match(styles, /@media\s*\(max-width:\s*720px\)[\s\S]*\.article-stream\.is-cylinder \.article-list-item\.is-pulled[\s\S]*box-shadow:/s, 'the extracted mobile card needs distinct depth emphasis');

@@ -1470,7 +1470,7 @@
     function setGeometry() {
       isCompact = window.innerWidth <= 720;
       radius = 0;
-      stage.style.setProperty('--cylinder-card-width', isCompact ? '48px' : '84px');
+      stage.style.setProperty('--cylinder-card-width', isCompact ? '112px' : '160px');
       stage.style.setProperty('--cylinder-radius', '0px');
       renderCylinder();
     }
