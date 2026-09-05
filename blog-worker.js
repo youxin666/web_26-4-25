@@ -638,7 +638,7 @@ function seoHead(title, description, canonicalPath, extraMeta = '') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' rx='14' fill='%23425aef'/%3E%3Cpath fill='white' d='M51.6 9.1C34.8 10.4 20.7 20 14.1 35.2c-2.4 5.5-3.4 11.2-2.9 17.2.1 1.2 1.6 1.8 2.5.9l8.5-8.5c4.9 3.7 12.1 3.2 16.5-1.4 5.6-5.8 5.7-16.8 15.2-26.3 2.7-2.7 1.5-8.3-2.3-8ZM22.7 38.4c4.8-6.5 10.5-12.2 17.2-17.3 1.1-.8 2.4.6 1.5 1.6-5.2 6.2-11 11.9-17.5 17.1-.9.7-1.9-.5-1.2-1.4Z'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="/styles.css?v=20260905-preview-clearance">
+    <link rel="stylesheet" href="/styles.css?v=20260905-search-close-center">
     <link rel="stylesheet" href="/customer-service.css?v=20260804-chat-receipts-tight">
     <style>${LOGO_INLINE_CSS}</style>
     <link rel="alternate" type="application/rss+xml" title="Rowan Notes RSS" href="/rss.xml">`;
@@ -730,7 +730,7 @@ const SHARED_NAV = `    <!-- Navigation -->
                 </button>
                 <header class="site-search-header">
                     <div><span data-i18n="search.kicker">SEARCH NOTES</span><h2 id="site-search-title" data-i18n="search.title">搜索文章</h2></div>
-                    <button type="button" data-site-search-close data-i18n-aria="search.close" aria-label="关闭搜索"><span aria-hidden="true">×</span></button>
+                    <button type="button" data-site-search-close data-i18n-aria="search.close" aria-label="关闭搜索"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
                 </header>
                 <label class="site-search-input-wrap">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -869,7 +869,7 @@ ${HOME_NAV}
       </div>
     </section>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -906,7 +906,7 @@ ${SHARED_NAV}
     </div>
   </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1023,7 +1023,7 @@ ${SHARED_NAV}
       </section>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1126,7 +1126,7 @@ ${SHARED_NAV}
       </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1198,7 +1198,7 @@ ${adminContent}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1222,7 +1222,7 @@ ${ADMIN_NAV}
         <p class="blog-comments-status" data-admin-submission-detail-status role="status"></p>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1273,7 +1273,7 @@ ${SHARED_NAV}
         </section>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1308,7 +1308,7 @@ ${SHARED_NAV}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
     <script>document.addEventListener('DOMContentLoaded', renderBookmarksPage);</script>
 </body>
 </html>`;
@@ -1716,7 +1716,7 @@ ${SHARED_NAV}
         </form>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1741,7 +1741,7 @@ ${SHARED_NAV}
         <div class="my-articles-list" data-my-articles-list data-my-articles><p data-i18n="myArticles.loading">正在加载文章...</p></div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -1770,7 +1770,7 @@ ${SHARED_NAV}
         <p class="notifications-status" data-notifications-status role="status" aria-live="polite"></p>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
@@ -3577,7 +3577,7 @@ ${SHARED_NAV}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260905-preview-clearance"></script>
+    <script src="/script.js?v=20260905-search-close-center"></script>
 </body>
 </html>`;
 }
