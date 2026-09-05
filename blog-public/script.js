@@ -1679,6 +1679,12 @@
       .catch(function (error) {
         if (requestId !== articleLayoutRequestId || document.body.getAttribute('data-article-layout') !== 'cylinder') return;
         console.error('Error loading cylinder articles:', error);
+        if (Array.isArray(window.__lastArticles) && window.__lastArticles.length) {
+          container.classList.remove('is-single-column', 'is-double-column');
+          container.classList.add('is-cylinder');
+          if (!articleCylinderController) articleCylinderController = initArticleCylinder();
+          return;
+        }
         setStoredArticleLayout('double');
         applyArticleLayout('double', { load: false });
         return window.loadArticles(currentPage || 1, true);
@@ -3463,9 +3469,28 @@
     window.loadArticles(1);
   }
 
+  function hydrateArticleArchiveFromEmbeddedData() {
+    var articlesData = document.body.getAttribute('data-articles');
+    if (!articlesData) return false;
+    try {
+      var articles = JSON.parse(articlesData);
+      if (!Array.isArray(articles) || !articles.length) return false;
+      renderArticles(articles);
+      document.body.removeAttribute('data-articles');
+      updatePagination(null);
+      articleCylinderController = initArticleCylinder();
+      return Boolean(articleCylinderController);
+    } catch (error) {
+      console.error('Error hydrating archive articles:', error);
+      return false;
+    }
+  }
+
   function initArticleArchive() {
-    if (document.body.getAttribute('data-article-layout') === 'cylinder') loadAllArticlesForCylinder();
-    else window.loadArticles(1, true);
+    if (document.body.getAttribute('data-article-layout') === 'cylinder') {
+      hydrateArticleArchiveFromEmbeddedData();
+      loadAllArticlesForCylinder();
+    } else window.loadArticles(1, true);
   }
 
   // ─── Site Search ──────────────────────────────────────────

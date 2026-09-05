@@ -43,6 +43,9 @@ assert.doesNotMatch(
   'cylinder must stay still until the user interacts'
 );
 assert.match(script, /function renderArcCardStack\(activeIndex, compact\)/, 'desktop and mobile need one responsive arc-stack renderer');
+assert.match(script, /function hydrateArticleArchiveFromEmbeddedData\(\)/, 'the archive must be able to hydrate its cylinder from embedded SSR data');
+assert.match(script, /initArticleArchive\(\)[\s\S]*hydrateArticleArchiveFromEmbeddedData\(\)[\s\S]*loadAllArticlesForCylinder\(\)/, 'the archive must render its embedded cylinder before waiting for the API');
+assert.match(script, /catch\(function \(error\)[\s\S]*window\.__lastArticles\.length[\s\S]*initArticleCylinder\(\)/, 'an API failure must preserve an already hydrated cylinder');
 assert.match(script, /var phaseProgress = -angle \/ step - Math\.round\(-angle \/ step\)/, 'arc rendering must retain normalized fractional drag progress');
 assert.match(script, /var stackSlot = modulo\(index - activeIndex, cards\.length\) - phaseProgress/, 'cards must move continuously with the pointer between article slots');
 assert.match(script, /card\.classList\.toggle\('is-pulled', stackSlot === 0\)/, 'the active mobile card must be pulled out of the stack');
