@@ -31,7 +31,7 @@ assert.match(worker, /data-i18n="home\.heroTitleMotion"/, 'home hero second line
 assert.match(script, /'home\.signal': '个人刊物'/, 'Chinese home signal must not remain English');
 assert.match(script, /'home\.heroTitleLead': '思绪在'/, 'Chinese home hero first line must not remain English');
 assert.match(script, /'home\.heroTitleMotion': '流动'/, 'Chinese home hero second line must not remain English');
-assert.match(worker, /script\.js\?v=20260906-draft-delete-feedback/, 'the current production script needs a fresh cache key');
+assert.match(worker, /script\.js\?v=20260906-account-about-menu/, 'the current production script needs a fresh cache key');
 assert.match(worker, /styles\.css\?v=20260906-draft-delete-feedback/, 'the current production stylesheet needs a fresh cache key');
 assert.match(worker, /data-my-articles-delete-status[^>]*role="status"/, 'my articles page needs visible draft deletion feedback');
 assert.match(script, /'myArticles\.deleting': '正在删除\.\.\.'/);
