@@ -1592,15 +1592,6 @@
       event.preventDefault();
     }
 
-    function onCylinderWheel(event) {
-      event.preventDefault();
-      targetAngle = null;
-      var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      angle -= delta * (event.deltaMode === 1 ? 16 : 1) * 0.7;
-      renderCylinder();
-      pauseThenResume();
-    }
-
     function onPointerMove(event) {
       if (!pointerState || (event.pointerId !== undefined && event.pointerId !== pointerState.id)) return;
       var delta = event.clientX - pointerState.startX;
@@ -1685,7 +1676,6 @@
 
     stage.addEventListener('pointerdown', onPointerDown);
     ring.addEventListener('dragstart', onNativeDragStart);
-    ring.addEventListener('wheel', onCylinderWheel, { passive: false });
     stage.addEventListener('pointermove', onPointerMove);
     stage.addEventListener('pointerup', onPointerUp);
     stage.addEventListener('pointercancel', onPointerUp);
@@ -1713,7 +1703,6 @@
         window.clearTimeout(resumeTimer);
         stage.removeEventListener('pointerdown', onPointerDown);
         ring.removeEventListener('dragstart', onNativeDragStart);
-        ring.removeEventListener('wheel', onCylinderWheel);
         stage.removeEventListener('pointermove', onPointerMove);
         stage.removeEventListener('pointerup', onPointerUp);
         stage.removeEventListener('pointercancel', onPointerUp);

@@ -60,6 +60,7 @@ assert.match(script, /pointerdown[\s\S]*pointermove[\s\S]*pointerup/, 'cylinder 
 assert.match(script, /function onNativeDragStart\(event\)\s*\{\s*event\.preventDefault\(\);\s*\}/, 'thumbnail links must not start the browser native drag ghost');
 assert.match(script, /ring\.addEventListener\('dragstart', onNativeDragStart\)/, 'the thumbnail ring must suppress native link and image dragging');
 assert.match(script, /ring\.removeEventListener\('dragstart', onNativeDragStart\)/, 'native drag suppression must be cleaned up with the cylinder controller');
+assert.doesNotMatch(script, /addEventListener\('wheel'|function onCylinderWheel/, 'mouse-wheel scrolling must never rotate the thumbnail cylinder');
 assert.match(script, /event\.target\.closest\('\.article-cylinder-preview a'\)/, 'preview links must bypass cylinder drag handling');
 assert.doesNotMatch(
   script,
