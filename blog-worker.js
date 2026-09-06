@@ -722,7 +722,7 @@ const SHARED_NAV = `    <!-- Navigation -->
                             <a href="/my-articles" role="menuitem"><i class="ri-file-list-3-line" aria-hidden="true"></i><span data-i18n="nav.myArticles">我的文章</span></a>
                             <a href="/notifications" role="menuitem"><span class="user-menu-message-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span data-i18n="nav.notifications">我的消息</span><span class="user-menu-notification-count hidden" data-user-menu-notification-count>0</span></a>
                             <a href="/bookmarks" role="menuitem"><i class="ri-bookmark-line" aria-hidden="true"></i><span data-i18n="nav.myFavorites">我的收藏</span></a>
-                            <a href="/about" role="menuitem"><i class="ri-information-line" aria-hidden="true"></i><span data-i18n="nav.aboutSite">关于本站</span></a>
+                            <a href="/about" role="menuitem"><svg class="user-menu-item-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.75v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.75" r="1" fill="currentColor"/></svg><span data-i18n="nav.aboutSite">关于本站</span></a>
                             <button class="user-menu-logout" type="button" data-user-logout role="menuitem"><i class="ri-logout-box-r-line" aria-hidden="true"></i><span data-i18n="nav.logout">退出</span></button>
                         </div>
                     </div>
