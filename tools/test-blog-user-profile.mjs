@@ -47,6 +47,7 @@ assert.match(styles, /\.profile-card/);
 assert.match(styles, /\.profile-shell\[data-account-page\]\{[^}]*width:min\(calc\(100% - clamp\(2rem,3\.2vw,4rem\)\),116rem\)[^}]*padding:3rem 0 4rem/);
 assert.match(styles, /\.profile-form\{[^}]*min-width:0/);
 assert.match(styles, /\.profile-form input,\.profile-form textarea\{[^}]*box-sizing:border-box[^}]*max-width:100%[^}]*min-width:0/);
+assert.match(styles, /\.profile-form textarea\{resize:vertical\}/);
 assert.match(styles, /@media\(max-width:720px\)/);
 assert.match(client, /'profile\.accountTitle': '我的账户'/);
 assert.match(client, /'profile\.accountTitle': 'My account'/);
