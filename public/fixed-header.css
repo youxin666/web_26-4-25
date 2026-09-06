@@ -1,0 +1,48 @@
+/* Viewport-fixed glass header override. Kept separate so the shared header
+   behavior remains reliable even when individual pages evolve independently. */
+.site-header {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    translate: -50% 0;
+    margin: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(24px) saturate(1.45);
+    -webkit-backdrop-filter: blur(24px) saturate(1.45);
+}
+
+main {
+    padding-top: 112px;
+}
+
+:root[data-theme="dark"] .site-header {
+    background: rgba(13, 27, 26, 0.68);
+    border-color: rgba(136, 186, 178, 0.24);
+}
+
+@media (max-width: 860px) {
+    main {
+        padding-top: 82px;
+    }
+}
+
+@media (max-width: 640px) {
+    .site-header {
+        top: 8px;
+    }
+
+    main {
+        padding-top: 74px;
+    }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-header {
+        background: rgba(255, 255, 255, 0.94);
+    }
+
+    :root[data-theme="dark"] .site-header {
+        background: rgba(13, 27, 26, 0.94);
+    }
+}
