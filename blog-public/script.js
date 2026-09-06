@@ -258,6 +258,8 @@
       'myArticles.rejected': '未通过',
       'myArticles.continue': '继续编辑',
       'myArticles.delete': '删除草稿',
+      'myArticles.deleting': '正在删除...',
+      'myArticles.deleted': '草稿已删除，剩余 {count} 篇草稿。',
       'myArticles.deleteConfirm': '确定删除这篇草稿吗？删除后无法恢复。',
       'myArticles.deleteFailed': '删除草稿失败，请稍后重试。',
       'myArticles.viewSubmission': '查看投稿',
@@ -520,6 +522,8 @@
       'myArticles.rejected': 'Rejected',
       'myArticles.continue': 'Continue editing',
       'myArticles.delete': 'Delete draft',
+      'myArticles.deleting': 'Deleting...',
+      'myArticles.deleted': 'Draft deleted. {count} drafts remaining.',
       'myArticles.deleteConfirm': 'Delete this draft? This action cannot be undone.',
       'myArticles.deleteFailed': 'Could not delete the draft. Please try again.',
       'myArticles.viewSubmission': 'View submission',
@@ -2957,6 +2961,7 @@
     if (!root) return;
     var list = root.querySelector('[data-my-articles-list]');
     var preview = root.querySelector('[data-my-article-preview]');
+    var deleteStatus = root.querySelector('[data-my-articles-delete-status]');
     var tabs = Array.from(root.querySelectorAll('[data-my-articles-status]'));
     var groups = { draft: [], pending: [], published: [], rejected: [] };
     var activeStatus = 'draft';
@@ -3083,13 +3088,17 @@
           remove.addEventListener('click', function () {
             if (!window.confirm(t('myArticles.deleteConfirm'))) return;
             remove.disabled = true;
+            remove.textContent = t('myArticles.deleting');
+            if (deleteStatus) deleteStatus.textContent = '';
             apiJson('/api/user/articles/' + encodeURIComponent(article.id), { method: 'DELETE' })
               .then(function () {
                 groups.draft = groups.draft.filter(function (item) { return item.id !== article.id; });
                 renderGroup();
+                if (deleteStatus) deleteStatus.textContent = t('myArticles.deleted').replace('{count}', String(groups.draft.length));
               })
               .catch(function () {
                 remove.disabled = false;
+                remove.textContent = t('myArticles.delete');
                 window.alert(t('myArticles.deleteFailed'));
               });
           });
