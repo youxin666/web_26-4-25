@@ -878,7 +878,7 @@ ${HOME_NAV}
       </div>
     </section>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -915,7 +915,7 @@ ${SHARED_NAV}
     </div>
   </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1032,7 +1032,7 @@ ${SHARED_NAV}
       </section>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1135,7 +1135,7 @@ ${SHARED_NAV}
       </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1207,7 +1207,7 @@ ${adminContent}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1231,7 +1231,7 @@ ${ADMIN_NAV}
         <p class="blog-comments-status" data-admin-submission-detail-status role="status"></p>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1282,7 +1282,7 @@ ${SHARED_NAV}
         </section>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1317,7 +1317,7 @@ ${SHARED_NAV}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
     <script>document.addEventListener('DOMContentLoaded', renderBookmarksPage);</script>
 </body>
 </html>`;
@@ -1725,7 +1725,7 @@ ${SHARED_NAV}
         </form>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1750,7 +1750,7 @@ ${SHARED_NAV}
         <div class="my-articles-list" data-my-articles-list data-my-articles><p data-i18n="myArticles.loading">正在加载文章...</p></div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -1779,7 +1779,7 @@ ${SHARED_NAV}
         <p class="notifications-status" data-notifications-status role="status" aria-live="polite"></p>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -3459,7 +3459,7 @@ ${SHARED_NAV}
       <div class="profile-avatar-column">
         ${profileAvatarHtml()}
         <label class="profile-upload-button hidden" data-profile-upload-label><i class="ri-camera-line" aria-hidden="true"></i><span data-i18n="profile.uploadAvatar">上传头像</span><input type="file" accept="image/jpeg,image/png,image/webp" data-profile-avatar-input hidden></label>
-        <small data-i18n="profile.avatarHint">JPG、PNG 或 WebP，不超过 5 MB</small>
+        <small class="hidden" data-profile-avatar-hint data-i18n="profile.avatarHint">JPG、PNG 或 WebP，不超过 5 MB</small>
       </div>
       <div class="profile-details">
         <div data-profile-view>
@@ -3479,7 +3479,7 @@ ${SHARED_NAV}
     </section>
   </main>
 ${SHARED_FOOTER}
-  <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+  <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -3505,7 +3505,7 @@ ${SHARED_NAV}
     </section>
   </main>
 ${SHARED_FOOTER}
-  <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+  <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }
@@ -3810,7 +3810,7 @@ ${SHARED_NAV}
         </div>
     </main>
 ${SHARED_FOOTER}
-    <script src="/script.js?v=20260906-cylinder-no-wheel"></script>
+    <script src="/script.js?v=20260906-profile-hint-edit-only"></script>
 </body>
 </html>`;
 }

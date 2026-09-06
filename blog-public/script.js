@@ -2206,6 +2206,7 @@
     var edit = root.querySelector('[data-profile-edit]');
     var cancel = root.querySelector('[data-profile-cancel]');
     var uploadLabel = root.querySelector('[data-profile-upload-label]');
+    var avatarHint = root.querySelector('[data-profile-avatar-hint]');
     var avatarInput = root.querySelector('[data-profile-avatar-input]');
     var nameInput = form && form.elements.displayName;
     var emailInput = form && form.elements.email;
@@ -2231,6 +2232,7 @@
       form.classList.toggle('hidden', !isEditing);
       view.classList.toggle('hidden', isEditing);
       if (uploadLabel) uploadLabel.classList.toggle('hidden', !isEditing);
+      if (avatarHint) avatarHint.classList.toggle('hidden', !isEditing);
       if (edit) edit.classList.toggle('hidden', isEditing);
       if (isEditing) { fillForm(); nameInput.focus(); }
     }
