@@ -3688,7 +3688,14 @@ async function handleGetComments(request, env, permalink) {
        WHERE article_permalink = ? AND status = 'approved'
        ORDER BY created_at ASC LIMIT 200`
     ).bind(permalink).all();
-    return jsonResponse({ comments: results || [] });
+    return jsonResponse({ comments: (results || []).map(comment => ({
+      id: comment.id,
+      parent_id: comment.parent_id,
+      userId: comment.user_id || null,
+      author_name: comment.author_name,
+      content: comment.content,
+      created_at: comment.created_at
+    })) });
   } catch (e) {
     return jsonResponse({ error: 'Comments unavailable' }, { status: 503 });
   }

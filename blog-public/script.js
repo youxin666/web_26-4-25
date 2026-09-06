@@ -1886,22 +1886,32 @@
     return text;
   }
 
+  function renderCommentIdentity(comment, headingTag) {
+    var author = comment.author_name || t('comments.anonymous');
+    var initial = (Array.from(author)[0] || '?').toUpperCase();
+    var heading = headingTag || 'h3';
+    var date = '<time class="blog-comment-date">' + new Date(comment.created_at).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'zh-CN') + '</time>';
+    if (comment.userId) {
+      var href = '/user/' + encodeURIComponent(comment.userId);
+      return '<div class="blog-comment-identity">' +
+        '<a class="blog-comment-avatar" href="' + escapeAttr(href) + '" aria-label="' + escapeAttr(author) + '"><img src="/media/user-avatar/' + encodeURIComponent(comment.userId) + '" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>' + escapeHtml(initial) + '</span></a>' +
+        '<div class="blog-comment-author-block"><' + heading + ' class="blog-comment-author"><a href="' + escapeAttr(href) + '">' + escapeHtml(author) + '</a></' + heading + '>' + date + '</div></div>';
+    }
+    return '<div class="blog-comment-identity"><span class="blog-comment-avatar blog-comment-avatar--anonymous"><span>' + escapeHtml(initial) + '</span></span><div class="blog-comment-author-block"><' + heading + ' class="blog-comment-author">' + escapeHtml(author) + '</' + heading + '>' + date + '</div></div>';
+  }
+
   function renderCommentCard(comment, replies) {
     var author = comment.author_name || t('comments.anonymous');
     var replyLabel = formatCommentText('comments.replyTo', { name: author });
     return '<article class="blog-comment-thread" id="comment-' + escapeAttr(comment.id || '') + '">' +
       '<div class="blog-comment-card">' +
-      '<div class="blog-comment-meta">' +
-        '<h3 class="blog-comment-author">' + escapeHtml(author) + '</h3>' +
-        '<time class="blog-comment-date">' + new Date(comment.created_at).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'zh-CN') + '</time>' +
-      '</div>' +
+      '<div class="blog-comment-meta">' + renderCommentIdentity(comment, 'h3') + '</div>' +
       '<p class="blog-comment-content">' + escapeHtml(comment.content || '') + '</p>' +
       '<button class="blog-comment-reply-button" type="button" data-comment-reply="' + escapeHtml(comment.id || '') + '" data-comment-author="' + escapeHtml(author) + '" aria-label="' + escapeHtml(replyLabel) + '">' + t('comments.reply') + '</button>' +
       '</div>' +
       (replies && replies.length ? '<div class="blog-comment-replies">' + replies.map(function (reply) {
         return '<article class="blog-comment-card blog-comment-card--reply" id="comment-' + escapeAttr(reply.id || '') + '">' +
-          '<div class="blog-comment-meta"><h4 class="blog-comment-author">' + escapeHtml(reply.author_name || t('comments.anonymous')) + '</h4>' +
-          '<time class="blog-comment-date">' + new Date(reply.created_at).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'zh-CN') + '</time></div>' +
+          '<div class="blog-comment-meta">' + renderCommentIdentity(reply, 'h4') + '</div>' +
           '<p class="blog-comment-content">' + escapeHtml(reply.content || '') + '</p>' +
         '</article>';
       }).join('') + '</div>' : '') +

@@ -52,5 +52,13 @@ assert.match(client, /data-profile-name-count/);
 assert.match(client, /data-profile-bio-count/);
 assert.match(client, /return fetchUserSession\(\)/);
 assert.match(client, /fillForm\(\);[\s\S]*setEditing\(false\)/);
+assert.match(worker, /SELECT id, parent_id, user_id, author_name, content, created_at/);
+assert.match(worker, /userId: comment\.user_id \|\| null/);
+assert.match(client, /function renderCommentIdentity\(comment, headingTag\)/);
+assert.match(client, /if \(comment\.userId\)/);
+assert.match(client, /'\/user\/' \+ encodeURIComponent\(comment\.userId\)/);
+assert.match(client, /renderCommentIdentity\(comment, 'h3'\)/);
+assert.match(client, /renderCommentIdentity\(reply, 'h4'\)/);
+assert.match(styles, /\.blog-comment-avatar/);
 
 console.log('user profile contracts passed');
