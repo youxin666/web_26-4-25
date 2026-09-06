@@ -4,6 +4,7 @@ import { validateProfileInput, detectAvatarType, privateProfileDto, publicProfil
 
 const migration = readFileSync(new URL('../migrations/blog_0008_user_profiles.sql', import.meta.url), 'utf8');
 const worker = readFileSync(new URL('../blog-worker.js', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../blog-public/styles.css', import.meta.url), 'utf8');
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN avatar_key TEXT/);
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN avatar_mime_type TEXT/);
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN bio TEXT/);
@@ -29,5 +30,16 @@ assert.match(worker, /\/media\\\/user-avatar\\\/\(\[\^\/\]\+\)/);
 assert.match(worker, /requireSameOrigin\(request\)/);
 assert.match(worker, /user-avatars\/\$\{auth\.user\.id\}/);
 assert.match(worker, /Cache-Control': 'public, max-age=300'/);
+assert.match(worker, /data-i18n="nav\.account">我的账户/);
+assert.match(worker, /data-account-page/);
+assert.match(worker, /data-profile-edit/);
+assert.match(worker, /data-profile-form/);
+assert.match(worker, /data-public-profile-page/);
+assert.match(worker, /data-profile-user-id=/);
+assert.match(worker, /pathname === '\/account'/);
+assert.match(worker, /pathname\.match\(\/\^\\\/user/);
+assert.doesNotMatch(worker.match(/function publicProfilePageHtml[\s\S]+?^}/m)?.[0] || '', /data-profile-email|data-profile-joined|data-profile-edit/);
+assert.match(styles, /\.profile-card/);
+assert.match(styles, /@media\(max-width:720px\)/);
 
 console.log('user profile contracts passed');

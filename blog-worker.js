@@ -717,6 +717,7 @@ const SHARED_NAV = `    <!-- Navigation -->
                             <i class="ri-arrow-down-s-line user-account-chevron" aria-hidden="true"></i>
                         </button>
                         <div class="user-account-menu hidden" data-user-account-menu role="menu">
+                            <a href="/account" role="menuitem"><i class="ri-user-settings-line" aria-hidden="true"></i><span data-i18n="nav.account">我的账户</span></a>
                             <a href="/publish" role="menuitem"><i class="ri-quill-pen-line" aria-hidden="true"></i><span data-i18n="nav.publish">发布文章</span></a>
                             <a href="/my-articles" role="menuitem"><i class="ri-file-list-3-line" aria-hidden="true"></i><span data-i18n="nav.myArticles">我的文章</span></a>
                             <a href="/notifications" role="menuitem"><span class="user-menu-message-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span data-i18n="nav.notifications">我的消息</span><span class="user-menu-notification-count hidden" data-user-menu-notification-count>0</span></a>
@@ -3436,6 +3437,79 @@ async function handleUserSession(request, env) {
   return jsonResponse({ authenticated: Boolean(user), user });
 }
 
+function profileAvatarHtml() {
+  return `<div class="profile-avatar" data-profile-avatar-wrap>
+      <img data-profile-avatar alt="" hidden>
+      <span data-profile-initials aria-hidden="true">U</span>
+    </div>`;
+}
+
+function accountPageHtml() {
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+${seoHead('我的账户 - Rowan Notes', '查看和编辑 Rowan Notes 个人资料。', '/account')}
+</head>
+<body class="min-h-screen flex flex-col theme-anzhiyu profile-page">
+${SHARED_NAV}
+  <main class="flex-1 profile-shell" data-account-page>
+    <header class="profile-page-heading"><p data-i18n="profile.kicker">个人中心</p><h1 data-i18n="profile.accountTitle">我的账户</h1></header>
+    <section class="profile-card glass-card" aria-live="polite">
+      <button class="profile-edit-button" type="button" data-profile-edit data-i18n-aria="profile.edit" aria-label="修改资料"><i class="ri-pencil-line" aria-hidden="true"></i></button>
+      <div class="profile-avatar-column">
+        ${profileAvatarHtml()}
+        <label class="profile-upload-button hidden" data-profile-upload-label><i class="ri-camera-line" aria-hidden="true"></i><span data-i18n="profile.uploadAvatar">上传头像</span><input type="file" accept="image/jpeg,image/png,image/webp" data-profile-avatar-input hidden></label>
+        <small data-i18n="profile.avatarHint">JPG、PNG 或 WebP，不超过 5 MB</small>
+      </div>
+      <div class="profile-details">
+        <div data-profile-view>
+          <h2 data-profile-name>—</h2>
+          <p class="profile-email" data-profile-email>—</p>
+          <p class="profile-bio" data-profile-bio data-i18n="profile.noBio">还没有填写简介</p>
+          <dl class="profile-stats"><div><dt data-i18n="profile.publishedArticles">已发布文章</dt><dd data-profile-published-count>0</dd></div><div><dt data-i18n="profile.joined">加入时间</dt><dd data-profile-joined>—</dd></div></dl>
+        </div>
+        <form class="profile-form hidden" data-profile-form novalidate>
+          <label><span data-i18n="profile.displayName">昵称</span><input name="displayName" maxlength="40" required><small><span data-profile-name-count>0</span>/40</small></label>
+          <label><span data-i18n="profile.email">邮箱</span><input name="email" type="email" readonly disabled></label>
+          <label><span data-i18n="profile.bio">个人简介</span><textarea name="bio" maxlength="300" rows="5"></textarea><small><span data-profile-bio-count>0</span>/300</small></label>
+          <div class="profile-form-actions"><button type="button" class="profile-cancel" data-profile-cancel data-i18n="profile.cancel">取消</button><button type="submit" class="profile-save" data-i18n="profile.save">保存信息</button></div>
+        </form>
+        <p class="profile-status" data-profile-status role="status"></p>
+      </div>
+    </section>
+  </main>
+${SHARED_FOOTER}
+  <script src="/script.js?v=20260905-search-close-center"></script>
+</body>
+</html>`;
+}
+
+function publicProfilePageHtml(userId) {
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+${seoHead('用户主页 - Rowan Notes', '查看 Rowan Notes 作者公开资料。', `/user/${escapeAttr(userId)}`)}
+</head>
+<body class="min-h-screen flex flex-col theme-anzhiyu profile-page">
+${SHARED_NAV}
+  <main class="flex-1 profile-shell" data-public-profile-page data-profile-user-id="${escapeAttr(userId)}">
+    <header class="profile-page-heading"><p data-i18n="profile.publicKicker">作者主页</p><h1 data-i18n="profile.publicTitle">个人主页</h1></header>
+    <section class="profile-card profile-card--public glass-card" aria-live="polite">
+      <div class="profile-avatar-column">${profileAvatarHtml()}</div>
+      <div class="profile-details" data-public-profile-content>
+        <h2 data-profile-name>—</h2>
+        <p class="profile-bio" data-profile-bio data-i18n="profile.noBio">还没有填写简介</p>
+        <dl class="profile-stats"><div><dt data-i18n="profile.publishedArticles">已发布文章</dt><dd data-profile-published-count>0</dd></div></dl>
+        <p class="profile-status" data-profile-status role="status"></p>
+      </div>
+    </section>
+  </main>
+${SHARED_FOOTER}
+  <script src="/script.js?v=20260905-search-close-center"></script>
+</body>
+</html>`;
+}
+
 const USER_PROFILE_SELECT = `SELECT user.id, user.email, user.display_name, user.avatar_key,
        user.avatar_mime_type, user.bio, user.created_at, user.updated_at,
        COUNT(article.id) AS published_count
@@ -4031,6 +4105,19 @@ export default {
     if (pathname === '/bookmarks') {
       return htmlResponse(bookmarksPageHtml(), {
         headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' }
+      });
+    }
+
+    if (pathname === '/account' || pathname === '/account/') {
+      const user = await getCurrentUser(request, env);
+      if (!user) return Response.redirect(`${url.origin}/login?returnTo=${encodeURIComponent('/account')}`, 302);
+      return htmlResponse(accountPageHtml(), { headers: { 'Cache-Control': 'private, no-store' } });
+    }
+
+    const publicProfilePageMatch = pathname.match(/^\/user\/([^/]+)\/?$/);
+    if (publicProfilePageMatch) {
+      return htmlResponse(publicProfilePageHtml(decodeURIComponent(publicProfilePageMatch[1])), {
+        headers: { 'Cache-Control': 'public, max-age=60' }
       });
     }
 
