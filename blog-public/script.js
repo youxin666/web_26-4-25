@@ -2306,12 +2306,20 @@
     var root = document.querySelector('[data-public-profile-page]');
     if (!root) return;
     var userId = root.getAttribute('data-profile-user-id');
+    var loadedProfile = null;
+    var errorStatus = 0;
     setProfileStatus(root, t('profile.loading'));
     profileRequest('/api/users/' + encodeURIComponent(userId) + '/profile').then(function (data) {
-      renderProfileFields(root, data.profile);
+      loadedProfile = data.profile;
+      renderProfileFields(root, loadedProfile);
       setProfileStatus(root, '');
     }).catch(function (error) {
+      errorStatus = error.status || 500;
       setProfileStatus(root, error.status === 404 ? t('profile.notFound') : t('profile.loadFailed'), 'error');
+    });
+    document.addEventListener('blog:languagechange', function () {
+      if (loadedProfile) renderProfileFields(root, loadedProfile);
+      if (errorStatus) setProfileStatus(root, errorStatus === 404 ? t('profile.notFound') : t('profile.loadFailed'), 'error');
     });
   }
 
