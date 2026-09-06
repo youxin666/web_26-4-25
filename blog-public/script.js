@@ -65,6 +65,7 @@
       'nav.about': '关于',
       'nav.login': '登录 / 注册',
       'nav.logout': '退出',
+      'nav.account': '我的账户',
       'nav.publish': '发布文章',
       'nav.myArticles': '我的文章',
       'nav.notifications': '我的消息',
@@ -73,6 +74,33 @@
       'nav.adminLogout': '退出登录',
       'nav.backHome': '返回首页',
       'nav.bookmarks': '书签',
+      'profile.kicker': '个人中心',
+      'profile.accountTitle': '我的账户',
+      'profile.publicKicker': '作者主页',
+      'profile.publicTitle': '个人主页',
+      'profile.edit': '修改资料',
+      'profile.uploadAvatar': '上传头像',
+      'profile.avatarHint': 'JPG、PNG 或 WebP，不超过 5 MB',
+      'profile.noAvatar': '尚未上传头像',
+      'profile.noBio': '还没有填写简介',
+      'profile.displayName': '昵称',
+      'profile.email': '邮箱',
+      'profile.bio': '个人简介',
+      'profile.publishedArticles': '已发布文章',
+      'profile.joined': '加入时间',
+      'profile.cancel': '取消',
+      'profile.save': '保存信息',
+      'profile.saving': '正在保存...',
+      'profile.saved': '资料已保存',
+      'profile.loading': '正在加载资料...',
+      'profile.loadFailed': '资料暂时无法加载，请稍后重试。',
+      'profile.saveFailed': '保存失败，请稍后重试。',
+      'profile.nameRequired': '请填写昵称。',
+      'profile.avatarInvalid': '请选择 JPG、PNG 或 WebP 图片。',
+      'profile.avatarTooLarge': '头像不能超过 5 MB。',
+      'profile.uploading': '正在上传头像...',
+      'profile.uploadFailed': '头像上传失败，请稍后重试。',
+      'profile.notFound': '找不到这个用户的公开资料。',
       'home.kicker': '欢迎来到我们的博客',
       'home.description': '技术实践、Cloudflare 部署和个人项目复盘。',
       'home.explore': '浏览全部文章',
@@ -299,6 +327,7 @@
       'nav.about': 'About',
       'nav.login': 'Sign in / Register',
       'nav.logout': 'Sign out',
+      'nav.account': 'My account',
       'nav.publish': 'Publish article',
       'nav.myArticles': 'My articles',
       'nav.notifications': 'My messages',
@@ -307,6 +336,33 @@
       'nav.adminLogout': 'Sign out of admin',
       'nav.backHome': 'Back to Home',
       'nav.bookmarks': 'Bookmarks',
+      'profile.kicker': 'PROFILE',
+      'profile.accountTitle': 'My account',
+      'profile.publicKicker': 'AUTHOR',
+      'profile.publicTitle': 'Public profile',
+      'profile.edit': 'Edit profile',
+      'profile.uploadAvatar': 'Upload avatar',
+      'profile.avatarHint': 'JPG, PNG or WebP, up to 5 MB',
+      'profile.noAvatar': 'No avatar uploaded',
+      'profile.noBio': 'No bio yet',
+      'profile.displayName': 'Display name',
+      'profile.email': 'Email',
+      'profile.bio': 'Bio',
+      'profile.publishedArticles': 'Published articles',
+      'profile.joined': 'Joined',
+      'profile.cancel': 'Cancel',
+      'profile.save': 'Save profile',
+      'profile.saving': 'Saving...',
+      'profile.saved': 'Profile saved',
+      'profile.loading': 'Loading profile...',
+      'profile.loadFailed': 'Profile is unavailable. Please try again.',
+      'profile.saveFailed': 'Could not save. Please try again.',
+      'profile.nameRequired': 'Enter a display name.',
+      'profile.avatarInvalid': 'Choose a JPG, PNG or WebP image.',
+      'profile.avatarTooLarge': 'Avatar must be 5 MB or smaller.',
+      'profile.uploading': 'Uploading avatar...',
+      'profile.uploadFailed': 'Could not upload the avatar. Please try again.',
+      'profile.notFound': 'This public profile could not be found.',
       'home.kicker': 'Welcome to our blog',
       'home.description': 'Technical practice, Cloudflare deployments, and personal project retrospectives.',
       'home.explore': 'Read all stories',
@@ -2086,6 +2142,169 @@
       });
   }
 
+  function profileRequest(url, options) {
+    return fetch(url, Object.assign({ headers: { Accept: 'application/json' } }, options || {})).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok) {
+          var error = new Error(data.error || 'PROFILE_REQUEST_FAILED');
+          error.code = data.error || 'PROFILE_REQUEST_FAILED';
+          error.status = response.status;
+          throw error;
+        }
+        return data;
+      });
+    });
+  }
+
+  function setProfileStatus(root, message, state) {
+    var status = root.querySelector('[data-profile-status]');
+    if (!status) return;
+    status.textContent = message || '';
+    status.dataset.state = state || '';
+  }
+
+  function renderProfileAvatar(root, profile, cacheBust) {
+    var image = root.querySelector('[data-profile-avatar]');
+    var initials = root.querySelector('[data-profile-initials]');
+    var name = String(profile && profile.displayName || '').trim();
+    if (initials) initials.textContent = (Array.from(name)[0] || 'U').toUpperCase();
+    if (!image) return;
+    image.onerror = function () { image.hidden = true; };
+    if (profile && profile.avatarUrl) {
+      image.hidden = false;
+      image.alt = name;
+      image.src = profile.avatarUrl + (cacheBust ? ('?v=' + encodeURIComponent(cacheBust)) : '');
+    } else {
+      image.hidden = true;
+      image.removeAttribute('src');
+    }
+  }
+
+  function renderProfileFields(root, profile) {
+    var name = root.querySelector('[data-profile-name]');
+    var email = root.querySelector('[data-profile-email]');
+    var bio = root.querySelector('[data-profile-bio]');
+    var count = root.querySelector('[data-profile-published-count]');
+    var joined = root.querySelector('[data-profile-joined]');
+    if (name) name.textContent = profile.displayName || '—';
+    if (email) email.textContent = profile.email || '—';
+    if (bio) textContentOrFallback(bio, profile.bio, t('profile.noBio'));
+    if (count) count.textContent = String(Math.max(0, Number(profile.publishedCount) || 0));
+    if (joined) joined.textContent = profile.createdAt ? new Intl.DateTimeFormat(currentLanguage === 'en' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(profile.createdAt)) : '—';
+    renderProfileAvatar(root, profile);
+  }
+
+  function textContentOrFallback(element, value, fallback) {
+    element.textContent = String(value || '').trim() || fallback;
+    element.classList.toggle('is-empty', !String(value || '').trim());
+  }
+
+  function initAccountProfile() {
+    var root = document.querySelector('[data-account-page]');
+    if (!root) return;
+    var form = root.querySelector('[data-profile-form]');
+    var view = root.querySelector('[data-profile-view]');
+    var edit = root.querySelector('[data-profile-edit]');
+    var cancel = root.querySelector('[data-profile-cancel]');
+    var uploadLabel = root.querySelector('[data-profile-upload-label]');
+    var avatarInput = root.querySelector('[data-profile-avatar-input]');
+    var nameInput = form && form.elements.displayName;
+    var emailInput = form && form.elements.email;
+    var bioInput = form && form.elements.bio;
+    var saved = null;
+    var previewUrl = '';
+
+    function updateCounters() {
+      var nameCount = root.querySelector('[data-profile-name-count]');
+      var bioCount = root.querySelector('[data-profile-bio-count]');
+      if (nameCount) nameCount.textContent = String(Array.from(nameInput?.value || '').length);
+      if (bioCount) bioCount.textContent = String(Array.from(bioInput?.value || '').length);
+    }
+    function fillForm() {
+      if (!saved || !form) return;
+      nameInput.value = saved.displayName || '';
+      emailInput.value = saved.email || '';
+      bioInput.value = saved.bio || '';
+      updateCounters();
+    }
+    function setEditing(isEditing) {
+      if (!form || !view) return;
+      form.classList.toggle('hidden', !isEditing);
+      view.classList.toggle('hidden', isEditing);
+      if (uploadLabel) uploadLabel.classList.toggle('hidden', !isEditing);
+      if (edit) edit.classList.toggle('hidden', isEditing);
+      if (isEditing) { fillForm(); nameInput.focus(); }
+    }
+    function renderSaved() {
+      if (!saved) return;
+      renderProfileFields(root, saved);
+      fillForm();
+    }
+    setProfileStatus(root, t('profile.loading'));
+    profileRequest('/api/user/profile').then(function (data) {
+      saved = data.profile;
+      renderSaved();
+      setProfileStatus(root, '');
+    }).catch(function (error) {
+      if (error.status === 401) { window.location.replace('/login?returnTo=%2Faccount'); return; }
+      setProfileStatus(root, t('profile.loadFailed'), 'error');
+    });
+    if (edit) edit.addEventListener('click', function () { setProfileStatus(root, ''); setEditing(true); });
+    if (cancel) cancel.addEventListener('click', function () {
+      fillForm();
+      renderSaved();
+      setEditing(false);
+      setProfileStatus(root, '');
+    });
+    [nameInput, bioInput].forEach(function (input) { if (input) input.addEventListener('input', updateCounters); });
+    if (form) form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var displayName = nameInput.value.trim();
+      if (!displayName) { setProfileStatus(root, t('profile.nameRequired'), 'error'); nameInput.focus(); return; }
+      var controls = Array.from(form.querySelectorAll('button,input,textarea'));
+      controls.forEach(function (control) { control.disabled = true; });
+      setProfileStatus(root, t('profile.saving'), 'saving');
+      profileRequest('/api/user/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ displayName: displayName, bio: bioInput.value }) })
+        .then(function (data) {
+          saved = data.profile;
+          renderSaved();
+          setEditing(false);
+          setProfileStatus(root, t('profile.saved'), 'success');
+          return fetchUserSession();
+        }).catch(function () { setProfileStatus(root, t('profile.saveFailed'), 'error'); })
+        .finally(function () { controls.forEach(function (control) { control.disabled = false; }); });
+    });
+    if (avatarInput) avatarInput.addEventListener('change', function () {
+      var file = avatarInput.files && avatarInput.files[0];
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { setProfileStatus(root, t('profile.avatarInvalid'), 'error'); avatarInput.value = ''; return; }
+      if (file.size > 5 * 1024 * 1024) { setProfileStatus(root, t('profile.avatarTooLarge'), 'error'); avatarInput.value = ''; return; }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      renderProfileAvatar(root, { displayName: nameInput.value || saved?.displayName, avatarUrl: previewUrl });
+      var body = new FormData(); body.append('avatar', file);
+      setProfileStatus(root, t('profile.uploading'), 'saving');
+      profileRequest('/api/user/avatar', { method: 'POST', body: body })
+        .then(function (data) { saved = data.profile; renderProfileAvatar(root, saved, Date.now()); setProfileStatus(root, t('profile.saved'), 'success'); return fetchUserSession(); })
+        .catch(function () { renderSaved(); setProfileStatus(root, t('profile.uploadFailed'), 'error'); })
+        .finally(function () { if (previewUrl) URL.revokeObjectURL(previewUrl); previewUrl = ''; avatarInput.value = ''; });
+    });
+    document.addEventListener('blog:languagechange', function () { if (saved) renderSaved(); });
+  }
+
+  function initPublicProfile() {
+    var root = document.querySelector('[data-public-profile-page]');
+    if (!root) return;
+    var userId = root.getAttribute('data-profile-user-id');
+    setProfileStatus(root, t('profile.loading'));
+    profileRequest('/api/users/' + encodeURIComponent(userId) + '/profile').then(function (data) {
+      renderProfileFields(root, data.profile);
+      setProfileStatus(root, '');
+    }).catch(function (error) {
+      setProfileStatus(root, error.status === 404 ? t('profile.notFound') : t('profile.loadFailed'), 'error');
+    });
+  }
+
   function postAuth(url, form) {
     var button = form.querySelector('button[type="submit"]');
     var payload = Object.fromEntries(new FormData(form).entries());
@@ -3803,6 +4022,10 @@
       initMyArticles();
     } else if (path === '/notifications' || path === '/notifications/') {
       initNotifications();
+    } else if (path === '/account' || path === '/account/') {
+      initAccountProfile();
+    } else if (path.indexOf('/user/') === 0) {
+      initPublicProfile();
     } else if (path === '/login' || path === '/login/' || path === '/register' || path === '/register/') {
       initUserAuth();
     }

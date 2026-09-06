@@ -5,6 +5,7 @@ import { validateProfileInput, detectAvatarType, privateProfileDto, publicProfil
 const migration = readFileSync(new URL('../migrations/blog_0008_user_profiles.sql', import.meta.url), 'utf8');
 const worker = readFileSync(new URL('../blog-worker.js', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../blog-public/styles.css', import.meta.url), 'utf8');
+const client = readFileSync(new URL('../blog-public/script.js', import.meta.url), 'utf8');
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN avatar_key TEXT/);
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN avatar_mime_type TEXT/);
 assert.match(migration, /ALTER TABLE blog_users ADD COLUMN bio TEXT/);
@@ -41,5 +42,15 @@ assert.match(worker, /pathname\.match\(\/\^\\\/user/);
 assert.doesNotMatch(worker.match(/function publicProfilePageHtml[\s\S]+?^}/m)?.[0] || '', /data-profile-email|data-profile-joined|data-profile-edit/);
 assert.match(styles, /\.profile-card/);
 assert.match(styles, /@media\(max-width:720px\)/);
+assert.match(client, /'profile\.accountTitle': '我的账户'/);
+assert.match(client, /'profile\.accountTitle': 'My account'/);
+assert.match(client, /function initAccountProfile\(\)/);
+assert.match(client, /function initPublicProfile\(\)/);
+assert.match(client, /JSON\.stringify\(\{ displayName: displayName, bio: bioInput\.value \}\)/);
+assert.match(client, /body\.append\('avatar', file\)/);
+assert.match(client, /data-profile-name-count/);
+assert.match(client, /data-profile-bio-count/);
+assert.match(client, /return fetchUserSession\(\)/);
+assert.match(client, /fillForm\(\);[\s\S]*setEditing\(false\)/);
 
 console.log('user profile contracts passed');
