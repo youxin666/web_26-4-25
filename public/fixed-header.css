@@ -2,28 +2,30 @@
    behavior remains reliable even when individual pages evolve independently. */
 .site-header {
     position: fixed;
-    top: 12px;
+    top: 0;
     left: 50%;
     translate: -50% 0;
     margin: 0;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.68);
-    backdrop-filter: blur(24px) saturate(1.45);
-    -webkit-backdrop-filter: blur(24px) saturate(1.45);
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .site-header::before {
     content: "";
     position: absolute;
-    top: -12px;
-    left: 50%;
+    inset: 0 auto auto 50%;
     width: 100vw;
-    height: calc(100% + 12px);
+    height: 100%;
     transform: translateX(-50%);
     pointer-events: none;
-    background: rgba(255, 255, 255, 0.68);
-    backdrop-filter: blur(24px) saturate(1.45);
-    -webkit-backdrop-filter: blur(24px) saturate(1.45);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(248, 246, 252, 0.16));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 8px 28px rgba(31, 45, 61, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(28px) saturate(185%);
+    -webkit-backdrop-filter: blur(28px) saturate(185%);
 }
 
 main {
@@ -31,12 +33,16 @@ main {
 }
 
 :root[data-theme="dark"] .site-header {
-    background: rgba(13, 27, 26, 0.68);
-    border-color: rgba(136, 186, 178, 0.24);
+    background: transparent;
+    border-color: transparent;
 }
 
 :root[data-theme="dark"] .site-header::before {
-    background: rgba(13, 27, 26, 0.68);
+    background: linear-gradient(180deg, rgba(22, 22, 28, 0.42), rgba(14, 14, 20, 0.24));
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(28px) saturate(175%);
+    -webkit-backdrop-filter: blur(28px) saturate(175%);
 }
 
 @media (max-width: 860px) {
@@ -46,15 +52,6 @@ main {
 }
 
 @media (max-width: 640px) {
-    .site-header {
-        top: 8px;
-    }
-
-    .site-header::before {
-        top: -8px;
-        height: calc(100% + 8px);
-    }
-
     main {
         padding-top: 74px;
     }
@@ -62,7 +59,7 @@ main {
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .site-header {
-        background: rgba(255, 255, 255, 0.94);
+        background: transparent;
     }
 
     .site-header::before {
@@ -70,7 +67,7 @@ main {
     }
 
     :root[data-theme="dark"] .site-header {
-        background: rgba(13, 27, 26, 0.94);
+        background: transparent;
     }
 
     :root[data-theme="dark"] .site-header::before {
