@@ -8,6 +8,9 @@ const css = fs.readFileSync(cssUrl, 'utf8');
 assert.match(css, /\.site-header\s*\{[^}]*position:\s*fixed;[^}]*top:\s*12px;[^}]*left:\s*50%;[^}]*translate:\s*-50% 0;/s);
 assert.match(css, /\.site-header\s*\{[^}]*backdrop-filter:\s*blur\(24px\) saturate\(1\.45\);/s);
 assert.match(css, /\.site-header\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(24px\) saturate\(1\.45\);/s);
+assert.match(css, /\.site-header::before\s*\{[^}]*position:\s*absolute;[^}]*top:\s*-12px;[^}]*left:\s*50%;[^}]*width:\s*100vw;[^}]*height:\s*12px;[^}]*transform:\s*translateX\(-50%\);[^}]*backdrop-filter:\s*blur\(24px\) saturate\(1\.45\);/s, 'the viewport gap above the header needs the same glass blur');
+assert.match(css, /:root\[data-theme="dark"\] \.site-header::before\s*\{[^}]*background:\s*rgba\(13, 27, 26, 0\.68\);/s, 'the immersive gap needs a dark glass color');
+assert.match(css, /@media \(max-width:\s*640px\)[\s\S]*?\.site-header::before\s*\{[^}]*height:\s*8px;/s, 'the mobile gap blur must match the smaller header offset');
 assert.match(css, /main\s*\{[^}]*padding-top:\s*112px;/s);
 assert.match(css, /@media \(max-width:\s*860px\)[\s\S]*?main\s*\{[^}]*padding-top:\s*82px;/s);
 assert.match(css, /@media \(max-width:\s*640px\)[\s\S]*?main\s*\{[^}]*padding-top:\s*74px;/s);
@@ -15,7 +18,7 @@ assert.match(css, /@media \(max-width:\s*640px\)[\s\S]*?main\s*\{[^}]*padding-to
 for (const name of fs.readdirSync(new URL('../public/', import.meta.url)).filter((file) => file.endsWith('.html'))) {
   const html = fs.readFileSync(new URL(`../public/${name}`, import.meta.url), 'utf8');
   if (!html.includes('styles.css?v=')) continue;
-  assert.match(html, /<link rel="stylesheet" href="fixed-header\.css\?v=20260906-fixed-glass-header">/, `${name} must load the fixed header override`);
+  assert.match(html, /<link rel="stylesheet" href="fixed-header\.css\?v=20260907-immersive-header-gap">/, `${name} must load the fixed header override`);
 }
 
 console.log('Main site fixed glass header contract passed.');
