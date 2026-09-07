@@ -19,6 +19,7 @@ import {
 } from './blog-notifications.js';
 import {
   PROFILE_LIMITS,
+  validatePasswordChangeInput,
   validateProfileInput,
   detectAvatarType,
   privateProfileDto,
@@ -463,6 +464,7 @@ async function createUserToken(user, env) {
     id: user.id,
     email: user.email,
     name: user.display_name || '',
+    version: Math.max(1, Number(user.session_version) || 1),
     exp: Date.now() + USER_SESSION_MAX_AGE * 1000
   }));
   const signature = await signPayload(payload, secret);
@@ -529,8 +531,9 @@ async function getCurrentUser(request, env) {
   if (!env.BLOG_DB) return publicUser({ id: tokenData.id, email: tokenData.email, display_name: tokenData.name });
   try {
     const user = await env.BLOG_DB.prepare(
-      'SELECT id, email, display_name, created_at FROM blog_users WHERE id = ? LIMIT 1'
+      'SELECT id, email, display_name, created_at, session_version FROM blog_users WHERE id = ? LIMIT 1'
     ).bind(tokenData.id).first();
+    if (!user || Math.max(1, Number(user.session_version) || 1) !== Math.max(1, Number(tokenData.version) || 1)) return null;
     return publicUser(user);
   } catch {
     return null;
@@ -559,9 +562,9 @@ async function requireUser(request, env) {
   }
   try {
     const user = await env.BLOG_DB.prepare(
-      'SELECT id, email, display_name, created_at FROM blog_users WHERE id = ? LIMIT 1'
+      'SELECT id, email, display_name, created_at, session_version FROM blog_users WHERE id = ? LIMIT 1'
     ).bind(tokenData.id).first();
-    if (!user) {
+    if (!user || Math.max(1, Number(user.session_version) || 1) !== Math.max(1, Number(tokenData.version) || 1)) {
       return {
         user: null,
         response: jsonResponse({ error: 'LOGIN_REQUIRED' }, { status: 401 })
@@ -646,7 +649,7 @@ function seoHead(title, description, canonicalPath, extraMeta = '') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' rx='14' fill='%23425aef'/%3E%3Cpath fill='white' d='M51.6 9.1C34.8 10.4 20.7 20 14.1 35.2c-2.4 5.5-3.4 11.2-2.9 17.2.1 1.2 1.6 1.8 2.5.9l8.5-8.5c4.9 3.7 12.1 3.2 16.5-1.4 5.6-5.8 5.7-16.8 15.2-26.3 2.7-2.7 1.5-8.3-2.3-8ZM22.7 38.4c4.8-6.5 10.5-12.2 17.2-17.3 1.1-.8 2.4.6 1.5 1.6-5.2 6.2-11 11.9-17.5 17.1-.9.7-1.9-.5-1.2-1.4Z'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="/styles.css?v=20260907-dark-about-logo">
+    <link rel="stylesheet" href="/styles.css?v=20260907-account-password">
     <link rel="stylesheet" href="/customer-service.css?v=20260804-chat-receipts-tight">
     <style>${LOGO_INLINE_CSS}</style>
     <link rel="alternate" type="application/rss+xml" title="Rowan Notes RSS" href="/rss.xml">`;
@@ -3415,7 +3418,7 @@ async function handleUserLogin(request, env) {
   }
 
   const user = await env.BLOG_DB.prepare(
-    'SELECT id, email, display_name, password_hash, created_at FROM blog_users WHERE email = ? LIMIT 1'
+    'SELECT id, email, display_name, password_hash, created_at, session_version FROM blog_users WHERE email = ? LIMIT 1'
   ).bind(email).first();
   if (!user || !(await verifyPassword(password, user.password_hash))) {
     return jsonResponse({ error: '邮箱或密码不正确。' }, { status: 401 });
@@ -3437,6 +3440,45 @@ async function handleUserLogout() {
 async function handleUserSession(request, env) {
   const user = await getCurrentUser(request, env);
   return jsonResponse({ authenticated: Boolean(user), user });
+}
+
+async function handleChangeUserPassword(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.response) return auth.response;
+  const originResponse = requireSameOrigin(request);
+  if (originResponse) return originResponse;
+  const parsed = await readProfileJson(request);
+  if (parsed.response) return parsed.response;
+  const validation = validatePasswordChangeInput(parsed.body);
+  if (!validation.ok) {
+    return jsonResponse({ error: validation.error, field: validation.field }, { status: 400 });
+  }
+
+  try {
+    const user = await env.BLOG_DB.prepare(
+      'SELECT id, email, display_name, password_hash, created_at, session_version FROM blog_users WHERE id = ? LIMIT 1'
+    ).bind(auth.user.id).first();
+    if (!user || !(await verifyPassword(validation.currentPassword, user.password_hash))) {
+      return jsonResponse({ error: 'CURRENT_PASSWORD_INCORRECT', field: 'currentPassword' }, { status: 401 });
+    }
+
+    const nextPasswordHash = await hashPassword(validation.newPassword);
+    const nextSessionVersion = Math.max(1, Number(user.session_version) || 1) + 1;
+    const updatedAt = new Date().toISOString();
+    const result = await env.BLOG_DB.prepare(
+      'UPDATE blog_users SET password_hash = ?, session_version = ?, updated_at = ? WHERE id = ? AND password_hash = ?'
+    ).bind(nextPasswordHash, nextSessionVersion, updatedAt, user.id, user.password_hash).run();
+    if (Number(result?.meta?.changes || 0) !== 1) {
+      return jsonResponse({ error: 'PASSWORD_CHANGE_CONFLICT' }, { status: 409 });
+    }
+
+    const updatedUser = { ...user, password_hash: nextPasswordHash, session_version: nextSessionVersion, updated_at: updatedAt };
+    const token = await createUserToken(updatedUser, env);
+    if (!token) return jsonResponse({ error: 'SERVER_CONFIG_ERROR' }, { status: 500 });
+    return jsonResponse({ ok: true }, { headers: { 'Set-Cookie': userCookie(token) } });
+  } catch {
+    return jsonResponse({ error: 'USER_DATABASE_UNAVAILABLE' }, { status: 503 });
+  }
 }
 
 function profileAvatarHtml() {
@@ -3479,9 +3521,26 @@ ${SHARED_NAV}
         <p class="profile-status" data-profile-status role="status"></p>
       </div>
     </section>
+    <section class="profile-security-card glass-card" data-password-panel>
+      <div class="profile-security-heading">
+        <span class="profile-security-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10M12 14v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <div><p data-i18n="profile.securityKicker">账户安全</p><h2 data-i18n="profile.securityTitle">登录密码</h2><span data-i18n="profile.securityDescription">修改密码时需要验证当前密码；保存后其他设备上的旧登录将失效。</span></div>
+        <button class="profile-password-edit" type="button" data-password-edit aria-expanded="false" aria-controls="profile-password-form"><span data-i18n="profile.changePassword">修改密码</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16.5-.75 3.25L7.5 19l10.3-10.3a2.12 2.12 0 0 0-3-3L4.5 16Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="m13.5 7 3.5 3.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></button>
+      </div>
+      <form class="profile-password-form hidden" id="profile-password-form" data-password-form novalidate>
+        <div class="profile-password-fields">
+          <label><span data-i18n="profile.currentPassword">当前密码</span><input name="currentPassword" type="password" maxlength="128" autocomplete="current-password" required></label>
+          <label><span data-i18n="profile.newPassword">新密码</span><input name="newPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+          <label><span data-i18n="profile.confirmPassword">再次输入新密码</span><input name="confirmPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+        </div>
+        <p class="profile-password-hint" data-i18n="profile.passwordHint">新密码至少 8 位，两次输入必须一致。</p>
+        <div class="profile-form-actions"><button type="button" class="profile-cancel" data-password-cancel data-i18n="profile.cancelPassword">取消</button><button type="submit" class="profile-save" data-i18n="profile.savePassword">确认修改</button></div>
+      </form>
+      <p class="profile-password-status" data-password-status role="status" aria-live="polite"></p>
+    </section>
   </main>
 ${SHARED_FOOTER}
-  <script src="/script.js?v=20260906-account-about-menu"></script>
+  <script src="/script.js?v=20260907-account-password"></script>
 </body>
 </html>`;
 }
@@ -3943,6 +4002,11 @@ export default {
     if (pathname === '/api/user/profile') {
       if (method === 'GET') return handleGetUserProfile(request, env);
       if (method === 'PUT') return handleUpdateUserProfile(request, env);
+      return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
+    }
+
+    if (pathname === '/api/user/password') {
+      if (method === 'POST') return handleChangeUserPassword(request, env);
       return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, { status: 405 });
     }
 

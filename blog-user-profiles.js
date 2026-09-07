@@ -4,6 +4,24 @@ export const PROFILE_LIMITS = Object.freeze({
   avatarBytes: 5 * 1024 * 1024
 });
 
+export const PASSWORD_LIMITS = Object.freeze({
+  min: 8,
+  max: 128
+});
+
+export function validatePasswordChangeInput(input) {
+  const currentPassword = typeof input?.currentPassword === 'string' ? input.currentPassword : '';
+  const newPassword = typeof input?.newPassword === 'string' ? input.newPassword : '';
+  const confirmPassword = typeof input?.confirmPassword === 'string' ? input.confirmPassword : '';
+  if (!currentPassword) return { ok: false, error: 'CURRENT_PASSWORD_REQUIRED', field: 'currentPassword' };
+  if (currentPassword.length > PASSWORD_LIMITS.max) return { ok: false, error: 'CURRENT_PASSWORD_INCORRECT', field: 'currentPassword' };
+  if (newPassword.length < PASSWORD_LIMITS.min) return { ok: false, error: 'PASSWORD_TOO_SHORT', field: 'newPassword' };
+  if (newPassword.length > PASSWORD_LIMITS.max) return { ok: false, error: 'PASSWORD_TOO_LONG', field: 'newPassword' };
+  if (newPassword !== confirmPassword) return { ok: false, error: 'PASSWORD_MISMATCH', field: 'confirmPassword' };
+  if (newPassword === currentPassword) return { ok: false, error: 'PASSWORD_UNCHANGED', field: 'newPassword' };
+  return { ok: true, currentPassword, newPassword };
+}
+
 export function validateProfileInput(input) {
   const displayName = typeof input?.displayName === 'string' ? input.displayName.trim() : '';
   const bio = typeof input?.bio === 'string' ? input.bio.trim() : '';

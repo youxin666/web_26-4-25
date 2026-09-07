@@ -32,7 +32,7 @@ assert.match(script, /'home\.signal': '个人刊物'/, 'Chinese home signal must
 assert.match(script, /'home\.heroTitleLead': '思绪在'/, 'Chinese home hero first line must not remain English');
 assert.match(script, /'home\.heroTitleMotion': '流动'/, 'Chinese home hero second line must not remain English');
 assert.match(worker, /script\.js\?v=20260906-account-about-menu/, 'the current production script needs a fresh cache key');
-assert.match(worker, /styles\.css\?v=20260907-dark-about-logo/, 'the current production stylesheet needs a fresh cache key');
+assert.match(worker, /styles\.css\?v=20260907-account-password/, 'the current production stylesheet needs a fresh cache key');
 assert.match(styles, /\[data-theme="dark"\] \.theme-profile-brand\s*\{[\s\S]*?linear-gradient\(135deg, #9d82dc 0%, #b77cc5 48%, #d98aa8 100%\)/, 'the dark profile logo must use the pink brand gradient');
 assert.match(styles, /\[data-theme="dark"\] \.about-author-avatar\s*\{[\s\S]*?linear-gradient\(135deg, #9d82dc 0%, #b77cc5 48%, #d98aa8 100%\)/, 'the dark about logo must use the pink brand gradient');
 assert.match(worker, /data-my-articles-delete-status[^>]*role="status"/, 'my articles page needs visible draft deletion feedback');

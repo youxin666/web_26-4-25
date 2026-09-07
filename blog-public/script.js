@@ -102,6 +102,26 @@
       'profile.uploading': '正在上传头像...',
       'profile.uploadFailed': '头像上传失败，请稍后重试。',
       'profile.notFound': '找不到这个用户的公开资料。',
+      'profile.securityKicker': '账户安全',
+      'profile.securityTitle': '登录密码',
+      'profile.securityDescription': '修改密码时需要验证当前密码；保存后其他设备上的旧登录将失效。',
+      'profile.changePassword': '修改密码',
+      'profile.currentPassword': '当前密码',
+      'profile.newPassword': '新密码',
+      'profile.confirmPassword': '再次输入新密码',
+      'profile.passwordHint': '新密码至少 8 位，两次输入必须一致。',
+      'profile.cancelPassword': '取消',
+      'profile.savePassword': '确认修改',
+      'profile.currentPasswordRequired': '请输入当前密码。',
+      'profile.currentPasswordIncorrect': '当前密码不正确。',
+      'profile.passwordTooShort': '新密码至少需要 8 位。',
+      'profile.passwordTooLong': '新密码不能超过 128 位。',
+      'profile.passwordMismatch': '两次输入的新密码不一致。',
+      'profile.passwordUnchanged': '新密码不能与当前密码相同。',
+      'profile.passwordChanging': '正在修改密码...',
+      'profile.passwordChanged': '密码已修改，其他设备上的旧登录已失效。',
+      'profile.passwordChangeFailed': '密码修改失败，请稍后重试。',
+      'profile.passwordChangeConflict': '密码已在其他位置更新，请刷新页面后重试。',
       'home.kicker': '欢迎来到我们的博客',
       'home.description': '技术实践、Cloudflare 部署和个人项目复盘。',
       'home.explore': '浏览全部文章',
@@ -367,6 +387,26 @@
       'profile.uploading': 'Uploading avatar...',
       'profile.uploadFailed': 'Could not upload the avatar. Please try again.',
       'profile.notFound': 'This public profile could not be found.',
+      'profile.securityKicker': 'ACCOUNT SECURITY',
+      'profile.securityTitle': 'Sign-in password',
+      'profile.securityDescription': 'Your current password is required. Saving signs out older sessions on other devices.',
+      'profile.changePassword': 'Change password',
+      'profile.currentPassword': 'Current password',
+      'profile.newPassword': 'New password',
+      'profile.confirmPassword': 'Confirm new password',
+      'profile.passwordHint': 'Use at least 8 characters and enter the same new password twice.',
+      'profile.cancelPassword': 'Cancel',
+      'profile.savePassword': 'Update password',
+      'profile.currentPasswordRequired': 'Enter your current password.',
+      'profile.currentPasswordIncorrect': 'The current password is incorrect.',
+      'profile.passwordTooShort': 'The new password must be at least 8 characters.',
+      'profile.passwordTooLong': 'The new password cannot exceed 128 characters.',
+      'profile.passwordMismatch': 'The new passwords do not match.',
+      'profile.passwordUnchanged': 'The new password must be different from the current password.',
+      'profile.passwordChanging': 'Updating password...',
+      'profile.passwordChanged': 'Password updated. Older sessions on other devices have been signed out.',
+      'profile.passwordChangeFailed': 'Could not update the password. Please try again.',
+      'profile.passwordChangeConflict': 'The password changed elsewhere. Refresh and try again.',
       'home.kicker': 'Welcome to our blog',
       'home.description': 'Technical practice, Cloudflare deployments, and personal project retrospectives.',
       'home.explore': 'Read all stories',
@@ -2153,6 +2193,7 @@
         if (!response.ok) {
           var error = new Error(data.error || 'PROFILE_REQUEST_FAILED');
           error.code = data.error || 'PROFILE_REQUEST_FAILED';
+          error.field = data.field || '';
           error.status = response.status;
           throw error;
         }
@@ -2204,9 +2245,103 @@
     element.classList.toggle('is-empty', !String(value || '').trim());
   }
 
+  function initAccountPassword(root) {
+    var form = root.querySelector('[data-password-form]');
+    var edit = root.querySelector('[data-password-edit]');
+    var cancel = root.querySelector('[data-password-cancel]');
+    var status = root.querySelector('[data-password-status]');
+    if (!form || !edit || !status) return;
+    var currentPassword = form.elements.currentPassword;
+    var newPassword = form.elements.newPassword;
+    var confirmPassword = form.elements.confirmPassword;
+
+    function setPasswordStatus(message, state) {
+      status.textContent = message || '';
+      status.dataset.state = state || '';
+    }
+
+    function setPasswordEditing(isEditing) {
+      form.classList.toggle('hidden', !isEditing);
+      edit.classList.toggle('hidden', isEditing);
+      edit.setAttribute('aria-expanded', isEditing ? 'true' : 'false');
+      if (isEditing) currentPassword.focus();
+      else form.reset();
+    }
+
+    function passwordErrorMessage(code) {
+      var keys = {
+        CURRENT_PASSWORD_REQUIRED: 'profile.currentPasswordRequired',
+        CURRENT_PASSWORD_INCORRECT: 'profile.currentPasswordIncorrect',
+        PASSWORD_TOO_SHORT: 'profile.passwordTooShort',
+        PASSWORD_TOO_LONG: 'profile.passwordTooLong',
+        PASSWORD_MISMATCH: 'profile.passwordMismatch',
+        PASSWORD_UNCHANGED: 'profile.passwordUnchanged',
+        PASSWORD_CHANGE_CONFLICT: 'profile.passwordChangeConflict'
+      };
+      return t(keys[code] || 'profile.passwordChangeFailed');
+    }
+
+    edit.addEventListener('click', function () {
+      setPasswordStatus('');
+      setPasswordEditing(true);
+    });
+    if (cancel) cancel.addEventListener('click', function () {
+      setPasswordEditing(false);
+      setPasswordStatus('');
+      edit.focus();
+    });
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!currentPassword.value) {
+        setPasswordStatus(t('profile.currentPasswordRequired'), 'error');
+        currentPassword.focus();
+        return;
+      }
+      if (newPassword.value.length < 8) {
+        setPasswordStatus(t('profile.passwordTooShort'), 'error');
+        newPassword.focus();
+        return;
+      }
+      if (newPassword.value !== confirmPassword.value) {
+        setPasswordStatus(t('profile.passwordMismatch'), 'error');
+        confirmPassword.focus();
+        return;
+      }
+      if (newPassword.value === currentPassword.value) {
+        setPasswordStatus(t('profile.passwordUnchanged'), 'error');
+        newPassword.focus();
+        return;
+      }
+
+      var controls = Array.from(form.querySelectorAll('button,input'));
+      controls.forEach(function (control) { control.disabled = true; });
+      setPasswordStatus(t('profile.passwordChanging'), 'saving');
+      profileRequest('/api/user/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          currentPassword: currentPassword.value,
+          newPassword: newPassword.value,
+          confirmPassword: confirmPassword.value
+        })
+      }).then(function () {
+        setPasswordEditing(false);
+        setPasswordStatus(t('profile.passwordChanged'), 'success');
+        return fetchUserSession();
+      }).catch(function (error) {
+        setPasswordStatus(passwordErrorMessage(error.code), 'error');
+        var field = error.field && form.elements[error.field];
+        if (field) field.focus();
+      }).finally(function () {
+        controls.forEach(function (control) { control.disabled = false; });
+      });
+    });
+  }
+
   function initAccountProfile() {
     var root = document.querySelector('[data-account-page]');
     if (!root) return;
+    initAccountPassword(root);
     var form = root.querySelector('[data-profile-form]');
     var view = root.querySelector('[data-profile-view]');
     var edit = root.querySelector('[data-profile-edit]');
