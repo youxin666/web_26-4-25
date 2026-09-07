@@ -5694,7 +5694,15 @@ body.site-search-open { overflow: hidden; }
   box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
 }
 
-[data-theme="dark"] .about-author-avatar { border-color: var(--anzhiyu-surface); }
+[data-theme="dark"] .about-author-avatar {
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255, 255, 255, 0.32), transparent 1.3rem),
+    linear-gradient(135deg, #9d82dc 0%, #b77cc5 48%, #d98aa8 100%);
+  border-color: rgba(242, 225, 255, 0.2);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(217, 190, 255, 0.08) inset;
+}
 [data-theme="dark"] .about-author-tag { color: var(--anzhiyu-ink); background: var(--anzhiyu-surface); border-color: var(--anzhiyu-line); }
 [data-theme="dark"] .about-space-links a { color: var(--anzhiyu-ink); border-color: var(--anzhiyu-line); }
 [data-theme="dark"] .about-secondary-action { color: var(--anzhiyu-ink); }
