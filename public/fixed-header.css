@@ -65,6 +65,11 @@ main {
 }
 
 @media (max-width: 860px) {
+    body > .site-nav {
+        padding-top: 82px;
+        scroll-padding-top: 82px;
+    }
+
     main {
         padding-top: 82px;
     }

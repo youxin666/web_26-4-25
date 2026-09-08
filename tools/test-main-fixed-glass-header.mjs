@@ -17,7 +17,7 @@ assert.match(css, /@media \(max-width:\s*640px\)[\s\S]*?main\s*\{[^}]*padding-to
 for (const name of fs.readdirSync(new URL('../public/', import.meta.url)).filter((file) => file.endsWith('.html'))) {
   const html = fs.readFileSync(new URL(`../public/${name}`, import.meta.url), 'utf8');
   if (!html.includes('styles.css?v=')) continue;
-  assert.match(html, /<link rel="stylesheet" href="fixed-header\.css\?v=20260907-deep-edge-glass">/, `${name} must load the fixed header override`);
+  assert.match(html, /<link rel="stylesheet" href="fixed-header\.css\?v=20260907-mobile-brand-gap">/, `${name} must load the fixed header override`);
 }
 
 console.log('Main site fixed glass header contract passed.');
