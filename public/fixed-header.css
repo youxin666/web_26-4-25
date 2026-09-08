@@ -70,6 +70,20 @@ main {
         scroll-padding-top: 82px;
     }
 
+    body > .site-nav::before {
+        background-image: none;
+    }
+
+    body > .site-nav .nav-main {
+        padding-top: 11px;
+        background-image:
+            linear-gradient(90deg, rgba(15, 118, 110, 0.32) 0 40px, transparent 40px),
+            linear-gradient(90deg, rgba(15, 118, 110, 0.1), rgba(15, 118, 110, 0.08) 78%, transparent);
+        background-repeat: no-repeat;
+        background-size: 40px 2px, calc(100% - 18px) 1px;
+        background-position: 9px 0, 9px 0;
+    }
+
     main {
         padding-top: 82px;
     }

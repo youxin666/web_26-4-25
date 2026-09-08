@@ -13,5 +13,7 @@ assert.match(finalMobileBlock, /\.nav-main,[\s\S]*?\.nav-tools,[\s\S]*?\.nav-ext
 assert.match(finalMobileBlock, /\.nav-main::before,[\s\S]*?\.nav-tools::before,[\s\S]*?\.nav-external::before\s*\{[\s\S]*?margin:\s*0 10px 3px;/);
 assert.match(finalMobileBlock, /\.nav-tools,[\s\S]*?\.nav-external\s*\{[\s\S]*?margin-top:\s*5px;[\s\S]*?padding-top:\s*11px;/);
 assert.match(fixedHeaderCss, /@media \(max-width:\s*860px\)[\s\S]*?body > \.site-nav\s*\{[^}]*padding-top:\s*82px;[^}]*scroll-padding-top:\s*82px;/s, "the brand divider needs extra space before the first navigation group");
+assert.match(fixedHeaderCss, /@media \(max-width:\s*860px\)[\s\S]*?body > \.site-nav::before\s*\{[^}]*background-image:\s*none;/s, "the divider must move away from the brand instead of remaining attached to it");
+assert.match(fixedHeaderCss, /@media \(max-width:\s*860px\)[\s\S]*?body > \.site-nav \.nav-main\s*\{[^}]*padding-top:\s*11px;[^}]*background-image:[^}]*background-size:\s*40px 2px, calc\(100% - 18px\) 1px;[^}]*background-position:\s*9px 0, 9px 0;/s, "the first group divider must use the same line-to-label spacing as the service groups");
 
 console.log("Mobile sidebar layout contract passed.");
