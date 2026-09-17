@@ -173,3 +173,15 @@ setInterval(() => {
   state.cache.delete(period);
   loadPeriod(period, false);
 }, 60_000);
+
+document.querySelectorAll('.workspace-tab').forEach(button => button.addEventListener('click', () => {
+  const detail = button.dataset.view === 'detail';
+  document.querySelector('#aggregate-view').hidden = detail;
+  document.querySelector('#detail-view').hidden = !detail;
+  document.querySelectorAll('.workspace-tab').forEach(tab => {
+    const active = tab === button;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', String(active));
+  });
+  window.dispatchEvent(new CustomEvent('market-detail:visible', { detail: { visible: detail } }));
+}));
