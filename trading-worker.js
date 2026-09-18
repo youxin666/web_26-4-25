@@ -1,3 +1,5 @@
+import { fetchCoinalyzeMetrics, selectMarkets } from './trading-coinalyze.js';
+
 const SYMBOLS = [
   'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','LTCUSDT',
   'BCHUSDT','SUIUSDT','TRXUSDT','DOTUSDT','UNIUSDT','AAVEUSDT','NEARUSDT','APTUSDT','ETCUSDT','ICPUSDT',
@@ -14,6 +16,12 @@ const PERIODS = {
 };
 const DETAIL_SYMBOLS = ['BTC', 'ETH', 'SOL'];
 const DETAIL_PERIODS = ['15m', '30m', '1h', '4h', '8h', '12h', '24h'];
+const classifyDirection = (pricePercent, oiPercent) => {
+  if (pricePercent >= 0 && oiPercent >= 0) return { key: 'long-build', label: '多头增仓', tone: 'positive' };
+  if (pricePercent < 0 && oiPercent >= 0) return { key: 'short-build', label: '空头增仓', tone: 'negative' };
+  if (pricePercent >= 0 && oiPercent < 0) return { key: 'short-cover', label: '空头止损', tone: 'positive' };
+  return { key: 'long-exit', label: '多头止损', tone: 'negative' };
+};
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
@@ -116,8 +124,9 @@ export default {
 };
 
 export class MarketSnapshot {
-  constructor(state) {
+  constructor(state, env) {
     this.state = state;
+    this.env = env;
   }
 
   async fetch(request) {
@@ -176,16 +185,72 @@ export class MarketSnapshot {
       return metric && ['pricePercent', 'oiPercent', 'netFlowUsd'].every(field => Number.isFinite(Number(metric[field])));
     });
     if (body?.symbol !== symbol || !fresh || !validCurrent || !validPeriods) return json({ error: 'Invalid detail snapshot' }, 400);
+    const coinalyze = await this.coinalyzeMetrics();
+    const metric = coinalyze.assets?.[symbol];
+    const hasCoinalyze = metric && metric.coverage?.oiMarkets > 0;
+    const mergedPeriods = Object.fromEntries(DETAIL_PERIODS.map(period => {
+      const candidate = periods[period];
+      const aggregate = metric?.periods?.[period];
+      const oiPercent = hasCoinalyze && Number.isFinite(Number(aggregate?.oiPercent)) ? Number(aggregate.oiPercent) : null;
+      const netFlowUsd = hasCoinalyze && Number.isFinite(Number(aggregate?.netFlowUsd)) ? Number(aggregate.netFlowUsd) : null;
+      return [period, {
+        pricePercent: Number(candidate.pricePercent), oiPercent, netFlowUsd,
+        direction: oiPercent === null ? null : classifyDirection(Number(candidate.pricePercent), oiPercent),
+      }];
+    }));
     const snapshot = {
       symbol, updatedAt: Number(body.updatedAt),
-      current: Object.fromEntries(Object.entries(current).map(([keyName, value]) => [keyName, Number(value)])),
-      periods: Object.fromEntries(DETAIL_PERIODS.map(period => [period, {
-        pricePercent: Number(periods[period].pricePercent), oiPercent: Number(periods[period].oiPercent),
-        netFlowUsd: Number(periods[period].netFlowUsd), direction: periods[period].direction,
-      }])),
+      current: {
+        price: Number(current.price), fundingRate: Number(current.fundingRate),
+        oiNotional: hasCoinalyze ? Number(metric.currentOiNotional) : null,
+        longShortRatio: hasCoinalyze ? Number(metric.longShortRatio) : null,
+      },
+      periods: mergedPeriods,
+      liquidations: hasCoinalyze ? metric.liquidations : null,
+      coverage: metric?.coverage || { oiMarkets: 0, cvdMarkets: 0, ratioMarkets: 0, liquidationMarkets: 0 },
+      sources: {
+        binance: { updatedAt: Number(body.updatedAt) },
+        coinalyze: { updatedAt: coinalyze.fetchedAt || null, stale: Boolean(coinalyze.stale), retryAfter: coinalyze.retryAfter || null },
+      },
     };
     await this.state.storage.put(key, snapshot);
     return json({ ...snapshot, stale: false });
+  }
+
+  async coinalyzeMetrics() {
+    const now = Date.now();
+    const cached = await this.state.storage.get('coinalyze:metrics');
+    if (cached && now - cached.fetchedAt < 60_000) return cached;
+    const retryAt = await this.state.storage.get('coinalyze:retry-at');
+    if (cached && Number(retryAt) > now) return { ...cached, stale: true, retryAfter: Number(retryAt) };
+    if (!this.env.COINALYZE_API_KEY) {
+      if (cached) return { ...cached, stale: true };
+      return { assets: {}, fetchedAt: null, stale: true };
+    }
+    try {
+      let catalog = await this.state.storage.get('coinalyze:markets');
+      if (!catalog || now - catalog.updatedAt >= 86_400_000) {
+        const response = await fetch('https://api.coinalyze.net/v1/future-markets', { headers: { api_key: this.env.COINALYZE_API_KEY } });
+        if (!response.ok) {
+          const error = new Error(`Coinalyze ${response.status}`);
+          error.status = response.status;
+          error.retryAfter = response.headers.get('retry-after');
+          throw error;
+        }
+        catalog = { markets: await response.json(), updatedAt: now };
+        await this.state.storage.put('coinalyze:markets', catalog);
+      }
+      const metrics = await fetchCoinalyzeMetrics({ apiKey: this.env.COINALYZE_API_KEY, marketsByAsset: selectMarkets(catalog.markets), now });
+      await this.state.storage.put('coinalyze:metrics', metrics);
+      await this.state.storage.delete('coinalyze:retry-at');
+      return metrics;
+    } catch (error) {
+      if (error.status === 429 && error.retryAfter) {
+        await this.state.storage.put('coinalyze:retry-at', now + Math.ceil(Number(error.retryAfter) * 1000));
+      }
+      if (cached) return { ...cached, stale: true, retryAfter: await this.state.storage.get('coinalyze:retry-at') };
+      return { assets: {}, fetchedAt: null, stale: true, retryAfter: await this.state.storage.get('coinalyze:retry-at') };
+    }
   }
 
   async liquidations(request, symbol = 'ALL') {
