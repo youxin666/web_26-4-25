@@ -441,6 +441,7 @@ footer {
     scroll-behavior: auto !important;
   }
 }
+.muted { color: var(--muted); }
 
 .workspace-tabs {
   position: sticky;
@@ -512,6 +513,7 @@ footer {
 .metric-bar-track::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #69809e; }
 .metric-bar-fill { position: absolute; top: 5px; height: 12px; width: var(--size); border-radius: 3px; background: var(--green); }
 .metric-bar-fill.positive { left: 50%; }.metric-bar-fill.negative { right: 50%; background: var(--red); }
+.metric-bar-fill.muted { left: 50%; background: var(--muted); }
 .metric-bar-value { text-align: right; font: 500 10px "IBM Plex Mono", monospace; }
 .detail-source { display: flex; justify-content: space-between; margin-top: 10px; }
 .detail-error { padding: 40px; text-align: center; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); }
