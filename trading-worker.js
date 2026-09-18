@@ -170,6 +170,11 @@ export class MarketSnapshot {
     const existing = await this.state.storage.get(key);
     if (request.method === 'GET') {
       if (!existing) return json({ needsSeed: true, symbol });
+      if (!existing.coverage) {
+        const upgraded = this.mergeDetailSnapshot(existing, symbol, await this.coinalyzeMetrics());
+        await this.state.storage.put(key, upgraded);
+        return json({ ...upgraded, stale: Date.now() - upgraded.updatedAt > 60_000 });
+      }
       return json({ ...existing, stale: Date.now() - existing.updatedAt > 60_000 });
     }
     if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -186,6 +191,14 @@ export class MarketSnapshot {
     });
     if (body?.symbol !== symbol || !fresh || !validCurrent || !validPeriods) return json({ error: 'Invalid detail snapshot' }, 400);
     const coinalyze = await this.coinalyzeMetrics();
+    const snapshot = this.mergeDetailSnapshot(body, symbol, coinalyze);
+    await this.state.storage.put(key, snapshot);
+    return json({ ...snapshot, stale: false });
+  }
+
+  mergeDetailSnapshot(body, symbol, coinalyze) {
+    const current = body.current || {};
+    const periods = body.periods || {};
     const metric = coinalyze.assets?.[symbol];
     const hasCoinalyze = metric && metric.coverage?.oiMarkets > 0;
     const mergedPeriods = Object.fromEntries(DETAIL_PERIODS.map(period => {
@@ -198,7 +211,7 @@ export class MarketSnapshot {
         direction: oiPercent === null ? null : classifyDirection(Number(candidate.pricePercent), oiPercent),
       }];
     }));
-    const snapshot = {
+    return {
       symbol, updatedAt: Number(body.updatedAt),
       current: {
         price: Number(current.price), fundingRate: Number(current.fundingRate),
@@ -213,8 +226,6 @@ export class MarketSnapshot {
         coinalyze: { updatedAt: coinalyze.fetchedAt || null, stale: Boolean(coinalyze.stale), retryAfter: coinalyze.retryAfter || null },
       },
     };
-    await this.state.storage.put(key, snapshot);
-    return json({ ...snapshot, stale: false });
   }
 
   async coinalyzeMetrics() {
