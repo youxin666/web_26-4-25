@@ -180,7 +180,10 @@ export class MarketSnapshot {
       const alarm = await this.state.storage.getAlarm();
       if (alarm === null) await this.state.storage.setAlarm(Date.now());
     }
-    if (!snapshot) return json({ building: true, retryAfterMs: 1500 }, 202);
+    if (!snapshot) {
+      const draft = await this.state.storage.get('panorama:draft');
+      return json({ building: true, progress: draft ? { completed: draft.cursor, total: draft.pairs.length } : null, retryAfterMs: 1500 }, 202);
+    }
     if (symbol) {
       const asset = snapshot.assets.find(item => item.symbol === symbol);
       if (!asset) return json({ error: 'Unsupported symbol' }, 404);
@@ -208,21 +211,25 @@ export class MarketSnapshot {
     const batch = draft.pairs.slice(draft.cursor, draft.cursor + 39);
     const windows = { '15m':3, '30m':6, '1h':12, '4h':48, '8h':96, '12h':144, '24h':288 };
     const results = await Promise.all(batch.map(async pair => {
-      const query = new URLSearchParams({ symbol: pair, period: '5m', limit: '289' });
-      const response = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?${query}`);
-      if (!response.ok) return null;
-      const rows = await response.json();
-      if (!Array.isArray(rows) || rows.length < 2) return null;
-      const current = rows.at(-1);
-      const periods = Object.fromEntries(PANORAMA_PERIODS.map(period => {
-        const baseline = rows.at(-(windows[period] + 1));
-        if (!baseline) return [period, { current: Number(current.sumOpenInterestValue), delta: null, percent: null }];
-        const currentValue = Number(current.sumOpenInterestValue);
-        const baselineValue = Number(baseline.sumOpenInterestValue);
-        const baselineOi = Number(baseline.sumOpenInterest);
-        return [period, { current: currentValue, delta: currentValue - baselineValue, percent: baselineOi ? (Number(current.sumOpenInterest) / baselineOi - 1) * 100 : null }];
-      }));
-      return [pair.replace(/USDT$/, ''), periods];
+      try {
+        const query = new URLSearchParams({ symbol: pair, period: '5m', limit: '289' });
+        const response = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?${query}`);
+        if (!response.ok) return null;
+        const rows = await response.json();
+        if (!Array.isArray(rows) || rows.length < 2) return null;
+        const current = rows.at(-1);
+        const periods = Object.fromEntries(PANORAMA_PERIODS.map(period => {
+          const baseline = rows.at(-(windows[period] + 1));
+          if (!baseline) return [period, { current: Number(current.sumOpenInterestValue), delta: null, percent: null }];
+          const currentValue = Number(current.sumOpenInterestValue);
+          const baselineValue = Number(baseline.sumOpenInterestValue);
+          const baselineOi = Number(baseline.sumOpenInterest);
+          return [period, { current: currentValue, delta: currentValue - baselineValue, percent: baselineOi ? (Number(current.sumOpenInterest) / baselineOi - 1) * 100 : null }];
+        }));
+        return [pair.replace(/USDT$/, ''), periods];
+      } catch {
+        return null;
+      }
     }));
     for (const result of results.filter(Boolean)) draft.metrics[result[0]] = result[1];
     draft.cursor += batch.length;
@@ -238,7 +245,8 @@ export class MarketSnapshot {
         return { symbol, ...(draft.metrics[symbol]?.[period] || { current: null, delta: null, percent: null }) };
       }),
     }]));
-    const coinalyze = await this.coinalyzeMetrics();
+    let coinalyze = {};
+    try { coinalyze = await this.coinalyzeMetrics(); } catch { coinalyze = {}; }
     const published = buildPanoramaSnapshot({ snapshots, tickers: draft.tickers, premiums: draft.premiums, coinalyze });
     published.updatedAt = Date.now();
     await this.state.storage.put('panorama:published', published);
