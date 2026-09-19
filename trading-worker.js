@@ -175,10 +175,14 @@ export class MarketSnapshot {
   }
 
   async panorama(symbol = '') {
-    const snapshot = await this.state.storage.get('panorama:published');
+    let snapshot = await this.state.storage.get('panorama:published');
     if (!snapshot || Date.now() - snapshot.updatedAt > 45_000) {
       const alarm = await this.state.storage.getAlarm();
       if (alarm === null) await this.state.storage.setAlarm(Date.now());
+    }
+    if (!snapshot) {
+      try { await this.alarm(); } catch {}
+      snapshot = await this.state.storage.get('panorama:published');
     }
     if (!snapshot) {
       const draft = await this.state.storage.get('panorama:draft');
