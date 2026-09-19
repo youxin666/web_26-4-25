@@ -3,11 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07101f">
+  <meta name="theme-color" id="theme-color" content="#07101f">
+  <script data-theme-bootstrap>
+    (() => {
+      const key = 'trading-theme-preference';
+      const allowed = new Set(['auto', 'light', 'dark']);
+      let preference = 'auto';
+      try {
+        const saved = localStorage.getItem(key);
+        if (allowed.has(saved)) preference = saved;
+      } catch {}
+      const systemDark = typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : true;
+      const resolved = preference === 'auto' ? (systemDark ? 'dark' : 'light') : preference;
+      document.documentElement.dataset.themePreference = preference;
+      document.documentElement.dataset.theme = resolved;
+      document.documentElement.style.colorScheme = resolved;
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307101f'/%3E%3Cpath d='M13 43l12-15 9 8 17-20v11L35 47l-9-8-13 15z' fill='%2351d7ae'/%3E%3C/svg%3E">
   <title>市场分组概览 · OI Observatory</title>
   <meta name="description" content="基于 Binance USDⓈ-M Futures 公开数据的合约持仓量分组观察面板。">
-    <link rel="stylesheet" href="/styles.css?v=20260917-1">
+    <link rel="stylesheet" href="/styles.css?v=20260918-1">
 </head>
 <body>
   <div class="ambient" aria-hidden="true"></div>
@@ -18,7 +36,13 @@
         <h1>市场分组概览</h1>
         <p>按实时名义持仓量排序 · USDⓈ-M 永续合约</p>
       </div>
-      <div class="status" id="status" aria-live="polite"><i></i><span>正在同步市场</span></div>
+      <div class="header-actions">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="主题模式：自动" title="主题模式：自动">
+          <span aria-hidden="true" class="theme-toggle-icon">◐</span>
+          <span class="theme-toggle-label">自动</span>
+        </button>
+        <div class="status" id="status" aria-live="polite"><i></i><span>正在同步市场</span></div>
+      </div>
     </header>
 
     <section id="aggregate-view">
@@ -78,6 +102,7 @@
       <p class="coverage"></p>
     </article>
   </template>
+  <script src="/theme-controller.js?v=20260918-1" defer></script>
   <script src="/app.js?v=20260917-2" defer></script>
   <script src="/market-detail-view.js?v=20260918-1" type="module"></script>
 </body>
