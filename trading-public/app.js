@@ -174,14 +174,18 @@ setInterval(() => {
   loadPeriod(period, false);
 }, 60_000);
 
-document.querySelectorAll('.workspace-tab').forEach(button => button.addEventListener('click', () => {
-  const detail = button.dataset.view === 'detail';
-  document.querySelector('#aggregate-view').hidden = detail;
-  document.querySelector('#detail-view').hidden = !detail;
+const workspaceIds = { aggregate: 'aggregate-view', detail: 'detail-view', panorama: 'panorama-view' };
+function activateWorkspace(view, { updateUrl = true } = {}) {
+  const selected = workspaceIds[view] ? view : 'aggregate';
+  Object.entries(workspaceIds).forEach(([key,id]) => { document.querySelector(`#${id}`).hidden = key !== selected; });
   document.querySelectorAll('.workspace-tab').forEach(tab => {
-    const active = tab === button;
+    const active = tab.dataset.view === selected;
     tab.classList.toggle('active', active);
     tab.setAttribute('aria-selected', String(active));
   });
-  window.dispatchEvent(new CustomEvent('market-detail:visible', { detail: { visible: detail } }));
-}));
+  window.dispatchEvent(new CustomEvent('market-detail:visible', { detail: { visible: selected === 'detail' } }));
+  window.dispatchEvent(new CustomEvent('market-panorama:visible', { detail: { visible: selected === 'panorama' } }));
+  if (updateUrl) { const url=new URL(location.href); selected==='aggregate'?url.searchParams.delete('view'):url.searchParams.set('view',selected); if(selected!=='panorama')url.searchParams.delete('symbol'); history.pushState({},'',url); }
+}
+document.querySelectorAll('.workspace-tab').forEach(button => button.addEventListener('click', () => activateWorkspace(button.dataset.view)));
+activateWorkspace(new URLSearchParams(location.search).get('view') || 'aggregate', { updateUrl:false });

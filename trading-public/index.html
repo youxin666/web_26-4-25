@@ -85,9 +85,29 @@
       <p class="detail-source" id="detail-source"></p>
     </section>
 
+    <section class="panorama-workspace" id="panorama-view" hidden aria-labelledby="panorama-title">
+      <header class="panorama-header"><div><span class="eyebrow">MARKET PANORAMA</span><h2 id="panorama-title">币种全景</h2><p>USDⓈ-M 永续合约统一快照 · Binance 基础数据 / Coinalyze 增强</p></div></header>
+      <form class="panorama-filters" id="panorama-filters" aria-label="币种筛选">
+        <label>搜索<input id="panorama-search" type="search" placeholder="BTC / ETH / SOL" autocomplete="off"></label>
+        <label>周期<select id="panorama-period"><option>15m</option><option>30m</option><option>1h</option><option selected>4h</option><option>8h</option><option>12h</option><option>24h</option></select></label>
+        <label>数据<select id="panorama-completeness"><option value="all">全部</option><option value="complete">Coinalyze 完整</option><option value="partial">存在缺失</option></select></label>
+        <label>OI排名<input data-filter="rankMin" type="number" min="1" placeholder="从"><input data-filter="rankMax" type="number" min="1" placeholder="到"></label>
+        <label>价格涨跌%<input data-filter="priceMin" type="number" step="0.1" placeholder="最低"><input data-filter="priceMax" type="number" step="0.1" placeholder="最高"></label>
+        <label>OI变化%<input data-filter="oiMin" type="number" step="0.1" placeholder="最低"><input data-filter="oiMax" type="number" step="0.1" placeholder="最高"></label>
+        <label>资金费率<input data-filter="fundingMin" type="number" step="0.0001" placeholder="最低"><input data-filter="fundingMax" type="number" step="0.0001" placeholder="最高"></label>
+        <label>24H成交量<input data-filter="volumeMin" type="number" placeholder="最低USD"><input data-filter="volumeMax" type="number" placeholder="最高USD"></label>
+      </form>
+      <div class="panorama-status" id="panorama-status" aria-live="polite">准备加载全景快照</div>
+      <div class="panorama-table-shell"><table id="panorama-table"><thead><tr>
+        <th data-sort="oiRank" aria-sort="none">排名</th><th data-sort="symbol" aria-sort="none">币种</th><th data-sort="price" aria-sort="none">价格</th><th data-sort="price24hPercent" aria-sort="none">24H涨跌</th><th data-sort="currentOi" aria-sort="descending">当前 OI</th><th data-sort="oiPercent" aria-sort="none">OI变化</th><th data-sort="fundingRate" aria-sort="none">资金费率</th><th data-sort="volume24hUsd" aria-sort="none">24H成交量</th><th>资金流</th><th>多空比</th><th>爆仓</th>
+      </tr></thead><tbody></tbody></table></div>
+      <aside class="panorama-drawer" id="panorama-drawer" aria-label="币种全景详情" hidden><button id="panorama-close" type="button">← 返回币种列表</button><div id="panorama-detail"></div></aside>
+    </section>
+
     <nav class="workspace-tabs" aria-label="市场工作区">
       <button class="workspace-tab active" data-view="aggregate" aria-selected="true">聚合看板</button>
       <button class="workspace-tab" data-view="detail" aria-selected="false">BTC / ETH / SOL 看盘</button>
+      <button class="workspace-tab" data-view="panorama" aria-selected="false">币种全景</button>
     </nav>
   </main>
   <template id="group-template">
@@ -103,7 +123,8 @@
     </article>
   </template>
   <script src="/theme-controller.js?v=20260918-1" defer></script>
-  <script src="/app.js?v=20260917-2" defer></script>
+  <script src="/app.js?v=20260919-1" defer></script>
   <script src="/market-detail-view.js?v=20260918-1" type="module"></script>
+  <script src="/panorama-view.js?v=20260919-1" type="module"></script>
 </body>
 </html>

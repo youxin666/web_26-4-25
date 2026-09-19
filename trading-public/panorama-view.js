@@ -1,0 +1,29 @@
+import { DEFAULT_PANORAMA_QUERY, filterPanoramaAssets, sortPanoramaAssets } from './panorama-model.js';
+
+const state={snapshot:null,query:{...DEFAULT_PANORAMA_QUERY},visible:false,timer:0,request:0,selected:null};
+const view=document.querySelector('#panorama-view'), table=document.querySelector('#panorama-table'), body=table.querySelector('tbody');
+const status=document.querySelector('#panorama-status'), drawer=document.querySelector('#panorama-drawer'), detail=document.querySelector('#panorama-detail');
+const fmt=(value,digits=2)=>value==null?'—':Number(value).toLocaleString('en-US',{maximumFractionDigits:digits});
+const money=value=>value==null?'—':`$${Math.abs(value)>=1e9?(value/1e9).toFixed(2)+'B':Math.abs(value)>=1e6?(value/1e6).toFixed(1)+'M':fmt(value,0)}`;
+const pct=value=>value==null?'—':`${value>=0?'↑ +':'↓ '}${Number(value).toFixed(2)}%`;
+const tone=value=>value==null?'muted':value>=0?'positive':'negative';
+
+function rows(){return sortPanoramaAssets(filterPanoramaAssets(state.snapshot?.assets||[],state.query),state.query.sortKey,state.query.sortDirection,state.query.period);}
+function render(){
+  const items=rows();
+  body.innerHTML=items.map(asset=>{const period=asset.periods[state.query.period]||{};const liq=asset.liquidations?asset.liquidations.longUsd+asset.liquidations.shortUsd:null;return `<tr tabindex="0" data-symbol="${asset.symbol}"><td>${asset.oiRank}</td><th>${asset.symbol}</th><td>${money(asset.price)}</td><td class="${tone(asset.price24hPercent)}">${pct(asset.price24hPercent)}</td><td>${money(asset.currentOi)}</td><td class="${tone(period.oiPercent)}">${pct(period.oiPercent)}</td><td>${asset.fundingRate==null?'—':(asset.fundingRate*100).toFixed(4)+'%'}</td><td>${money(asset.volume24hUsd)}</td><td class="${tone(period.netFlowUsd)}">${period.netFlowUsd==null?'—':money(period.netFlowUsd)}</td><td>${fmt(asset.longShortRatio,3)}</td><td>${money(liq)}</td></tr>`}).join('');
+  status.textContent=`${items.length}/${state.snapshot.assets.length} 个币种 · ${state.snapshot.stale?'延迟快照':'统一快照'} · ${new Date(state.snapshot.updatedAt).toLocaleTimeString('zh-CN')}`;
+  table.querySelectorAll('[data-sort]').forEach(th=>th.setAttribute('aria-sort',th.dataset.sort===state.query.sortKey?(state.query.sortDirection==='asc'?'ascending':'descending'):'none'));
+}
+async function load(){const id=++state.request;status.textContent=state.snapshot?'正在刷新快照':'正在构建统一快照';try{const response=await fetch('/api/panorama');const payload=await response.json();if(id!==state.request)return;if(response.status===202){setTimeout(load,payload.retryAfterMs||1500);return;}if(!response.ok)throw new Error(payload.error||`HTTP ${response.status}`);state.snapshot=payload;render();const symbol=new URLSearchParams(location.search).get('symbol');if(symbol)openSymbol(symbol);}catch{status.textContent=state.snapshot?'数据源延迟，保留上次快照':'全景快照暂不可用，请稍后重试';}}
+function openSymbol(symbol){const asset=state.snapshot?.assets.find(item=>item.symbol===symbol);if(!asset)return;state.selected=symbol;const cards=Object.entries(asset.periods).map(([period,item])=>`<div class="panorama-period"><b>${period.toUpperCase()}</b><span class="${tone(item.oiPercent)}">OI ${pct(item.oiPercent)}</span><span class="${tone(item.netFlowUsd)}">流量 ${item.netFlowUsd==null?'—':money(item.netFlowUsd)}</span></div>`).join('');detail.innerHTML=`<h2>${symbol} 全景</h2><div class="panorama-summary"><span>价格<b>${money(asset.price)}</b></span><span>当前 OI<b>${money(asset.currentOi)}</b></span><span>资金费率<b>${asset.fundingRate==null?'—':(asset.fundingRate*100).toFixed(4)+'%'}</b></span><span>多空比<b>${fmt(asset.longShortRatio,3)}</b></span></div><div class="panorama-periods">${cards}</div><p class="muted">Binance 基础数据 · Coinalyze ${asset.completeness==='complete'?'增强完整':'部分指标暂无数据'}</p>`;drawer.hidden=false;view.classList.add('detail-open');const url=new URL(location.href);url.searchParams.set('view','panorama');url.searchParams.set('symbol',symbol);history.pushState({},'',url);}
+function close(){drawer.hidden=true;view.classList.remove('detail-open');state.selected=null;const url=new URL(location.href);url.searchParams.delete('symbol');history.pushState({},'',url);document.querySelector(`[data-symbol]`)?.focus();}
+body.addEventListener('click',e=>{const row=e.target.closest('[data-symbol]');if(row)openSymbol(row.dataset.symbol)});body.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-symbol]')){e.preventDefault();openSymbol(e.target.dataset.symbol)}});
+document.querySelector('#panorama-close').addEventListener('click',close);
+document.querySelector('#panorama-search').addEventListener('input',e=>{state.query.search=e.target.value;render()});
+document.querySelector('#panorama-period').addEventListener('change',e=>{state.query.period=e.target.value;render()});
+document.querySelector('#panorama-completeness').addEventListener('change',e=>{state.query.completeness=e.target.value;render()});
+document.querySelectorAll('[data-filter]').forEach(input=>input.addEventListener('input',e=>{state.query[e.target.dataset.filter]=e.target.value===''?null:Number(e.target.value);render()}));
+table.querySelector('thead').addEventListener('click',e=>{const th=e.target.closest('[data-sort]');if(!th)return;state.query.sortDirection=state.query.sortKey===th.dataset.sort&&state.query.sortDirection==='desc'?'asc':'desc';state.query.sortKey=th.dataset.sort;render()});
+window.addEventListener('market-panorama:visible',e=>{state.visible=e.detail.visible;if(state.visible){load();clearInterval(state.timer);state.timer=setInterval(()=>state.visible&&load(),60000)}});
+if (!view.hidden) { state.visible=true; load(); state.timer=setInterval(()=>state.visible&&load(),60000); }
