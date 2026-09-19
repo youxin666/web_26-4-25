@@ -9,6 +9,7 @@ const SYMBOLS = [
   '1000PEPEUSDT','1000SHIBUSDT','WIFUSDT','ORDIUSDT','LDOUSDT','CRVUSDT','DYDXUSDT','STXUSDT',
   'IMXUSDT','COMPUSDT','SUSHIUSDT','ZECUSDT','DASHUSDT','KSMUSDT','EGLDUSDT','THETAUSDT','CHZUSDT'
 ];
+const PANORAMA_SCHEMA = 4;
 
 const PERIODS = {
   '5m': { api: '5m', limit: 2 }, '15m': { api: '15m', limit: 2 }, '30m': { api: '30m', limit: 2 },
@@ -26,7 +27,7 @@ const classifyDirection = (pricePercent, oiPercent) => {
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
-  headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=45, s-maxage=45' }
+  headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': status === 200 ? 'public, max-age=45, s-maxage=45' : 'no-store' }
 });
 
 async function fetchHistory(symbol, period) {
@@ -175,19 +176,14 @@ export class MarketSnapshot {
   }
 
   async panorama(symbol = '') {
-    let snapshot = await this.state.storage.get('panorama:published');
-    if (!snapshot || Date.now() - snapshot.updatedAt > 45_000) {
-      const alarm = await this.state.storage.getAlarm();
-      if (alarm === null) await this.state.storage.setAlarm(Date.now());
-    }
-    if (!snapshot) {
-      try { await this.alarm(); } catch {}
-      snapshot = await this.state.storage.get('panorama:published');
-    }
-    if (!snapshot) {
-      const draft = await this.state.storage.get('panorama:draft');
-      return json({ building: true, progress: draft ? { completed: draft.cursor, total: draft.pairs.length } : null, retryAfterMs: 1500 }, 202);
-    }
+    const entries = await Promise.all(PANORAMA_PERIODS.map(async period => [period, await this.state.storage.get(`snapshot:${period}`)]));
+    const snapshots = Object.fromEntries(entries);
+    if (!Array.isArray(snapshots['4h']?.assets) || snapshots['4h'].assets.length < 20) return json({ building: true, retryAfterMs: 1500 }, 202);
+    const coinalyze = await this.coinalyzeMetrics();
+    const snapshot = buildPanoramaSnapshot({ snapshots, coinalyze });
+    snapshot.schema = PANORAMA_SCHEMA;
+    snapshot.updatedAt = Math.max(...entries.map(([, item]) => Number(item?.updatedAt)).filter(Number.isFinite));
+    await this.state.storage.put('panorama:published', snapshot);
     if (symbol) {
       const asset = snapshot.assets.find(item => item.symbol === symbol);
       if (!asset) return json({ error: 'Unsupported symbol' }, 404);
@@ -197,30 +193,32 @@ export class MarketSnapshot {
   }
 
   async alarm() {
+    // Legacy alarms from earlier builds must not overwrite the browser-seeded unified snapshot.
+    return;
     const key = 'panorama:draft';
     let draft = await this.state.storage.get(key);
     if (!draft) {
-      const [exchangeResponse, tickersResponse, premiumsResponse] = await Promise.all([
-        fetch('https://fapi.binance.com/fapi/v1/exchangeInfo'),
-        fetch('https://fapi.binance.com/fapi/v1/ticker/24hr'),
-        fetch('https://fapi.binance.com/fapi/v1/premiumIndex'),
-      ]);
-      if (!exchangeResponse.ok || !tickersResponse.ok || !premiumsResponse.ok) throw new Error('Binance panorama bulk source unavailable');
-      const exchange = await exchangeResponse.json();
-      const pairs = exchange.symbols
-        .filter(item => item.contractType === 'PERPETUAL' && item.quoteAsset === 'USDT' && item.status === 'TRADING')
-        .map(item => item.symbol);
-      draft = { startedAt: Date.now(), cursor: 0, pairs, metrics: {}, tickers: await tickersResponse.json(), premiums: await premiumsResponse.json() };
+      if (!this.env.COINALYZE_API_KEY) throw new Error('Coinalyze market catalog unavailable');
+      const catalogResponse = await fetch('https://api.coinalyze.net/v1/future-markets', { headers: { api_key: this.env.COINALYZE_API_KEY } });
+      if (!catalogResponse.ok) throw new Error(`Coinalyze market catalog unavailable (${catalogResponse.status})`);
+      const catalog = await catalogResponse.json();
+      const pairs = [...new Set(catalog
+        .filter(item => item.exchange === 'A' && item.is_perpetual === true && item.margined === 'STABLE' && item.quote_asset === 'USDT' && item.has_ohlcv_data === true)
+        .map(item => item.symbol_on_exchange))];
+      if (!pairs.length) throw new Error('Coinalyze market catalog returned no Binance USDT perpetuals');
+      draft = { startedAt: Date.now(), cursor: 0, pairs, metrics: {}, tickers: [], premiums: [] };
+      await this.state.storage.delete('panorama:lastError');
     }
-    const batch = draft.pairs.slice(draft.cursor, draft.cursor + 39);
+    const batch = draft.pairs.slice(draft.cursor, draft.cursor + 10);
     const windows = { '15m':3, '30m':6, '1h':12, '4h':48, '8h':96, '12h':144, '24h':288 };
-    const results = await Promise.all(batch.map(async pair => {
+    const results = [];
+    for (const pair of batch) {
       try {
         const query = new URLSearchParams({ symbol: pair, period: '5m', limit: '289' });
-        const response = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?${query}`);
-        if (!response.ok) return null;
+        const response = await fetch(`https://www.binance.com/futures/data/openInterestHist?${query}`);
+        if (!response.ok) { results.push(null); continue; }
         const rows = await response.json();
-        if (!Array.isArray(rows) || rows.length < 2) return null;
+        if (!Array.isArray(rows) || rows.length < 2) { results.push(null); continue; }
         const current = rows.at(-1);
         const periods = Object.fromEntries(PANORAMA_PERIODS.map(period => {
           const baseline = rows.at(-(windows[period] + 1));
@@ -230,12 +228,26 @@ export class MarketSnapshot {
           const baselineOi = Number(baseline.sumOpenInterest);
           return [period, { current: currentValue, delta: currentValue - baselineValue, percent: baselineOi ? (Number(current.sumOpenInterest) / baselineOi - 1) * 100 : null }];
         }));
-        return [pair.replace(/USDT$/, ''), periods];
+        const currentOi = Number(current.sumOpenInterest);
+        const currentValue = Number(current.sumOpenInterestValue);
+        const dayBaseline = rows.at(-(windows['24h'] + 1));
+        const currentPrice = currentOi ? currentValue / currentOi : null;
+        const baselineOi = Number(dayBaseline?.sumOpenInterest);
+        const baselinePrice = baselineOi ? Number(dayBaseline.sumOpenInterestValue) / baselineOi : null;
+        results.push([pair.replace(/USDT$/, ''), periods, {
+          symbol: pair,
+          lastPrice: currentPrice,
+          priceChangePercent: baselinePrice ? (currentPrice / baselinePrice - 1) * 100 : null,
+          quoteVolume: null,
+        }]);
       } catch {
-        return null;
+        results.push(null);
       }
-    }));
-    for (const result of results.filter(Boolean)) draft.metrics[result[0]] = result[1];
+    }
+    for (const result of results.filter(Boolean)) {
+      draft.metrics[result[0]] = result[1];
+      draft.tickers.push(result[2]);
+    }
     draft.cursor += batch.length;
     await this.state.storage.put(key, draft);
     if (draft.cursor < draft.pairs.length) {
@@ -252,9 +264,11 @@ export class MarketSnapshot {
     let coinalyze = {};
     try { coinalyze = await this.coinalyzeMetrics(); } catch { coinalyze = {}; }
     const published = buildPanoramaSnapshot({ snapshots, tickers: draft.tickers, premiums: draft.premiums, coinalyze });
+    published.schema = PANORAMA_SCHEMA;
     published.updatedAt = Date.now();
     await this.state.storage.put('panorama:published', published);
     await this.state.storage.delete(key);
+    await this.state.storage.delete('panorama:lastError');
   }
 
   async detail(request, symbol) {

@@ -1,6 +1,6 @@
 export const PANORAMA_PERIODS = ['15m','30m','1h','4h','8h','12h','24h'];
 
-const finiteOrNull = value => Number.isFinite(Number(value)) ? Number(value) : null;
+const finiteOrNull = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
 
 export function normalizePanoramaSymbol(pair) {
   const value = String(pair || '').toUpperCase();

@@ -9,7 +9,7 @@ const snapshots = Object.fromEntries(PANORAMA_PERIODS.map((period, index) => [pe
   updatedAt: 1_000 + index,
   assets: [
     { symbol: 'BTC', current: 1000, percent: index + 1, delta: 10 },
-    { symbol: 'ETH', current: 500, percent: -(index + 1), delta: -5 },
+    { symbol: 'ETH', current: null, percent: null, delta: null },
   ],
 }]));
 const snapshot = buildPanoramaSnapshot({
@@ -23,5 +23,7 @@ assert.equal(snapshot.assets[0].periods['4h'].oiPercent, 4);
 assert.equal(snapshot.assets[0].periods['4h'].netFlowUsd, 8);
 assert.equal(snapshot.assets[1].periods['4h'].netFlowUsd, null);
 assert.equal(snapshot.assets[1].longShortRatio, null);
+assert.equal(snapshot.assets[1].currentOi, null);
+assert.equal(snapshot.assets[1].periods['4h'].oiPercent, null);
 assert.equal(snapshot.assets[1].completeness, 'partial');
 console.log('trading panorama data tests passed');

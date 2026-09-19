@@ -4,7 +4,7 @@ const GROUPS = [
 ];
 const PERIODS = ['5m','15m','30m','1h','4h','8h','12h','24h'];
 const SYMBOLS = ['BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','LTCUSDT','BCHUSDT','SUIUSDT','TRXUSDT','DOTUSDT','UNIUSDT','AAVEUSDT','NEARUSDT','APTUSDT','ETCUSDT','ICPUSDT','FILUSDT','ATOMUSDT','ARBUSDT','OPUSDT','INJUSDT','TIAUSDT','SEIUSDT','WLDUSDT','ENAUSDT','PENDLEUSDT','RENDERUSDT','TAOUSDT','FETUSDT','RUNEUSDT','JUPUSDT','GALAUSDT','SANDUSDT','MANAUSDT','AXSUSDT','APEUSDT','1000PEPEUSDT','1000SHIBUSDT','WIFUSDT','ORDIUSDT','LDOUSDT','CRVUSDT','DYDXUSDT','STXUSDT','IMXUSDT','COMPUSDT','SUSHIUSDT','ZECUSDT','DASHUSDT','KSMUSDT','EGLDUSDT','THETAUSDT','CHZUSDT'];
-const API_PERIODS = { '5m':['5m',2], '15m':['5m',4], '30m':['5m',7], '1h':['5m',13], '4h':['5m',49], '8h':['5m',97], '12h':['5m',145], '24h':['5m',289] };
+const API_PERIODS = { '5m':['5m',2], '15m':['5m',4], '30m':['5m',7], '1h':['5m',13], '4h':['5m',49], '8h':['4h',3], '12h':['4h',4], '24h':['4h',7] };
 const state = { rank: 5, groupPeriods: Array(5).fill('4h'), cache: new Map(), request: 0 };
 const grid = document.querySelector('#market-grid');
 const status = document.querySelector('#status');
@@ -187,5 +187,12 @@ function activateWorkspace(view, { updateUrl = true } = {}) {
   window.dispatchEvent(new CustomEvent('market-panorama:visible', { detail: { visible: selected === 'panorama' } }));
   if (updateUrl) { const url=new URL(location.href); selected==='aggregate'?url.searchParams.delete('view'):url.searchParams.set('view',selected); if(selected!=='panorama')url.searchParams.delete('symbol'); history.pushState({},'',url); }
 }
+
+window.marketSnapshot = {
+  loadPeriod: async (period, { force = false } = {}) => {
+    if (force) state.cache.delete(period);
+    return loadPeriod(period, false);
+  }
+};
 document.querySelectorAll('.workspace-tab').forEach(button => button.addEventListener('click', () => activateWorkspace(button.dataset.view)));
 activateWorkspace(new URLSearchParams(location.search).get('view') || 'aggregate', { updateUrl:false });
