@@ -1,4 +1,5 @@
 import { fetchCoinalyzeMetrics, selectMarkets } from './trading-coinalyze.js';
+import { PANORAMA_PERIODS, buildPanoramaSnapshot } from './trading-panorama.js';
 
 const SYMBOLS = [
   'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','BNBUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','AVAXUSDT','LTCUSDT',
@@ -49,6 +50,13 @@ async function marketData(request, env, url) {
   if (!PERIODS[period]) return json({ error: 'Unsupported period' }, 400);
   const object = env.MARKET_SNAPSHOT.getByName('global-market-snapshot');
   return object.fetch(new Request(`https://snapshot.internal/${period}`, request));
+}
+
+async function panoramaData(request, env, url) {
+  if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
+  const symbol = String(url.searchParams.get('symbol') || '').toUpperCase();
+  const path = symbol ? `/panorama/${encodeURIComponent(symbol)}` : '/panorama';
+  return detailObject(env).fetch(new Request(`https://snapshot.internal${path}`));
 }
 
 const detailObject = env => env.MARKET_SNAPSHOT.getByName('global-market-snapshot');
@@ -111,6 +119,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/market') return marketData(request, env, url);
+    if (url.pathname === '/api/panorama') return panoramaData(request, env, url);
     if (url.pathname === '/api/detail') return detailSnapshot(request, env, url);
     if (url.pathname === '/api/liquidations') return liquidationData(request, env, url);
     if (url.pathname === '/api/etf') return etfData(request, env, url);
@@ -133,6 +142,7 @@ export class MarketSnapshot {
     const url = new URL(request.url);
     const parts = url.pathname.split('/').filter(Boolean);
     if (parts[0] === 'detail') return this.detail(request, parts[1]);
+    if (parts[0] === 'panorama') return this.panorama(parts[1]);
     if (parts[0] === 'liquidations') return this.liquidations(request, parts[1]);
     if (parts[0] === 'etf') return this.etf(request, parts[1]);
     const period = url.pathname.slice(1);
@@ -162,6 +172,77 @@ export class MarketSnapshot {
     const snapshot = { source: 'Binance USDⓈ-M Futures', period, updatedAt: Date.now(), assets };
     await this.state.storage.put(key, snapshot);
     return json({ ...snapshot, stale: false });
+  }
+
+  async panorama(symbol = '') {
+    const snapshot = await this.state.storage.get('panorama:published');
+    if (!snapshot || Date.now() - snapshot.updatedAt > 45_000) {
+      const alarm = await this.state.storage.getAlarm();
+      if (alarm === null) await this.state.storage.setAlarm(Date.now());
+    }
+    if (!snapshot) return json({ building: true, retryAfterMs: 1500 }, 202);
+    if (symbol) {
+      const asset = snapshot.assets.find(item => item.symbol === symbol);
+      if (!asset) return json({ error: 'Unsupported symbol' }, 404);
+      return json({ ...asset, updatedAt: snapshot.updatedAt, stale: Date.now() - snapshot.updatedAt > 60_000, sources: snapshot.sources });
+    }
+    return json({ ...snapshot, stale: Date.now() - snapshot.updatedAt > 60_000 });
+  }
+
+  async alarm() {
+    const key = 'panorama:draft';
+    let draft = await this.state.storage.get(key);
+    if (!draft) {
+      const [exchangeResponse, tickersResponse, premiumsResponse] = await Promise.all([
+        fetch('https://fapi.binance.com/fapi/v1/exchangeInfo'),
+        fetch('https://fapi.binance.com/fapi/v1/ticker/24hr'),
+        fetch('https://fapi.binance.com/fapi/v1/premiumIndex'),
+      ]);
+      if (!exchangeResponse.ok || !tickersResponse.ok || !premiumsResponse.ok) throw new Error('Binance panorama bulk source unavailable');
+      const exchange = await exchangeResponse.json();
+      const pairs = exchange.symbols
+        .filter(item => item.contractType === 'PERPETUAL' && item.quoteAsset === 'USDT' && item.status === 'TRADING')
+        .map(item => item.symbol);
+      draft = { startedAt: Date.now(), cursor: 0, pairs, metrics: {}, tickers: await tickersResponse.json(), premiums: await premiumsResponse.json() };
+    }
+    const batch = draft.pairs.slice(draft.cursor, draft.cursor + 39);
+    const windows = { '15m':3, '30m':6, '1h':12, '4h':48, '8h':96, '12h':144, '24h':288 };
+    const results = await Promise.all(batch.map(async pair => {
+      const query = new URLSearchParams({ symbol: pair, period: '5m', limit: '289' });
+      const response = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?${query}`);
+      if (!response.ok) return null;
+      const rows = await response.json();
+      if (!Array.isArray(rows) || rows.length < 2) return null;
+      const current = rows.at(-1);
+      const periods = Object.fromEntries(PANORAMA_PERIODS.map(period => {
+        const baseline = rows.at(-(windows[period] + 1));
+        if (!baseline) return [period, { current: Number(current.sumOpenInterestValue), delta: null, percent: null }];
+        const currentValue = Number(current.sumOpenInterestValue);
+        const baselineValue = Number(baseline.sumOpenInterestValue);
+        const baselineOi = Number(baseline.sumOpenInterest);
+        return [period, { current: currentValue, delta: currentValue - baselineValue, percent: baselineOi ? (Number(current.sumOpenInterest) / baselineOi - 1) * 100 : null }];
+      }));
+      return [pair.replace(/USDT$/, ''), periods];
+    }));
+    for (const result of results.filter(Boolean)) draft.metrics[result[0]] = result[1];
+    draft.cursor += batch.length;
+    await this.state.storage.put(key, draft);
+    if (draft.cursor < draft.pairs.length) {
+      await this.state.storage.setAlarm(Date.now() + 250);
+      return;
+    }
+    const snapshots = Object.fromEntries(PANORAMA_PERIODS.map(period => [period, {
+      updatedAt: Date.now(),
+      assets: draft.pairs.map(pair => {
+        const symbol = pair.replace(/USDT$/, '');
+        return { symbol, ...(draft.metrics[symbol]?.[period] || { current: null, delta: null, percent: null }) };
+      }),
+    }]));
+    const coinalyze = await this.coinalyzeMetrics();
+    const published = buildPanoramaSnapshot({ snapshots, tickers: draft.tickers, premiums: draft.premiums, coinalyze });
+    published.updatedAt = Date.now();
+    await this.state.storage.put('panorama:published', published);
+    await this.state.storage.delete(key);
   }
 
   async detail(request, symbol) {
