@@ -5,22 +5,22 @@ document.documentElement.dataset.theme = introTheme;
 document.documentElement.style.colorScheme = introTheme;
 
 const statusNode = document.querySelector('[data-intro-status]');
-const steps = ['连接 Worker...', '加载 D1 数据...', '准备 AI 模块...', '进入主界面...'];
-let stepIndex = 0;
+const enterButton = document.querySelector('.intro-button');
 
-const statusTimer = window.setInterval(() => {
-  if (statusNode) {
-    statusNode.textContent = steps[Math.min(stepIndex, steps.length - 1)];
-  }
-  stepIndex += 1;
-  if (stepIndex >= steps.length) {
-    window.clearInterval(statusTimer);
-  }
-}, 760);
+if (statusNode) {
+  statusNode.textContent = '准备进入 858846.xyz';
+}
 
-window.setTimeout(() => {
+function enterHome(event) {
+  event?.preventDefault();
   document.body.classList.add('is-leaving');
   window.setTimeout(() => {
     window.location.href = '/home';
-  }, 620);
-}, 3800);
+  }, 460);
+}
+
+enterButton?.addEventListener('click', enterHome);
+
+window.setTimeout(() => {
+  enterHome();
+}, 2700);

@@ -163,35 +163,69 @@ function normalizeMatchResult(result, isAiPowered) {
     overallScore,
     matchLevel: normalizeText(result?.matchLevel, 16) || (overallScore >= 82 ? '高度匹配' : overallScore >= 68 ? '较匹配' : '需进一步确认'),
     dimensionScores: normalizedScores,
+    dimensionLabels: {
+      education: normalizeText(result?.dimensionLabels?.education, 12) || '学历要求',
+      experience: normalizeText(result?.dimensionLabels?.experience, 12) || '相关经验',
+      technical: normalizeText(result?.dimensionLabels?.technical, 12) || '核心技能',
+      maintenance: normalizeText(result?.dimensionLabels?.maintenance, 12) || '行业与场景',
+      communication: normalizeText(result?.dimensionLabels?.communication, 12) || '协作与表达',
+    },
     highlights: Array.isArray(result?.highlights) ? result.highlights.map((item) => normalizeText(item, 90)).filter(Boolean).slice(0, 4) : [],
     gaps: Array.isArray(result?.gaps) ? result.gaps.map((item) => normalizeText(item, 90)).filter(Boolean).slice(0, 4) : [],
-    summary: normalizeText(result?.summary, 260) || '候选人具备现场维护、设备调试和嵌入式项目基础，可结合岗位要求进一步沟通。',
+    summary: normalizeText(result?.summary, 260) || '已根据当前岗位描述与候选人公开简历逐项对照，建议结合未明确的信息进一步沟通。',
     isAiPowered,
   };
 }
 
 function buildLocalMatch(jobDescription) {
-  const education = scoreByKeywords(jobDescription, ['本科', '大专', '电子', '信息工程', '英语', '证书']);
-  const experience = scoreByKeywords(jobDescription, ['维护', '巡检', '安装', '调试', '现场', '设备', '网络', '客户']);
-  const technical = scoreByKeywords(jobDescription, ['STM32', '单片机', 'PCB', '电路', '嵌入式', 'RFID', 'OLED', '云平台', 'APP']);
-  const maintenance = scoreByKeywords(jobDescription, ['电工', '弱电', '机房', '空调', '故障', '安全', '宽带', '局域网']);
-  const communication = scoreByKeywords(jobDescription, ['沟通', '服务', '客户', '协调', '文档', '记录', '上报', '学习']);
+  const jd = jobDescription.toLowerCase();
+  const asks = (...keywords) => keywords.some((keyword) => jd.includes(keyword.toLowerCase()));
+  const isAiRole = asks('ai', '人工智能', '大语言模型', 'llm', 'prompt', '对话语料', '数据标注');
+  const isCreativeRole = asks('二次元', '游戏', '角色', '人设', '世界观', 'vtuber', '剧本');
+  const isMaintenanceRole = asks('维护', '巡检', '弱电', '电工', '机房', '设备故障', '宽带');
+  const isCloudRole = asks('cloudflare', 'worker', '前端', '网站', 'javascript', '数据库', 'd1');
+
+  const education = asks('本科') ? 88 : asks('大专') ? 92 : 72;
+  const experience = isAiRole ? 46 : isMaintenanceRole ? 82 : isCloudRole ? 74 : 52;
+  const technical = isAiRole ? (asks('prompt') ? 48 : 55) : isMaintenanceRole ? 78 : isCloudRole ? 82 : 55;
+  const maintenance = isCreativeRole ? 22 : isMaintenanceRole ? 88 : isCloudRole ? 76 : 45;
+  const communication = asks('沟通', '协作', '客户', '反馈', '文档', '表达') ? 76 : 62;
   const scores = { education, experience, technical, maintenance, communication };
   const overallScore = Math.round((education * 0.16) + (experience * 0.26) + (technical * 0.24) + (maintenance * 0.2) + (communication * 0.14));
+
+  let highlights;
+  let gaps;
+  let summary;
+  if (isAiRole) {
+    highlights = [
+      '候选人有 AIGC 工具、AI 岗位匹配器及 Cloudflare 全栈网站实践，可作为接触 AI 应用工作流的项目证明。',
+      asks('反馈', '日志', '数据') ? '候选人开发过反馈系统并使用 D1 存储数据，与岗位要求的反馈整理和数据记录存在可迁移经验。' : '候选人具备电子信息工程本科背景和独立项目交付经验。',
+      asks('沟通', '协作', '表达') ? '课程顾问和智慧家庭工程经历包含客户沟通，能够支撑岗位所需的表达与协作能力。' : '候选人有公开网站与项目作品，可用于进一步核验实际交付能力。',
+    ];
+    gaps = [
+      asks('prompt') ? '公开简历未明确展示 Prompt 模板、评测集或数据标注规范的直接产出，需要补充案例。' : '公开简历对大语言模型相关工作的深度描述不足，需要进一步核验。',
+      isCreativeRole ? 'JD 强调二次元/游戏内容、角色人设和圈层语言，公开简历未体现直接行业经验。' : '岗位要求的具体业务领域经验在公开简历中未明确体现。',
+      asks('日语', 'n2', 'vtuber', '同人', '剧本杀', '跑团') ? '日语 N2、同人创作、剧本杀、跑团或 VTuber 运营等加分项未在公开简历中体现。' : '部分加分能力缺少公开证据，建议在面试中确认。',
+      asks('python', 'sql') ? 'JD 提到 Python / SQL 数据分析，公开简历尚未列出这两项技能。' : '同岗经验年限和实际职责边界仍需确认。',
+    ];
+    summary = `该岗位核心是${isCreativeRole ? '二次元/游戏角色对话训练、Prompt 与语料评测' : 'AI 应用、Prompt 与数据评测'}。候选人的 AI 应用项目、反馈系统和沟通经历具备部分可迁移性，但缺少角色内容设计、评测集/标注规范及部分工具技能的直接证据，当前属于可尝试但需补充作品证明的匹配。`;
+  } else if (isMaintenanceRole) {
+    highlights = ['具备低压电工证以及弱电机房、场地巡检和设备维护经历。', '有家庭宽带、智能产品安装调试和网络优化经验。', '电子信息工程背景与嵌入式项目可支撑基础故障分析。'];
+    gaps = ['特定行业平台或大型系统经验需要进一步确认。', '如岗位要求多年同岗经验，当前履历仍需核验年限与项目深度。'];
+    summary = '该岗位与候选人的设备维护、弱电巡检、智慧家庭工程及电子技术背景存在直接交集，建议进一步核验具体设备类型和现场处置深度。';
+  } else {
+    highlights = [isCloudRole ? '候选人完成过 Cloudflare Workers、D1、反馈系统和个人网站部署，与 JD 的网站及云端实践存在交集。' : '候选人具备电子信息工程本科背景和多个可展示项目。', '候选人有客户沟通、数据整理和独立交付经历。'];
+    gaps = ['公开简历未覆盖 JD 中全部专用工具与行业经验，需要逐项确认。', '同岗工作年限和成果指标缺少直接证据。'];
+    summary = '本地预评估已按当前 JD 与公开简历进行对照；候选人存在部分可迁移经验，但岗位专用能力仍需通过作品或面试验证。';
+  }
 
   return normalizeMatchResult({
     overallScore,
     dimensionScores: scores,
-    highlights: [
-      '具备低压电工证和弱电机房、场地巡检、设备维护相关经历。',
-      '有家庭宽带、互联网电视、智能产品安装调试和网络优化经验。',
-      '完成过 STM32 门禁系统和四足机器人项目，覆盖硬件、外设驱动和系统测试。',
-    ],
-    gaps: [
-      '如果岗位强调特定行业平台或大型系统经验，需要进一步确认项目深度。',
-      '如果 JD 要求多年同岗经验，当前经历更偏现场维护与初中级技术支持。',
-    ],
-    summary: '从 JD 关键词看，候选人与设备维护、弱电电工、智慧家庭工程、电子技术支持和嵌入式基础岗位匹配度较高，适合进入面试进一步核验现场处理能力。',
+    dimensionLabels: { education: '学历要求', experience: '相关经验', technical: '核心技能', maintenance: '行业与场景', communication: '协作与表达' },
+    highlights,
+    gaps,
+    summary,
   }, false);
 }
 
@@ -207,7 +241,18 @@ function extractJson(content) {
 }
 
 function createMatchPrompt(jobDescription) {
-  return `候选人公开简历：\n${RESUME_CONTEXT}\n\n岗位 JD：\n${jobDescription}\n\n请输出 JSON：{"overallScore":0-100,"matchLevel":"高度匹配/较匹配/需进一步确认/不太匹配","dimensionScores":{"education":0-100,"experience":0-100,"technical":0-100,"maintenance":0-100,"communication":0-100},"highlights":["最多4条"],"gaps":["最多4条"],"summary":"120字以内总结"}`;
+  return `候选人公开简历：\n${RESUME_CONTEXT}\n\n岗位 JD：\n${jobDescription}\n\n必须只分析上述这份 JD，不得套用其他岗位模板。亮点必须同时得到 JD 和简历证据支持；简历未提及的要求应放入差距。请输出 JSON：{"overallScore":0-100,"matchLevel":"高度匹配/较匹配/需进一步确认/不太匹配","dimensionScores":{"education":0-100,"experience":0-100,"technical":0-100,"maintenance":0-100,"communication":0-100},"dimensionLabels":{"education":"学历要求","experience":"相关经验","technical":"核心技能","maintenance":"行业与场景","communication":"协作与表达"},"highlights":["最多4条"],"gaps":["最多4条"],"summary":"120字以内总结"}`;
+}
+
+function modelErrorDetails(error) {
+  return normalizeText(error?.message || error?.name || 'unknown error', 180);
+}
+
+function extractModelText(answer) {
+  const content = answer?.response || answer?.result?.response || answer?.text || answer?.output_text || answer?.choices?.[0]?.message?.content;
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) return content.map((item) => typeof item === 'string' ? item : item?.text || item?.content || '').join('');
+  return '';
 }
 
 async function callMatchModel(jobDescription, env) {
@@ -232,6 +277,7 @@ async function callMatchModel(jobDescription, env) {
         temperature: 0.2,
         max_tokens: 900,
         stream: false,
+        thinking: { type: 'disabled' },
         response_format: { type: 'json_object' },
         messages: [
           {
@@ -247,16 +293,19 @@ async function callMatchModel(jobDescription, env) {
     });
 
     if (!response.ok) {
+      console.warn('[job-match] external model HTTP failure', { status: response.status });
       return null;
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || data.output_text || data.content;
+    const content = extractModelText(data) || data.content;
     if (!normalizeText(content, 20)) {
+      console.warn('[job-match] external model returned empty content');
       return null;
     }
     return normalizeMatchResult(extractJson(content), true);
-  } catch {
+  } catch (error) {
+    console.warn('[job-match] external model failure', { error: modelErrorDetails(error) });
     return null;
   }
 }
@@ -279,12 +328,14 @@ async function callCloudflareMatchModel(jobDescription, env) {
         },
       ],
     });
-    const content = answer?.response || answer?.result?.response || answer?.text;
+    const content = extractModelText(answer);
     if (!normalizeText(content, 20)) {
+      console.warn('[job-match] Cloudflare AI returned empty content');
       return null;
     }
     return normalizeMatchResult(extractJson(content), true);
-  } catch {
+  } catch (error) {
+    console.warn('[job-match] Cloudflare AI failure', { error: modelErrorDetails(error) });
     return null;
   }
 }
@@ -849,6 +900,14 @@ async function handleContactReveal(request, env) {
     return jsonResponse({ error: '查看码错误' }, { status: 403 });
   }
 
+  if (type === 'name') {
+    const name = normalizeText(env.CONTACT_NAME || '罗文辉', 40);
+    if (!name) {
+      return jsonResponse({ error: '姓名暂未配置' }, { status: 503 });
+    }
+    return jsonResponse({ value: name });
+  }
+
   if (type === 'phone') {
     const phone = normalizeText(env.CONTACT_PHONE, 40);
     if (!phone) {
@@ -1009,14 +1068,18 @@ export default {
       }
     }
 
+    if (path === '/posts' || path === '/posts.html') {
+      return Response.redirect('https://blog.858846.xyz/', 301);
+    }
+
     const assetRequest = path === '/'
       ? requestForAsset(request, '/intro')
       : path === '/home'
         ? requestForAsset(request, '/home')
         : path === '/about'
           ? requestForAsset(request, '/about')
-        : path === '/posts'
-          ? requestForAsset(request, '/posts')
+        : path === '/works'
+          ? requestForAsset(request, '/works')
         : request;
     const assetResponse = await env.ASSETS.fetch(assetRequest);
 
@@ -1031,8 +1094,8 @@ export default {
 
     if (assetPath.endsWith('.css') || assetPath.endsWith('.js')) {
       headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home' || path === '/about' || path === '/posts') {
-      headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+    } else if (assetPath.endsWith('.html') || path === '/' || path === '/home' || path === '/about' || path === '/works') {
+      headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     }
 
     return new Response(body, {

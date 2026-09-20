@@ -4,6 +4,11 @@ compatibility_date = "2026-04-30"
 main = "./worker.js"
 workers_dev = false
 
+[vars]
+AI_MATCH_BASE_URL = "https://api.deepseek.com"
+AI_MATCH_ENDPOINT = "/chat/completions"
+AI_MATCH_MODEL = "deepseek-flash"
+
 [assets]
 directory = "./public"
 binding = "ASSETS"

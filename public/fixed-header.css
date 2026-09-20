@@ -44,7 +44,7 @@
 }
 
 main {
-    padding-top: 112px;
+    padding-top: 90px;
 }
 
 :root[data-theme="dark"] .site-header {
@@ -65,9 +65,67 @@ main {
 }
 
 @media (max-width: 860px) {
+    .site-header {
+        left: 10px;
+        translate: none;
+        width: calc(100% - 20px);
+        min-height: 64px;
+        margin-top: 0;
+        padding: 8px 12px 8px 10px;
+    }
+
+    .nav-toggle,
+    .theme-toggle {
+        width: 36px;
+        height: 36px;
+    }
+
+    .theme-toggle { min-width: 36px; }
+
+    .nav-toggle span {
+        width: 18px;
+        height: 2px;
+    }
+
+    .theme-toggle span {
+        width: 18px;
+        height: 18px;
+        mask-size: 18px 18px;
+        -webkit-mask-size: 18px 18px;
+    }
+
+    .brand {
+        width: 32px;
+        height: 32px;
+        min-height: 32px;
+    }
+
+    .brand::before {
+        width: 32px;
+        height: 32px;
+    }
+
+    .brand::after {
+        width: 18px;
+        height: 18px;
+        mask-size: 18px 18px;
+        -webkit-mask-size: 18px 18px;
+    }
+
     body > .site-nav {
         padding-top: 82px;
         scroll-padding-top: 82px;
+        background-image: linear-gradient(rgba(15, 118, 110, 0.16), rgba(15, 118, 110, 0.16));
+        background-repeat: no-repeat;
+        background-size: calc(100% - 20px) 1px;
+        background-position: center 50px;
+    }
+
+    :root[data-theme="dark"] body > .site-nav {
+        background-image: linear-gradient(rgba(75, 220, 205, 0.2), rgba(75, 220, 205, 0.2));
+        background-repeat: no-repeat;
+        background-size: calc(100% - 20px) 1px;
+        background-position: center 50px;
     }
 
     body > .site-nav::before {
@@ -92,6 +150,158 @@ main {
 @media (max-width: 640px) {
     main {
         padding-top: 74px;
+    }
+}
+
+/* Mirror the Lab mobile sidebar exactly: the title sits above its divider,
+   groups stay static, and the panel itself never scrolls. */
+@media (max-width: 860px) {
+    body > .site-nav {
+        gap: 0;
+        padding: 82px 12px calc(18px + env(safe-area-inset-bottom, 0px));
+        overflow-y: hidden;
+        overscroll-behavior: auto;
+        touch-action: manipulation;
+        background-image: none;
+    }
+
+    body > .site-nav::before {
+        top: 11px;
+        left: 14px;
+        right: 52px;
+        height: 36px;
+        min-height: 36px;
+        padding-left: 48px;
+        font-size: 1rem;
+        line-height: 1.2;
+        background-image: none;
+    }
+
+    body > .site-nav::after {
+        top: 11px;
+        left: 14px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 1.08rem;
+    }
+
+    body > .site-nav .nav-close {
+        top: 11px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+    }
+
+    body > .site-nav.grouped-nav > span {
+        position: relative;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding-top: 0;
+        background-image:
+            linear-gradient(90deg, rgba(15, 118, 110, 0.32) 0 3.12rem, transparent 3.12rem),
+            linear-gradient(90deg, rgba(15, 118, 110, 0.1), rgba(15, 118, 110, 0.08) 78%, transparent);
+        background-repeat: no-repeat;
+        background-size: 3.12rem 2px, calc(100% - 18px) 1px;
+        background-position: 9px 21px, 9px 21px;
+    }
+
+    body > .site-nav .nav-main::before,
+    body > .site-nav .nav-tools::before,
+    body > .site-nav .nav-external::before {
+        margin: 0 10px 7px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.45;
+    }
+
+    body > .site-nav .nav-main::after {
+        content: "";
+        position: absolute;
+        top: -24px;
+        left: 2px;
+        right: 0;
+        height: 1px;
+        pointer-events: none;
+        background: rgba(15, 118, 110, 0.16);
+    }
+
+    body > .site-nav .nav-tools,
+    body > .site-nav .nav-external {
+        margin-top: 5px;
+        padding-top: 0;
+        padding-left: 0;
+        border-left: 0;
+    }
+
+    body > .site-nav .nav-external { padding-bottom: 0; }
+
+    body > .site-nav a {
+        min-height: 40px;
+        gap: 5px;
+        padding: 0 12px;
+        border-radius: 9px;
+        color: #202123;
+        background: transparent;
+        box-shadow: none;
+        font-size: 1rem;
+        font-weight: 760;
+    }
+
+    body > .site-nav a,
+    body > .site-nav .nav-close,
+    .nav-toggle { -webkit-tap-highlight-color: transparent; }
+
+    body > .site-nav a:hover,
+    body > .site-nav a.is-active {
+        color: #202123;
+        background: transparent;
+        box-shadow: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    body > .site-nav a:active {
+        background: rgba(15, 118, 110, 0.1);
+        transform: scale(0.985);
+    }
+
+    .nav-scrim {
+        z-index: 90;
+        background: rgba(8, 25, 23, 0.28);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    :root[data-theme="dark"] body > .site-nav {
+        background-color: rgba(10, 22, 21, 0.76);
+        border-color: rgba(136, 186, 178, 0.22);
+        background-image: none;
+    }
+
+    :root[data-theme="dark"] body > .site-nav.grouped-nav > span {
+        background-image:
+            linear-gradient(90deg, rgba(75, 220, 205, 0.38) 0 3.12rem, transparent 3.12rem),
+            linear-gradient(90deg, rgba(75, 220, 205, 0.14), rgba(75, 220, 205, 0.08) 78%, transparent);
+    }
+
+    :root[data-theme="dark"] body > .site-nav .nav-main::after {
+        background: rgba(75, 220, 205, 0.2);
+    }
+
+    :root[data-theme="dark"] body > .site-nav a,
+    :root[data-theme="dark"] body > .site-nav a:hover,
+    :root[data-theme="dark"] body > .site-nav a.is-active {
+        color: #b7c9c5;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    :root[data-theme="dark"] body > .site-nav a:active {
+        background: rgba(75, 220, 205, 0.12);
     }
 }
 

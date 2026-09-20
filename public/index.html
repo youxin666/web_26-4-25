@@ -7,12 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260616-brand-toggle-hide">
-    <link rel="stylesheet" href="fixed-header.css?v=20260908-mobile-main-divider">
+    <link rel="stylesheet" href="styles.css?v=20260912-job-match-autogrow-v1">
+    <link rel="stylesheet" href="fixed-header.css?v=20260912-desktop-shell-gap-v1">
 </head>
-<body class="resume-home">
+<body id="top" class="resume-home">
     <header class="site-header">
-        <a class="brand" href="/home">主页</a>
+        <a class="brand" href="/home" aria-label="主页"></a>
         <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" data-nav-toggle>
             <span></span>
             <span></span>
@@ -21,16 +21,16 @@
         <nav class="site-nav grouped-nav" aria-label="个人站导航">
             <span class="nav-main">
                 <a href="about.html">关于本站</a>
-                <a href="#posts">文章</a>
-                <a href="#site-project">网站作品</a>
-                <a href="#project">项目经历</a>
-                <a href="#experience">简历</a>
-                <a href="#skills">技能证书</a>
+                <a href="works.html">网站作品</a>
+                <a href="release.html">项目经历</a>
+                <a href="immerse.html">工作经历</a>
+                <a href="rest.html">技能证书</a>
                 <a href="player.html">联系方式</a>
             </span>
             <span class="nav-tools">
                 <a href="interview.html">面试邀约</a>
                 <a href="feedback.html">反馈系统</a>
+                <a href="https://blog.858846.xyz">博客系统<span class="external-arrow" aria-hidden="true">↗</span></a>
                 <a href="https://lab.858846.xyz">技术实验室<span class="external-arrow" aria-hidden="true">↗</span></a>
                 <a href="https://mail.858846.xyz">邮箱系统<span class="external-arrow" aria-hidden="true">↗</span></a>
             </span>
@@ -44,12 +44,12 @@
                 <h1>个人展示站</h1>
                 <p class="hero-lead">这里不再只是简历页面，而是一个持续更新的个人展示网站：记录技术实践、项目过程、工作观察和学习笔记。简历、AI 岗位匹配、反馈系统、邮箱入口和技术实验室都会作为站内模块存在。</p>
                 <div class="hero-actions">
-                    <a class="button primary" href="#posts">阅读文章</a>
+                    <a class="button primary" href="https://blog.858846.xyz/">访问博客</a>
                     <a class="button ghost" href="about.html">关于本站</a>
                     <a class="button ghost" href="https://lab.858846.xyz">技术实验室<span class="external-arrow" aria-hidden="true">↗</span></a>
                 </div>
                 <div class="hero-proof-strip" aria-label="网站能力摘要">
-                    <span>文章沉淀</span>
+                    <span>独立博客</span>
                     <span>项目展示</span>
                     <span>Cloudflare 部署</span>
                     <span>轻量数据功能</span>
@@ -64,26 +64,26 @@
                     </div>
                 </div>
                 <div class="console-grid">
-                    <article>
-                        <span>Posts</span>
-                        <strong>文章记录</strong>
+                    <a class="console-card" href="https://blog.858846.xyz/">
+                        <span>Blog</span>
+                        <strong>独立博客</strong>
                         <small>技术实践与阶段复盘</small>
-                    </article>
-                    <article>
+                    </a>
+                    <a class="console-card" href="works.html">
                         <span>Works</span>
                         <strong>作品项目</strong>
                         <small>网站、嵌入式与实验室</small>
-                    </article>
-                    <article>
+                    </a>
+                    <a class="console-card" href="immerse.html">
                         <span>Resume</span>
                         <strong>简历模块</strong>
                         <small>经历、证书与联系方式</small>
-                    </article>
-                    <article>
+                    </a>
+                    <a class="console-card" href="feedback.html">
                         <span>Data</span>
                         <strong>轻量互动</strong>
                         <small>反馈、邀约与后台查看</small>
-                    </article>
+                    </a>
                 </div>
                 <div class="console-footer">
                     <span>更新方向</span>
@@ -115,36 +115,6 @@
             <span>嵌入式项目</span>
             <span>测试记录</span>
             <span>工作复盘</span>
-        </section>
-
-        <section id="posts" class="section-block posts-section reveal">
-            <div class="section-heading">
-                <p class="eyebrow">Journal</p>
-                <h2>近期文章</h2>
-                <a class="text-link" href="posts.html">进入文章列表</a>
-            </div>
-            <div class="post-grid">
-                <article class="post-card featured-post">
-                    <div>
-                        <span class="post-category">Cloudflare</span>
-                        <h3>把个人站部署到 Cloudflare Workers</h3>
-                        <p>从静态资源托管、自定义域名、缓存策略到 Worker 路由，整理本站上线的核心流程。</p>
-                    </div>
-                    <a class="post-link" href="posts.html#cloudflare-worker">阅读记录</a>
-                </article>
-                <article class="post-card">
-                    <span class="post-category">Database</span>
-                    <h3>D1 如何承接反馈、邀约和匹配记录</h3>
-                    <p>把数据库只用在需要写入的地方，公开页面尽量静态化，降低免费额度压力。</p>
-                    <a class="post-link" href="posts.html#d1-feedback">查看思路</a>
-                </article>
-                <article class="post-card">
-                    <span class="post-category">AI</span>
-                    <h3>AI 岗位匹配器的页面与接口设计</h3>
-                    <p>从 JD 粘贴、报告生成、保存记录到后台查看，拆解这个小工具的产品路径。</p>
-                    <a class="post-link" href="posts.html#ai-job-matcher">查看思路</a>
-                </article>
-            </div>
         </section>
 
         <section id="site-project" class="section-block site-case reveal">
@@ -297,12 +267,17 @@
     </main>
 
     <footer class="site-footer" aria-label="站点页脚">
-        <div class="footer-links">
-            <a href="about.html">关于本站</a>
-            <a href="posts.html">文章</a>
-            <a href="/home#site-project">网站作品</a>
-            <a href="player.html">联系方式</a>
-            <a href="feedback.html">反馈系统</a>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <span>858846.xyz</span>
+                <p>Personal Site / Cloudflare / Notes</p>
+            </div>
+            <div class="footer-links">
+                <a href="about.html">关于本站</a>
+                <a href="works.html">网站作品</a>
+                <a href="player.html">联系方式</a>
+                <a href="feedback.html">反馈系统</a>
+            </div>
         </div>
         <div class="footer-badges" aria-label="站点技术标签">
             <span>Cloudflare Workers</span>
@@ -312,7 +287,7 @@
         </div>
         <div class="footer-bottom">
             <p>Copyright © 2026 By Rowan</p>
-            <a href="/home">858846.xyz</a>
+            <a href="#top">回到顶部</a>
         </div>
     </footer>
 
@@ -362,7 +337,7 @@
         </section>
     </div>
 
-    <script src="script.js?v=20260616-brand-toggle-hide"></script>
-    <script src="job-match.js?v=20260525-jd-format"></script>
+    <script src="script.js?v=20260912-main-lab-sidebar-logic"></script>
+    <script src="job-match.js?v=20260912-job-match-autogrow-v1"></script>
 </body>
 </html>

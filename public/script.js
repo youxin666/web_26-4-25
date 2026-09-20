@@ -15,13 +15,95 @@ document.addEventListener('DOMContentLoaded', () => {
     const siteHeader = document.querySelector('.site-header');
     const navToggle = document.querySelector('[data-nav-toggle]');
     const siteNav = document.querySelector('.site-nav');
+    const mobileNavQuery = window.matchMedia('(max-width: 860px)');
+    const navHome = document.createComment('site-nav-home');
+    siteNav?.parentNode?.insertBefore(navHome, siteNav);
+    const navScrim = document.createElement('button');
+    navScrim.type = 'button';
+    navScrim.className = 'nav-scrim';
+    navScrim.setAttribute('aria-label', '关闭导航菜单');
+    document.body.append(navScrim);
 
+    const navigationGroups = [
+        {
+            className: 'nav-main',
+            label: '站内页面',
+            links: [
+                ['about.html', '关于本站'],
+                ['works.html', '网站作品'],
+                ['release.html', '项目经历'],
+                ['immerse.html', '工作经历'],
+                ['rest.html', '技能证书'],
+                ['player.html', '联系方式']
+            ]
+        },
+        {
+            className: 'nav-tools',
+            label: '在线服务',
+            links: [
+                ['interview.html', '面试邀约'],
+                ['feedback.html', '反馈系统']
+            ]
+        },
+        {
+            className: 'nav-external',
+            label: '站外页面',
+            links: [
+                ['https://blog.858846.xyz', '博客系统'],
+                ['https://mail.858846.xyz', '邮件系统'],
+                ['https://lab.858846.xyz', '技术实验室']
+            ]
+        }
+    ];
+
+    if (siteNav) {
+        const navigationFragment = document.createDocumentFragment();
+
+        navigationGroups.forEach(({ className, label, links }) => {
+            const group = document.createElement('span');
+            group.className = className;
+            group.dataset.navLabel = label;
+
+            links.forEach(([href, text]) => {
+                const link = document.createElement('a');
+                const isExternal = href.startsWith('https://');
+
+                link.href = href;
+                link.append(document.createTextNode(text));
+
+                if (isExternal) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'external-arrow';
+                    arrow.setAttribute('aria-hidden', 'true');
+                    arrow.textContent = '↗';
+                    link.append(arrow);
+                } else if (href === currentPage) {
+                    link.classList.add('is-active');
+                    link.setAttribute('aria-current', 'page');
+                }
+
+                group.append(link);
+            });
+
+            navigationFragment.append(group);
+        });
+
+        siteNav.classList.add('grouped-nav');
+        siteNav.replaceChildren(navigationFragment);
+    }
+
+    const navClose = document.createElement('button');
+    navClose.type = 'button';
+    navClose.className = 'nav-close';
+    navClose.setAttribute('aria-label', '关闭导航菜单');
+    navClose.innerHTML = '<span></span><span></span>';
+    siteNav?.prepend(navClose);
     const themeToggle = document.createElement('button');
     themeToggle.type = 'button';
     themeToggle.className = 'theme-toggle';
     themeToggle.setAttribute('aria-label', '切换深色模式');
     themeToggle.innerHTML = '<span aria-hidden="true"></span>';
-    document.body.append(themeToggle);
+    siteHeader?.append(themeToggle);
 
     const syncThemeButton = () => {
         const isDark = root.dataset.theme === 'dark';
@@ -46,30 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    let lastThemeScrollY = window.scrollY;
-    let themeScrollTicking = false;
-    const updateThemeToggleVisibility = () => {
-        const currentY = window.scrollY;
-        const delta = currentY - lastThemeScrollY;
-        const shouldHide = currentY > 120 && delta > 8;
-
-        themeToggle.classList.toggle('is-hidden', shouldHide);
-
-        if (delta < -6 || currentY < 80) {
-            themeToggle.classList.remove('is-hidden');
-        }
-
-        lastThemeScrollY = currentY;
-        themeScrollTicking = false;
-    };
-
-    window.addEventListener('scroll', () => {
-        if (!themeScrollTicking) {
-            window.requestAnimationFrame(updateThemeToggleVisibility);
-            themeScrollTicking = true;
-        }
-    }, { passive: true });
-
     document.querySelectorAll('.site-nav a').forEach((link) => {
         const href = link.getAttribute('href') || '';
         if (href === currentPage) {
@@ -79,18 +137,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeNav = () => {
         siteHeader?.classList.remove('is-nav-open');
+        document.body.classList.remove('is-nav-open');
         navToggle?.setAttribute('aria-expanded', 'false');
     };
 
+    const syncNavPlacement = () => {
+        if (!siteNav) {
+            return;
+        }
+
+        if (mobileNavQuery.matches) {
+            if (siteNav.parentNode !== document.body) {
+                document.body.append(siteNav);
+            }
+        } else if (navHome.parentNode) {
+            navHome.parentNode.insertBefore(siteNav, navHome.nextSibling);
+        }
+    };
+
+    syncNavPlacement();
+
+    const openNav = () => {
+        syncNavPlacement();
+        siteHeader?.classList.add('is-nav-open');
+        document.body.classList.add('is-nav-open');
+        navToggle?.setAttribute('aria-expanded', 'true');
+    };
+
     navToggle?.addEventListener('click', () => {
-        const isOpen = siteHeader?.classList.toggle('is-nav-open');
-        navToggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+        if (siteHeader?.classList.contains('is-nav-open')) {
+            closeNav();
+        } else {
+            openNav();
+        }
     });
 
     siteNav?.addEventListener('click', (event) => {
-        if (event.target.closest('a') && window.matchMedia('(max-width: 860px)').matches) {
+        if (event.target.closest('a') && mobileNavQuery.matches) {
             closeNav();
         }
+    });
+
+    navClose.addEventListener('click', closeNav);
+    navScrim.addEventListener('click', closeNav);
+
+    mobileNavQuery.addEventListener('change', (event) => {
+        closeNav();
+        syncNavPlacement();
     });
 
     document.addEventListener('keydown', (event) => {
@@ -124,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
         }, { passive: true });
 
-        document.querySelectorAll('.feature-card, .info-card, .detail-card, .contact-card, .social-card, .feedback-card, .match-card, .product-console, .console-grid article, .arch-node, .case-summary, .case-steps article, .interview-process article, .interview-summary-card, .skill-matrix article').forEach((card) => {
+        document.querySelectorAll('.feature-card, .info-card, .detail-card, .contact-card, .social-card, .feedback-card, .match-card, .product-console, .console-grid article, .console-grid .console-card, .arch-node, .case-summary, .case-steps article, .interview-process article, .interview-summary-card, .skill-matrix article').forEach((card) => {
             card.addEventListener('pointermove', (event) => {
                 const rect = card.getBoundingClientRect();
                 const x = (event.clientX - rect.left) / rect.width - 0.5;

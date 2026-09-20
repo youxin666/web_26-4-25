@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let latestResult = null;
 
     const metrics = [
-        ['education', '学历背景'],
-        ['experience', '工作经验'],
-        ['technical', '技术能力'],
-        ['maintenance', '设备维护'],
-        ['communication', '沟通服务'],
+        ['education', '学历要求'],
+        ['experience', '相关经验'],
+        ['technical', '核心技能'],
+        ['maintenance', '行业与场景'],
+        ['communication', '协作与表达'],
     ];
 
     const setStatus = (message, state = 'muted') => {
@@ -52,6 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
         .replace(/\n{3,}/g, '\n\n')
         .trim();
 
+    const growTextareaToContent = () => {
+        if (!textarea) return;
+        const currentHeight = textarea.getBoundingClientRect().height;
+        const computedMaxHeight = Number.parseFloat(window.getComputedStyle(textarea).maxHeight);
+        const maxHeight = Number.isFinite(computedMaxHeight) ? computedMaxHeight : Number.POSITIVE_INFINITY;
+        const desiredHeight = Math.min(textarea.scrollHeight, maxHeight);
+
+        // Only grow automatically so a height chosen with the resize handle is preserved.
+        if (desiredHeight > currentHeight + 1) {
+            textarea.style.height = `${Math.ceil(desiredHeight)}px`;
+        }
+        textarea.style.overflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    };
+
     const fillList = (target, items) => {
         if (!target) return;
         target.replaceChildren();
@@ -63,10 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const renderBars = (scores = {}) => {
+    const renderBars = (scores = {}, labels = {}) => {
         if (!bars) return;
         bars.replaceChildren();
-        metrics.forEach(([key, title]) => {
+        metrics.forEach(([key, defaultTitle]) => {
+            const title = labels[key] || defaultTitle;
             const value = Math.max(0, Math.min(100, Number(scores[key]) || 0));
             const row = document.createElement('div');
             row.className = 'match-bar-row';
@@ -86,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (label) label.textContent = result.matchLevel || (total >= 82 ? '高度匹配' : total >= 68 ? '较匹配' : '需进一步确认');
         if (summary) summary.textContent = result.summary || '已根据岗位描述和公开简历信息生成匹配结论。';
         if (source) source.textContent = result.isAiPowered ? '结果由 AI 基于岗位描述和公开简历信息生成。' : '当前为本地预评估；接入模型后会升级为 AI 分析。';
-        renderBars(result.dimensionScores);
+        renderBars(result.dimensionScores, result.dimensionLabels);
         fillList(highlights, result.highlights);
         fillList(gaps, result.gaps);
         if (saveButton) {
@@ -103,9 +118,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('has-modal');
     };
 
+    textarea?.addEventListener('input', growTextareaToContent);
+    growTextareaToContent();
+
     textarea?.addEventListener('paste', () => {
         window.setTimeout(() => {
             textarea.value = formatJobDescription(textarea.value);
+            growTextareaToContent();
             textarea.scrollTop = 0;
             setStatus('已自动整理 JD 排版，点击开始匹配即可生成报告。', 'muted');
         }, 0);
@@ -115,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formatted = formatJobDescription(textarea.value);
         if (formatted && formatted !== textarea.value) {
             textarea.value = formatted;
+            growTextareaToContent();
         }
     });
     document.querySelectorAll('[data-match-close]').forEach((button) => {

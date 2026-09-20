@@ -7,12 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260616-brand-toggle-hide">
-    <link rel="stylesheet" href="fixed-header.css?v=20260908-mobile-main-divider">
+    <link rel="stylesheet" href="styles.css?v=20260912-job-match-autogrow-v1">
+    <link rel="stylesheet" href="fixed-header.css?v=20260912-desktop-shell-gap-v1">
 </head>
-<body class="detail-page admin-page">
+<body id="top" class="detail-page admin-page">
     <header class="site-header">
-        <a class="brand" href="/home">主页</a>
+        <a class="brand" href="/home" aria-label="主页"></a>
         <button class="nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" data-nav-toggle>
             <span></span>
             <span></span>
@@ -143,7 +143,32 @@
         </section>
     </main>
 
-    <script src="script.js?v=20260616-brand-toggle-hide"></script>
+    <footer class="site-footer" aria-label="站点页脚">
+        <div class="footer-main">
+            <div class="footer-brand">
+                <span>858846.xyz</span>
+                <p>Personal Site / Cloudflare / Notes</p>
+            </div>
+            <div class="footer-links">
+                <a href="about.html">关于本站</a>
+                <a href="works.html">网站作品</a>
+                <a href="player.html">联系方式</a>
+                <a href="feedback.html">反馈系统</a>
+            </div>
+        </div>
+        <div class="footer-badges" aria-label="站点技术标签">
+            <span>Cloudflare Workers</span>
+            <span>D1</span>
+            <span>AI Workflow</span>
+            <span>Static First</span>
+        </div>
+        <div class="footer-bottom">
+            <p>Copyright © 2026 By Rowan</p>
+            <a href="#top">回到顶部</a>
+        </div>
+    </footer>
+
+    <script src="script.js?v=20260912-main-lab-sidebar-logic"></script>
     <script src="admin.js?v=20260525-match-save"></script>
 </body>
 </html>

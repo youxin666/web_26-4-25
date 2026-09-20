@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const targets = {
+        name: document.querySelector('[data-contact-name]'),
         phone: document.querySelector('[data-contact-phone]'),
         email: document.querySelector('[data-contact-email]'),
     };
 
     const labels = {
+        name: '姓名',
         phone: '手机号',
         email: '邮箱',
     };
